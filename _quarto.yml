@@ -1,0 +1,55 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "R torchによる深層学習と科学計算"
+  author: "Sigrid Keydana 著 榎本剛 訳"
+  date: "2024/12/2"
+  chapters:
+    - index.qmd
+    - part: "torchに慣れる"
+      chapters:
+        - tensors.qmd
+    - references.qmd
+  page-navigation: true
+  downloads: pdf
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+    html-math-method: mathjax
+  pdf:
+    pdf-engine: lualatex
+    documentclass: ltjsbook
+    papersize: a4
+    echo: false
+    keep-tex: true
+    #    toc-title: "Contents"
+    lof: true
+    fig-pos: "H"
+    highlight-style: none
+    colorlinks: false
+    links-as-notes: true
+    include-in-header: 
+      text: |
+        \usepackage{makeidx}
+        \makeindex
+    include-after-body: 
+      text: |
+        \printindex
+execute:
+  eval: false
+  #crossref:
+  #fig-prefix: fig.
+  #tbl-prefix: tbl.
+
+classoption: 
+  - jafont = hiragino-pro
+
+toc: true
+toc-depth: 2
+number-sections: true
+number-depth: 2
+
