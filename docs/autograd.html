@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>参考文献 – R torchによる深層学習と科学計算</title>
+<title>2&nbsp; 自動微分 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,26 +20,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,7 +30,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./autograd.html" rel="prev">
+<link href="./references.html" rel="next">
+<link href="./tensors.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -87,6 +69,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -99,7 +110,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">参考文献</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -150,7 +161,7 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./autograd.html" class="sidebar-item-text sidebar-link">
+  <a href="./autograd.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
   </div>
 </li>
@@ -158,7 +169,7 @@ div.csl-indent {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link active">
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">参考文献</span></a>
   </div>
 </li>
@@ -167,15 +178,21 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#なぜ微分を計算するのか" id="toc-なぜ微分を計算するのか" class="nav-link active" data-scroll-target="#なぜ微分を計算するのか"><span class="header-section-number">2.1</span> なぜ微分を計算するのか</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">参考文献</h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></h1>
 </div>
 
 
@@ -192,15 +209,35 @@ div.csl-indent {
 </header>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-abs-2104-13478" class="csl-entry" role="listitem">
-Bronstein, Michael M., Joan Bruna, Taco Cohen, and Petar Velickovic.
-2021. <span>“Geometric Deep Learning: Grids, Groups, Graphs, Geodesics,
-and Gauges.”</span> <em>CoRR</em> abs/2104.13478. <a href="https://arxiv.org/abs/2104.13478">https://arxiv.org/abs/2104.13478</a>.
+<p>前の章では、テンソルをどのように扱うかを学び、それに対して行うことができる数学的な演算の例を示した。 そのような演算が多数あったとしても、それらが主要な<code>torch</code>の全てだったら、この本は読む必要がない。 <code>torch</code>のようなフレームワークの人気は、それらを使ってできること、一般的には深層学習、機械学習、最適化、大規模科学計算にある。 これらの応用分野の多くは、なんらかの損失函数を最小化と関係している。 これは、さらに函数の <em>微分</em> の計算を必要とする。 ここで、利用者として、個々の微分の函数形を自分で指定しなくてはならないということを想像してみよう。 特にニューラルネットワークでは、すぐに面倒になるだろう。</p>
+<p>実は、<code>torch</code>は微分の函数表現を作ったり、保存したりしない。 代わりに、 <em>自動微分</em> と呼ばれるものを実装している。 自動微分では、より具体的には逆モード形では、微分はテンソル演算のグラフを逆向き走査で計算され、結合される。 この後すぐに例を示すが、その前に一歩引いてなぜ微分を計算する必要があるのか、簡単に議論しておこう。</p>
+<section id="なぜ微分を計算するのか" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="なぜ微分を計算するのか"><span class="header-section-number">2.1</span> なぜ微分を計算するのか</h2>
+<p>教師あり機械学習では、訓練集合が使えて、予測したい変数は既知である。 これが目的変数で真値である。 今予測アルゴリズムを開発し、これを入力変数、予測変数に基づいて訓練する。 この訓練あるいは学習過程は、アルゴリズムの予測と真値とを比べ、 現在の予測がどれくらいよいか悪いか捉える数値が出てくるような比較に基づいている。 この数値を与えるのは、 <em>損失函数</em> の仕事だ。</p>
+<p>一度現在の損失が分かったら、アルゴリズムはパラメタ、つまりニューラルネットワークの重みを調整して、もっとよい予測にする。 アルゴリズムはどの方向に調整するか知る必要がある。 この情報は、 <em>勾配</em> つまり微分のベクトルから得られる。</p>
+<p>例として次のような損失函数を想像してみる <a href="#fig-autograd-paraboloid" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>。</p>
+<div id="fig-autograd-paraboloid" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-autograd-paraboloid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/autograd-paraboloid.png" class="img-fluid figure-img">
 </div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-autograd-paraboloid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: 仮想的な損失函数（放物面）。
+</figcaption>
+</figure>
 </div>
+<p>これは二変数の二次函数 <code>f(x_1, x_2) = 0.2x_1^2 + 0.2x_2^2 - 5</code> である。 最小値は<code>(0,0)</code>で、この点を求める。 白い点で示した点に立ち、風景を眺めれば、坂を速く降る方法は明確に分かる（坂を下るのを恐れないとする）。 でも、最良の方向を計算で見つけるには、勾配を計算する。</p>
+<p><span class="math inline">\(x_1\)</span>の方向を取り上げる。 <span class="math inline">\(x_1\)</span>に関する函数の微分は、函数値が<span class="math inline">\(x_1\)</span>とともにどのように変化するかを示す。 計算すると<span class="math inline">\(\frac{\partial f}{\partial x_1} = 0.4x_1\)</span>となる。 これは<span class="math inline">\(x_1\)</span>が増えると損失が増えることと、それがどの程度かを示している。 でも損失を減らす必要があるので、逆方向に進む必要がある。</p>
+<p>同じことが<span class="math inline">\(x_2\)</span>軸に対しても成り立つ。 微分を計算すると、<span class="math inline">\(\frac{\partial f}{\partial x_2} = 0.4x_2\)</span>を得る。 再び、微分が示す向きと逆方向を選ぶ。 全体では、降下方向は <span class="math display">\[
+\begin{bmatrix}
+-0.4x_1\\
+-0.4x_2
+\end{bmatrix}
+\]</span> である。</p>
+<p>この方法は記述的に最急降下と呼ばれている。 一般的に <em>勾配降下</em> と呼ばれ、機械学習で最も基本的な最適化アルゴリズムである。 おそらく直感に反して、最も効率の良い方法ではない。 さらに別の問いがある。 出発点で計算されたこの方向は降下中にずっと最適なのか。 代わりに、定期的に方向を計算し直した方が良いのかもしれない。 このような質問は後の章で検討する。</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -625,11 +662,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./autograd.html" class="pagination-link" aria-label="自動微分">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span>
+      <a href="./tensors.html" class="pagination-link" aria-label="テンソル">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">テンソル</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="参考文献">
+        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

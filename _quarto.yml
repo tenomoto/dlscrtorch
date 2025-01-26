@@ -11,6 +11,7 @@ book:
     - part: "torchに慣れる"
       chapters:
         - tensors.qmd
+        - autograd.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
