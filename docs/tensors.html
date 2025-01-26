@@ -237,9 +237,9 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#複製なし変形と複製あり変形" id="toc-複製なし変形と複製あり変形" class="nav-link" data-scroll-target="#複製なし変形と複製あり変形"><span class="header-section-number">1.5.1</span> 複製なし変形と複製あり変形</a></li>
   </ul></li>
-  <li><a href="#伝播" id="toc-伝播" class="nav-link" data-scroll-target="#伝播"><span class="header-section-number">1.6</span> 伝播</a>
+  <li><a href="#拡張" id="toc-拡張" class="nav-link" data-scroll-target="#拡張"><span class="header-section-number">1.6</span> 拡張</a>
   <ul class="collapse">
-  <li><a href="#伝播のルール" id="toc-伝播のルール" class="nav-link" data-scroll-target="#伝播のルール"><span class="header-section-number">1.6.1</span> 伝播のルール</a></li>
+  <li><a href="#拡張のルール" id="toc-拡張のルール" class="nav-link" data-scroll-target="#拡張のルール"><span class="header-section-number">1.6.1</span> 拡張のルール</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -691,11 +691,11 @@ Caution
 <span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>想像通り、二つのテンソルは今度は異なる場所に格納されている。</p>
-<p>この長い章の終わりに取り上げる内容は、一見手に余るように見える機能だが、性能の上で極めて重要なものである。 多くのもののように、慣れるには時間が掛かるが、安心してほしい。 この本や<code>torch</code>を使った多くのプロジェクトでたびたび目にすることになる。 この機能 <em>伝播</em> と呼ばれている。</p>
+<p>この長い章の終わりに取り上げる内容は、一見手に余るように見える機能だが、性能の上で極めて重要なものである。 多くのもののように、慣れるには時間が掛かるが、安心してほしい。 この本や<code>torch</code>を使った多くのプロジェクトでたびたび目にすることになる。 この機能 <em>拡張</em> （ブロードキャスト） と呼ばれている。</p>
 </section>
 </section>
-<section id="伝播" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="伝播"><span class="header-section-number">1.6</span> 伝播</h2>
+<section id="拡張" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="拡張"><span class="header-section-number">1.6</span> 拡張</h2>
 <p>形状が厳密に一致しないテンソルに対する演算をすることが多い。</p>
 <p>もちろん、長さ2のベクトルに長さ5のベクトルを足すようなことはしないかもしれない。 でもやってみたいこともありうる。 例えば、全ての要素にスカラを掛けることがあるが、これはできる。</p>
 <div class="cell">
@@ -732,15 +732,15 @@ Caution
 <span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">add</span>(t3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><code>torch</code>ではどちらも意図通りにうまくいった。 理由を考えてみよう。 上の例でテンソルの形状をあえて印字した。 3 x 5のテンソルには、形状3のテンソルも形状1 x 5のテンソルも足すことができた。 これらは、伝播がどのようにされるか示している。 簡単にいうと、起きたのは次の通りだ。</p>
+<p><code>torch</code>ではどちらも意図通りにうまくいった。 理由を考えてみよう。 上の例でテンソルの形状をあえて印字した。 3 x 5のテンソルには、形状3のテンソルも形状1 x 5のテンソルも足すことができた。 これらは、拡張がどのようにされるか示している。 簡単にいうと、起きたのは次の通りだ。</p>
 <ol type="1">
 <li><p>1 x 5テンソルが加数として使われると、実際は拡張される。 つまり、同じ3行あるかのように扱われる。 このような拡張は一致しない次元が単一で一番左にある場合にのみ実行される。</p></li>
 <li><p>形状3のテンソルも同様だが、先に手順が追加される。 大きさが1の主要な次元が実質上左に追加される。 これにより1と同様になり、そこから手順が続く。</p></li>
 </ol>
 <p>重要なのは、物理的な拡張はされないことだ。</p>
 <p>ルールを系統だてることにする。</p>
-<section id="伝播のルール" class="level3" data-number="1.6.1">
-<h3 data-number="1.6.1" class="anchored" data-anchor-id="伝播のルール"><span class="header-section-number">1.6.1</span> 伝播のルール</h3>
+<section id="拡張のルール" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="拡張のルール"><span class="header-section-number">1.6.1</span> 拡張のルール</h3>
 <p>ルールは次の通り。 まず、一つ目は目を引くものではないか、全ての基礎になる。</p>
 <ol type="1">
 <li>テンソルの形状を右に揃える。</li>
@@ -749,19 +749,19 @@ Caution
 <pre><code>t1, 形状:     3 7 1
 t2, 形状:       1 5</code></pre>
 <ol start="2" type="1">
-<li>右から始めて、揃えた軸に沿う大きさが厳密に一致するか、一つが1でなければならない。 後者の場合、単一要素次元のテンソルは単一でないものに対して <em>伝播</em> される。</li>
+<li>右から始めて、揃えた軸に沿う大きさが厳密に一致するか、一つが1でなければならない。 後者の場合、単一要素次元のテンソルは単一でないものに対して <em>拡張</em> される。</li>
 </ol>
-<p>上の例では、伝播は各テンソルに1回ずつ2回発生する。 結果は実質的に以下のようになる。</p>
+<p>上の例では、拡張は各テンソルに1回ずつ2回発生する。 結果は実質的に以下のようになる。</p>
 <pre><code>t1, 形状:     3 7 5
 t2, 形状:       7 5</code></pre>
 <ol start="3" type="1">
 <li><p>もしテンソルの一つが一つ（もしくは1以上）余分な軸があれば、実質的に拡張される。</p>
 <p>t1, 形状: 3 7 5 t2, 形状: 1 7 5</p></li>
 </ol>
-<p>そして伝播が発生する。</p>
+<p>そして拡張が発生する。</p>
 <pre><code>t1, 形状:     3 7 5
 t2, 形状:     3 7 5</code></pre>
-<p>この例では、伝播が両方のテンソルに同時に発生していることを見た。 覚えておくべきことは、常に右から見るということだ。 次の例は、どんな伝播をしてもうまくいかない。</p>
+<p>この例では、拡張が両方のテンソルに同時に発生していることを見た。 覚えておくべきことは、常に右から見るということだ。 次の例は、どんな拡張をしてもうまくいかない。</p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_zeros</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>)<span class="sc">$</span><span class="fu">add</span>(<span class="fu">torch_ones</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)) <span class="co"># error</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 <p>おそらく、この本の中で、この章は最も長く、最も応用から離れたように見えるものだった。 しかし、テンソルに慣れることは、<code>torch</code>をすらすら書くための前提であると言っておく。 同様のことは次の章で扱う話題、自動微分についても言える。 違いは、<code>torch</code>が大変な仕事を我々の代わりにしてくれるということだ。 我々は何をしているか理解すればよいだけだ。</p>
