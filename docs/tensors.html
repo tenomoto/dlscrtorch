@@ -160,6 +160,9 @@ window.Quarto = {
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">R torchによる深層学習と科学計算</a> 
+        <div class="sidebar-tools-main">
+    <a href="./R-torchによる深層学習と科学計算.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -207,10 +210,31 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Table of contents</h2>
    
-  <ul class="collapse">
+  <ul>
   <li><a href="#テンソルとは何か" id="toc-テンソルとは何か" class="nav-link active" data-scroll-target="#テンソルとは何か"><span class="header-section-number">1.1</span> テンソルとは何か</a></li>
-  <li><a href="#テンソルの作成" id="toc-テンソルの作成" class="nav-link" data-scroll-target="#テンソルの作成"><span class="header-section-number">1.2</span> テンソルの作成</a></li>
-  <li><a href="#テンソルに対する操作" id="toc-テンソルに対する操作" class="nav-link" data-scroll-target="#テンソルに対する操作"><span class="header-section-number">1.3</span> テンソルに対する操作</a></li>
+  <li><a href="#テンソルの作成" id="toc-テンソルの作成" class="nav-link" data-scroll-target="#テンソルの作成"><span class="header-section-number">1.2</span> テンソルの作成</a>
+  <ul class="collapse">
+  <li><a href="#値からテンソル" id="toc-値からテンソル" class="nav-link" data-scroll-target="#値からテンソル"><span class="header-section-number">1.2.1</span> 値からテンソル</a></li>
+  <li><a href="#指定からテンソル" id="toc-指定からテンソル" class="nav-link" data-scroll-target="#指定からテンソル"><span class="header-section-number">1.2.2</span> 指定からテンソル</a></li>
+  <li><a href="#データセットからテンソル" id="toc-データセットからテンソル" class="nav-link" data-scroll-target="#データセットからテンソル"><span class="header-section-number">1.2.3</span> データセットからテンソル</a></li>
+  </ul></li>
+  <li><a href="#テンソルに対する操作" id="toc-テンソルに対する操作" class="nav-link" data-scroll-target="#テンソルに対する操作"><span class="header-section-number">1.3</span> テンソルに対する操作</a>
+  <ul class="collapse">
+  <li><a href="#集計" id="toc-集計" class="nav-link" data-scroll-target="#集計"><span class="header-section-number">1.3.1</span> 集計</a></li>
+  </ul></li>
+  <li><a href="#テンソルの部分参照" id="toc-テンソルの部分参照" class="nav-link" data-scroll-target="#テンソルの部分参照"><span class="header-section-number">1.4</span> テンソルの部分参照</a>
+  <ul class="collapse">
+  <li><a href="#r思考" id="toc-r思考" class="nav-link" data-scroll-target="#r思考"><span class="header-section-number">1.4.1</span> 「R思考」</a></li>
+  <li><a href="#rを越える" id="toc-rを越える" class="nav-link" data-scroll-target="#rを越える"><span class="header-section-number">1.4.2</span> Rを越える</a></li>
+  </ul></li>
+  <li><a href="#テンソルの変形" id="toc-テンソルの変形" class="nav-link" data-scroll-target="#テンソルの変形"><span class="header-section-number">1.5</span> テンソルの変形</a>
+  <ul class="collapse">
+  <li><a href="#複製なし変形と複製あり変形" id="toc-複製なし変形と複製あり変形" class="nav-link" data-scroll-target="#複製なし変形と複製あり変形"><span class="header-section-number">1.5.1</span> 複製なし変形と複製あり変形</a></li>
+  </ul></li>
+  <li><a href="#伝播" id="toc-伝播" class="nav-link" data-scroll-target="#伝播"><span class="header-section-number">1.6</span> 伝播</a>
+  <ul class="collapse">
+  <li><a href="#伝播のルール" id="toc-伝播のルール" class="nav-link" data-scroll-target="#伝播のルール"><span class="header-section-number">1.6.1</span> 伝播のルール</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -238,7 +262,8 @@ window.Quarto = {
 
 <section id="テンソルとは何か" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="テンソルとは何か"><span class="header-section-number">1.1</span> テンソルとは何か</h2>
-<p><code>torch</code>の<code>tensor</code>は、Rの<code>array</code>に同様に任意の次元を取れる。 Rの<code>array</code>とは異なり、高速かつ大規模に計算を実行するために、GPUに移すことができる（おまけに、自動微分ができるので、大変有用だ）。</p>
+<p><code>torch</code>で何か役に立つことをするには、テンソルについて知る必要がある。 数学や物理の意味のテンソルではない。 TensorFlowや (Py-)Torchのような深層学習フレームワークでは、 <em>テンソル</em> は「単なる」多次元配列で、CPUだけでなく、GPUやTPUのような専用の装置上での高速計算に最適化されたものだ。</p>
+<p>実際、<code>torch</code>の<code>tensor</code>は、Rの<code>array</code>に同様に任意の次元を取れる。 Rの<code>array</code>とは異なり、高速かつ大規模に計算を実行するために、GPUに移すことができる（おまけに、自動微分ができるので、大変有用だ）。</p>
 <p><code>tensor</code>はR6オブジェクトに類似していて、<code>$</code>によりフィールドやメソッドを利用できる。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
@@ -285,8 +310,8 @@ window.Quarto = {
 <h2 data-number="1.2" class="anchored" data-anchor-id="テンソルの作成"><span class="header-section-number">1.2</span> テンソルの作成</h2>
 <p>既に見たテンソルを作る一つの方法は<code>torch_tensor()</code>を呼び出し、Rの値を渡すというものだった。 この方法は多次元オブジェクトに適用でき、以下にいくつかの例を示す。</p>
 <p>しかし、多くの異なる値を渡す必要があるときは効率が悪くなる。 ありがたいことに、値が全て同一であるべき場合や、明示的なパターンに従うときに適用できる別の方法がある。 この節ではこの技についても説明する。</p>
-<section id="値からテンソル" class="level3">
-<h3 class="anchored" data-anchor-id="値からテンソル">値からテンソル</h3>
+<section id="値からテンソル" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="値からテンソル"><span class="header-section-number">1.2.1</span> 値からテンソル</h3>
 <p>前の例では単一要素のベクトルを<code>torch_tensor()</code>に渡したが、より長いベクトルを同様に渡すことができる。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_tensor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -318,8 +343,8 @@ window.Quarto = {
 <p>上のテンソルの印字と比較しよう。 <code>Array</code>と<code>tensor</code>は異なる方向にオブジェクトを切っている。 テンソルは値を<code>3x2</code>の上向きと奥に向かう広がる長方形に切り、4つの<span class="math inline">\(x\)</span>のそれぞれの値に対して一つ示している。 一方、配列は<code>z</code>の値で分割し、二つの奥向きと右向きに進む大きな<code>4x3</code>の部分を示す。</p>
 <p>言い換えれば、テンソルは左/「外側」から、配列は右/「内側」から思考を始めているとも言えるだろう。</p>
 </section>
-<section id="指定からテンソル" class="level3">
-<h3 class="anchored" data-anchor-id="指定からテンソル">指定からテンソル</h3>
+<section id="指定からテンソル" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="指定からテンソル"><span class="header-section-number">1.2.2</span> 指定からテンソル</h3>
 <p><code>torch</code>の大口生成函数が便利な状況は、おおまかに二つある。 一つは、テンソルの個々の値は気にせず、分布のみに興味がある場合だ。 もう一つは、ある一定のパターンに従う場合だ。</p>
 <p>要素の値の代わりに、大口生成函数を使うときは、取るべき形状を指定する。 例えば、3x3のテンソルを生成し、標準正規分部の値で埋める場合は次のようにする。</p>
 <div class="cell">
@@ -345,8 +370,8 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_diag</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="データセットからテンソル" class="level3">
-<h3 class="anchored" data-anchor-id="データセットからテンソル">データセットからテンソル</h3>
+<section id="データセットからテンソル" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="データセットからテンソル"><span class="header-section-number">1.2.3</span> データセットからテンソル</h3>
 <p>さて、Rのデータセットからテンソルを作る方法を見ていこう。 データセットよっては、この過程は「自動」であったり、考慮や操作が必要になったりする。</p>
 <p>まず、base Rについてくる<code>JohnsonJohnson</code>を試してみる。 これは、Johnson &amp; Johnsonの一株あたりの四半期利益の時系列である。</p>
 <div class="cell">
@@ -475,8 +500,8 @@ Caution
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_multiply</span>(t1, t2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>テンソル演算は他にも多数あり、勉強の途中、いくつかに出会うことになるか、特に述べておく必要な集まりが一つある。</p>
-<section id="集計" class="level3">
-<h3 class="anchored" data-anchor-id="集計">集計</h3>
+<section id="集計" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="集計"><span class="header-section-number">1.3.1</span> 集計</h3>
 <p>R行列に対して和を計算する場合、それは次の三つのうちの一つを意味する。 総和、行の和、もしくは列の和。 これら三つを見てみよう（訳あって<code>apply()</code>を使う）。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)</span>
@@ -520,6 +545,220 @@ Caution
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">mean</span>(<span class="at">dim =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>ここで圧縮されたは時刻である。</p>
+</section>
+</section>
+<section id="テンソルの部分参照" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="テンソルの部分参照"><span class="header-section-number">1.4</span> テンソルの部分参照</h2>
+<p>テンソルを使っていると、計算のある部分が入力テンソルの一部にのみに対する演算であることはよくある。 その部分が単一の実体（値、行、列など）なら添字参照、このような実体の範囲なら切り出しと呼ばれる。</p>
+<section id="r思考" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="r思考"><span class="header-section-number">1.4.1</span> 「R思考」</h3>
+<p>添字参照も切り出しも基本的にはRと同じように働く。 いくつかの拡張された記法を続く節で示すが、総じてふるまいは直感に反しない。</p>
+<p>なぜならRと同じように、<code>torch</code>でも添字は1から始まるし、1要素になった次元は落とされるからだ。</p>
+<p>下の例では、2次元テンソルの最初の行を求め、その結果1次元つまりベクトルを得る。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">1</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ただし、<code>drop = FALSE</code>を指定すると次元は保持される。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">1</span>, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>切り出しの時は、1要素となる次元はないので、他に考慮すべきことはない。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_rand</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>まとめると、添字参照と切り出しはほぼRと同じように働く。 次に、前に述べた、さらに使いやすくする拡張について見る。</p>
+</section>
+<section id="rを越える" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="rを越える"><span class="header-section-number">1.4.2</span> Rを越える</h3>
+<p>拡張の一つはテンソルの最後の要素の参照だ。 利便性のため、<code>torch</code>では<code>-1</code>を使ってそれができる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>t[<span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>注意すべきは、Rでは負の添字はかなり異なった効果を持ち、対応する位置の要素は取り除かれることだ。</p>
+<p>もう一つの便利な機能は、切り出しの記法で刻み幅を二つ目のコロンの後に指定できることだ。 ここでは、一つ目から八つ目の列を一つおきに取り出している。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">ncol =</span> <span class="dv">10</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>t[ , <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>最後に示すのは、同じコードを異なる次元のテンソルに対して動作させる方法だ。 この場合、<code>..</code>を使って明示的に参照されていない、存在する次元全てをまとめて指定できる。</p>
+<p>例えば、行列、配列、もしくは高次元の構造など、どんなテンソルが渡されても最初の次元の添字参照をしたいとする。 次の</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>t[<span class="dv">1</span>, ..]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>は全てに対して機能する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>t1[<span class="dv">1</span>, ..]</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>t2[<span class="dv">1</span>, ..]</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>t3[<span class="dv">1</span>, ..]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>最後の次元の添字参照がしたければ、代わりに<code>t[.., 1]</code>と書けばよい。 両方を組み合わせることもできる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>t3[<span class="dv">1</span>, .., <span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>次の話題は、添字参照や切り出しと同じくらい重要なテンソルの変形だ。</p>
+</section>
+</section>
+<section id="テンソルの変形" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="テンソルの変形"><span class="header-section-number">1.5</span> テンソルの変形</h2>
+<p>24要素のテンソルがあるとする。 形状はどうなっているか。 次の可能性がある。</p>
+<ul>
+<li>長さ24のベクトル</li>
+<li>24 x 1、12 x 2、6 x 4などの行列</li>
+<li>24 x 1 x 1, 12 x 2 x 1などの3次元配列</li>
+<li>その他（24 x 1 x 1 x 1 x 1という可能性もありうる）</li>
+</ul>
+<p>値をお手玉しなくても、<code>view()</code>メソッドでテンソルの形状を変更できる。 最初のテンソルは長さ24のベクトルとする。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">24</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t, <span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>同じベクトルを横長の行列に変形する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> t<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>新しいテンソル<code>t2</code>を得たが、興味深いことに（そして性能の上で重要なことに）、<code>torch</code>はその値に対して新たに記憶域を割り付ける必要がなかったことだ。 自分で確認することができる。 二つのテンソルはデータほ同じ場所に格納している。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>どのように実現されているか少し議論する。</p>
+<section id="複製なし変形と複製あり変形" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="複製なし変形と複製あり変形"><span class="header-section-number">1.5.1</span> 複製なし変形と複製あり変形</h3>
+<p><code>torch</code>にテンソルの変形をさせると、テンソルの中身に対して新たな記憶域を割り付けずに要求を達成しようとする。 これが実現可能なのは、同じデータ、究極的には同じバイト列は異なる方法で読み出すことができるからだ。 必要なのはメタデータの記憶域だけだ。</p>
+<p><code>torch</code>はどのようにしているか。 具体的な例を見てみる。 3 x 5行列から始める。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>, <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>テンソルには<code>stride()</code>メソッドがあり、各次元に対して次の要素にたどり着くまでにいくつの要素を越えたか追跡する。 上記のテンソル<code>t</code>に対して、次の行に進むには5要素飛ばす必要があるが、次の列には一つだけ飛ばせばよい。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">stride</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ここで、テンソルを変形して、今度は5行3列にする。 データ自体は変化しないことを思い出してほしい。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> t<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">3</span>))</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>t2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>今回は次の行には、5要素ではなく3要素だけ飛ばせば次の行に到達する。 次の列に進むのは、ここでも1要素だけ「跳べ」ばよい。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">stride</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ここで、要素の順序を変えることができるか考えてみよう。 例えば、行列の転置はメタデータの方法で可能だろうか。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> t<span class="sc">$</span><span class="fu">t</span>()</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>t3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>元のテンソルとその転置はメモリ上の同じ場所を指しているので、実際に可能であるはずだ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>t3<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>これは道理にかなっている。 次の行に到達するのに、1要素だけ跳び、次の列には5要素跳べばよいから、うまくいくだろう。 確認する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>t3<span class="sc">$</span><span class="fu">stride</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>その通りだ。</p>
+<p>可能な限り、<code>torch</code>は形状を変更する演算をこの方法で扱おうとする。</p>
+<p>このような（今後多数見ることになる）複製なし演算の一つは<code>squeeze()</code>とその対義語<code>unsqueeeze()</code>だ。 後者は指定位置に単一要素の次元を付け加え、前者は取り除く。 例を挙げる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>t</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ここでは単一要素の次元を前につけた。 代わりに、<code>t$unsqueeze(2)</code>を使えば末尾につけることもできた。</p>
+<p>さて、複製なしの技法は失敗することがあるか。 そのような例を示す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">view</span>(<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ストライドを変える演算を連続して行うと、二つ目は失敗する可能性が高い。 失敗するかどうか決める方法はあるが、簡単な方法は<code>view()</code>の代わりに<code>reshape()</code>を使うことだ。 後者は魔法のように機能し、可能であればメタデータで、そうでなければ複製する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> t<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">reshape</span>(<span class="dv">9</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>想像通り、二つのテンソルは今度は異なる場所に格納されている。</p>
+<p>この長い章の終わりに取り上げる内容は、一見手に余るように見える機能だが、性能の上で極めて重要なものである。 多くのもののように、慣れるには時間が掛かるが、安心してほしい。 この本や<code>torch</code>を使った多くのプロジェクトでたびたび目にすることになる。 この機能 <em>伝播</em> と呼ばれている。</p>
+</section>
+</section>
+<section id="伝播" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="伝播"><span class="header-section-number">1.6</span> 伝播</h2>
+<p>形状が厳密に一致しないテンソルに対する演算をすることが多い。</p>
+<p>もちろん、長さ2のベクトルに長さ5のベクトルを足すようなことはしないかもしれない。 でもやってみたいこともありうる。 例えば、全ての要素にスカラを掛けることがあるが、これはできる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>t1 <span class="sc">*</span> <span class="fl">0.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>これはおそらく大したことではなかっただろう。 Rで慣れている。 しかし、次はRでは動作しない。 同じベクトルを行列の全ての行に加えようとしている。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">ncol =</span> <span class="dv">5</span>, <span class="at">byrown =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>m2</code>をベクトルに代えてもうまくいかない。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>m <span class="sc">+</span> m3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>文法としては動いたが、意味の上では意図した通りではない。</p>
+<p>ここで、上の二つを<code>torch</code>で試してみる。 まず二つのテンソルが2次元の場合（概念的には一つは行ベクトルだが）から。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(m)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(m2)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span>shape</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span>shape</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">add</span>(t2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>次に足すものが1次元テンソルの場合。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>t3 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(m3)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>t3<span class="sc">$</span>shape</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">add</span>(t3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>torch</code>ではどちらも意図通りにうまくいった。 理由を考えてみよう。 上の例でテンソルの形状をあえて印字した。 3 x 5のテンソルには、形状3のテンソルも形状1 x 5のテンソルも足すことができた。 これらは、伝播がどのようにされるか示している。 簡単にいうと、起きたのは次の通りだ。</p>
+<ol type="1">
+<li><p>1 x 5テンソルが加数として使われると、実際は拡張される。 つまり、同じ3行あるかのように扱われる。 このような拡張は一致しない次元が単一で一番左にある場合にのみ実行される。</p></li>
+<li><p>形状3のテンソルも同様だが、先に手順が追加される。 大きさが1の主要な次元が実質上左に追加される。 これにより1と同様になり、そこから手順が続く。</p></li>
+</ol>
+<p>重要なのは、物理的な拡張はされないことだ。</p>
+<p>ルールを系統だてることにする。</p>
+<section id="伝播のルール" class="level3" data-number="1.6.1">
+<h3 data-number="1.6.1" class="anchored" data-anchor-id="伝播のルール"><span class="header-section-number">1.6.1</span> 伝播のルール</h3>
+<p>ルールは次の通り。 まず、一つ目は目を引くものではないか、全ての基礎になる。</p>
+<ol type="1">
+<li>テンソルの形状を右に揃える。</li>
+</ol>
+<p>二つのテンソル、一つのサイズは3 x 7 x 1、もう一つは1 x 5、があるとする。 これらを右に揃える。</p>
+<pre><code>t1, 形状:     3 7 1
+t2, 形状:       1 5</code></pre>
+<ol start="2" type="1">
+<li>右から始めて、揃えた軸に沿う大きさが厳密に一致するか、一つが1でなければならない。 後者の場合、単一要素次元のテンソルは単一でないものに対して <em>伝播</em> される。</li>
+</ol>
+<p>上の例では、伝播は各テンソルに1回ずつ2回発生する。 結果は実質的に以下のようになる。</p>
+<pre><code>t1, 形状:     3 7 5
+t2, 形状:       7 5</code></pre>
+<ol start="3" type="1">
+<li><p>もしテンソルの一つが一つ（もしくは1以上）余分な軸があれば、実質的に拡張される。</p>
+<p>t1, 形状: 3 7 5 t2, 形状: 1 7 5</p></li>
+</ol>
+<p>そして伝播が発生する。</p>
+<pre><code>t1, 形状:     3 7 5
+t2, 形状:     3 7 5</code></pre>
+<p>この例では、伝播が両方のテンソルに同時に発生していることを見た。 覚えておくべきことは、常に右から見るということだ。 次の例は、どんな伝播をしてもうまくいかない。</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_zeros</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>)<span class="sc">$</span><span class="fu">add</span>(<span class="fu">torch_ones</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)) <span class="co"># error</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<p>おそらく、この本の中で、この章は最も長く、最も応用から離れたように見えるものだった。 しかし、テンソルに慣れることは、<code>torch</code>をすらすら書くための前提であると言っておく。 同様のことは次の章で扱う話題、自動微分についても言える。 違いは、<code>torch</code>が大変な仕事を我々の代わりにしてくれるということだ。 我々は何をしているか理解すればよいだけだ。</p>
 
 
 </section>

@@ -49,7 +49,7 @@ classoption:
   - jafont = hiragino-pro
 
 toc: true
-toc-depth: 2
+#toc-depth: 2
 number-sections: true
-number-depth: 2
+#number-depth: 2
 
