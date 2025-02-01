@@ -12,6 +12,7 @@ book:
       chapters:
         - tensors.qmd
         - autograd.qmd
+        - optim1.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf

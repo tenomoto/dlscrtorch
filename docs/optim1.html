@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>参考文献 – R torchによる深層学習と科学計算</title>
+<title>3&nbsp; autogradを使った函数の最小化 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,26 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
 }
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,7 +64,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./optim1.html" rel="prev">
+<link href="./references.html" rel="next">
+<link href="./autograd.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -99,7 +115,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">参考文献</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -156,7 +172,7 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./optim1.html" class="sidebar-item-text sidebar-link">
+  <a href="./optim1.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
   </div>
 </li>
@@ -164,7 +180,7 @@ div.csl-indent {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link active">
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">参考文献</span></a>
   </div>
 </li>
@@ -173,15 +189,22 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#最適化の古典" id="toc-最適化の古典" class="nav-link active" data-scroll-target="#最適化の古典"><span class="header-section-number">3.1</span> 最適化の古典</a></li>
+  <li><a href="#最小化を白紙から" id="toc-最小化を白紙から" class="nav-link" data-scroll-target="#最小化を白紙から"><span class="header-section-number">3.2</span> 最小化を白紙から</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">参考文献</h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></h1>
 </div>
 
 
@@ -198,15 +221,147 @@ div.csl-indent {
 </header>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-abs-2104-13478" class="csl-entry" role="listitem">
-Bronstein, Michael M., Joan Bruna, Taco Cohen, and Petar Velickovic.
-2021. <span>“Geometric Deep Learning: Grids, Groups, Graphs, Geodesics,
-and Gauges.”</span> <em>CoRR</em> abs/2104.13478. <a href="https://arxiv.org/abs/2104.13478">https://arxiv.org/abs/2104.13478</a>.
+<p>前の二つの章ではテンソルと自動微分について学んだ。 これから二つの章では<code>torch</code>の仕組みについての勉強は休んで、その代わりすでに学んだことで何ができるか試してよう。 テンソルだけを使い、自動微分だけの力を借りるだけで、既に二つのことができる。</p>
+<ul>
+<li>函数を最小化する（つまり、数値最適化を行う）、そして</li>
+<li>ニューラルネットワークを構築して訓練する。</li>
+</ul>
+<p>この章では、最小化からはじめ、ネットワークは次章に回す。</p>
+<section id="最適化の古典" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="最適化の古典"><span class="header-section-number">3.1</span> 最適化の古典</h2>
+<p>最適化研究において、<em>ローゼンブロック函数</em> は古典である。 この函数は二つの変数をとり、<code>(1, 1)</code>で最小となる。 等値線を眺めると、最小は伸びた細い谷の中にあることが分かる。</p>
+<div id="fig-optim1-rosenbrock" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-optim1-rosenbrock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/optim-1-rosenbrock.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-optim1-rosenbrock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: ローゼンブロック函数
+</figcaption>
+</figure>
+</div>
+<p>函数の定義は次の通りだ。 <code>a</code>と<code>b</code>は自由に定めてよいパラメタだが、よく使われる値を用いる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  x1 <span class="ot">&lt;-</span> x[<span class="dv">1</span>]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  x2 <span class="ot">&lt;-</span> x[<span class="dv">2</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  (a <span class="sc">-</span> x1)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> b <span class="sc">*</span> (x2 <span class="sc">-</span> x1<span class="sc">^</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="最小化を白紙から" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="最小化を白紙から"><span class="header-section-number">3.2</span> 最小化を白紙から</h2>
+<p>シナリオは次の通り。 与えられた点<code>(x1, x2)</code>から出発し、ローゼンブロック函数が最小になる場所を見つける。</p>
+<p>前の章で説明した方法に従い、現在の位置における函数の勾配を計算し、それを使って逆方向にに進む。 どれくらい遠くまで行けばよいかは分からない。 大きく進みすぎると、簡単に行き過ぎてしまう。 （等値線図を再度確認すると最小値のの西または東の急な崖に立っていると、これがすぐに生じることが分かる。）</p>
+<p>つまり、最良の方法は反復して進むことで、妥当な幅を取り、毎回勾配を再評価することだ。</p>
+<p>まとめると、最適化の手順は次のようになる。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># これはまだ正しい手順ではない!</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_iterations) {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 函数を呼び現在のパラメタ値を渡す。</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  value <span class="ot">&lt;-</span> <span class="fu">rosenbrock</span>(x)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># パラメタについての勾配を計算する。</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 手動でパラメタを更新し、勾配に比例した一部を引く。</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ここはまだ正しくない。</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> x<span class="sc">$</span>grad)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>書かれている通り、コード片は考えを示したもので、（まだ）正しくない。 また、いくつかの必要なものが欠けている。 テンソル<code>x</code>も変数<code>lr</code>や<code>num_iterations</code>も定義されていない。 まず、これらを準備しよう。 学習率<code>lr</code>は毎回引く勾配に比例した一部で、<code>num_iterations</code>は反復する回数である。 これらは実験パラメタである。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lr <span class="ot">&lt;-</span> <span class="fl">0.01</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>num_iterations <span class="ot">&lt;-</span> <span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>x</code>は最適化するパラメタ、つまり函数の入力であり、最適化の最後に可能な限り最小の函数値に近い値を与える位置であることが望まれる。 このテンソルについて函数の微分を計算するので、<code>requires_grad = TRUE</code>をつけて作る必要がある。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>), <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>初期位置<code>(-1, 1)</code>は任意に選択した。 さて、残っているのは最適化ループを少し修正することだ。 <em>autograd</em> が<code>x</code>について有効化されていると、<code>torch</code>はこのテンソルに対して行われるすべての演算を記録する。 そのため<code>backward()</code>を呼ぶたびに、すべての必要な微分を計算しようとすることになる。 しかし、勾配の一部を引くときは、微分を今朝さんする必要はない。 <code>torch</code>にこれを記録しないように指示するために、<code>with_no_grad()</code>を囲む。</p>
+<p>ここで説明しておかなければならないことがある。 既定で<code>torch</code>は<code>grad</code>フィールドに格納された勾配を筑西する。 新しい計算をするたびに<code>grad$zero_()</code>を使ってゼロに消去する必要がある。</p>
+<p>これらを考慮すると、パラメタの更新は次のように書ける。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">with_no_grad</span>({</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> x<span class="sc">$</span>grad)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zer_</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>完成したコードは次のようになる。 ログをとる文を追加して何が起きているか分かるようにしてある。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>num_iterations <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>lr <span class="ot">&lt;-</span> <span class="fl">0.01</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>), <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_iterations) {</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">%%</span> <span class="dv">100</span> <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">cat</span>(<span class="st">"Iteration: "</span>, i, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  value <span class="ot">&lt;-</span> <span class="fu">rosenbrock</span>(x)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">%%</span> <span class="dv">100</span> <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Value is : "</span>, <span class="fu">as.numeric</span>(value), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">%%</span> <span class="dv">100</span> <span class="sc">==</span> <span class="dv">0</span> ) {</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Gradient is : "</span>, <span class="fu">as.matrix</span>(x<span class="sc">$</span>grad), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with_no_grad</span>({</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> x<span class="sc">$</span>grad)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>() </span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration:  100 
+Value is :  0.3502924 
+Gradient is :  -0.667685 -0.5771312 
+Iteration:  200 
+Value is :  0.07398106 
+Gradient is :  -0.1603189 -0.2532476 
+Iteration:  300 
+Value is :  0.02483024 
+Gradient is :  -0.07679074 -0.1373911 
+Iteration:  400 
+Value is :  0.009619333 
+Gradient is :  -0.04347242 -0.08254051 
+Iteration:  500 
+Value is :  0.003990697 
+Gradient is :  -0.02652063 -0.05206227 
+Iteration:  600 
+Value is :  0.001719962 
+Gradient is :  -0.01683905 -0.03373682 
+Iteration:  700 
+Value is :  0.0007584976 
+Gradient is :  -0.01095017 -0.02221584 
+Iteration:  800 
+Value is :  0.0003393509 
+Gradient is :  -0.007221781 -0.01477957 
+Iteration:  900 
+Value is :  0.0001532408 
+Gradient is :  -0.004811743 -0.009894371 
+Iteration:  1000 
+Value is :  6.962555e-05 
+Gradient is :  -0.003222887 -0.006653666 </code></pre>
 </div>
 </div>
+<p>1000回の反復後、函数値は0.0001よりも小さくなった。 対応する<code>(x1,x2)</code>の位置はどこになったか。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 0.9918
+ 0.9830
+[ CPUFloatType{2} ][ requires_grad = TRUE ]</code></pre>
+</div>
+</div>
+<p>これは真の最小<code>(1,1)</code>にかなり近い。 気が向いたら、学習率がどのような違いを生じるか試してみよう。 例えば、0.001と0.1をそれぞれ使ってみるとよい。</p>
+<p>次の章では、白紙からニューラルネットワークを構築する。 そこで最小化するのは <em>損失函数</em> 、つまり回帰問題から現れる平均二乗誤差である。</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -631,11 +786,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./optim1.html" class="pagination-link" aria-label="*autograd*を使った函数の最小化">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span>
+      <a href="./autograd.html" class="pagination-link" aria-label="自動微分">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="参考文献">
+        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
