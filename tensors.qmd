@@ -680,10 +680,15 @@ t$unsqueeze(1)
 そのような例を示す。
 
 ```{r}
-#| error: true
+#| eval: false
 t <- torch_randn(3, 3)
 t$t()$view(9)
 ```
+
+    Error in (function (self, size) :
+    view size is not compatible with input tensor's size and
+    stride (at least one dimension spans across two contiguous subspaces).
+    Use .reshape(...) instead.
 
 ストライドを変える演算を連続して行うと、二つ目は失敗する可能性が高い。
 失敗するかどうか決める方法はあるが、簡単な方法は`view()`の代わりに`reshape()`を使うことだ。
@@ -725,7 +730,7 @@ Rで慣れている。
 ```{r}
 #| error: true
 m <- matrix(1:15, ncol = 5, byrow = TRUE)
-m2 <- matrix(1:5, ncol = 5, byrown = TRUE)
+m2 <- matrix(1:5, ncol = 5, byrow = TRUE)
 ```
 
 `m2`をベクトルに代えてもうまくいかない。

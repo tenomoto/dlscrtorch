@@ -40,8 +40,8 @@ format:
     include-after-body: 
       text: |
         \printindex
-execute:
-  eval: false
+#execute:
+#  eval: false
   #crossref:
   #fig-prefix: fig.
   #tbl-prefix: tbl.

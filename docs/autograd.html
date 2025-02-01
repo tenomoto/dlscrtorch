@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -184,6 +218,8 @@ window.Quarto = {
    
   <ul>
   <li><a href="#なぜ微分を計算するのか" id="toc-なぜ微分を計算するのか" class="nav-link active" data-scroll-target="#なぜ微分を計算するのか"><span class="header-section-number">2.1</span> なぜ微分を計算するのか</a></li>
+  <li><a href="#自動微分の例" id="toc-自動微分の例" class="nav-link" data-scroll-target="#自動微分の例"><span class="header-section-number">2.2</span> 自動微分の例</a></li>
+  <li><a href="#torch-autograd-による自動微分" id="toc-torch-autograd-による自動微分" class="nav-link" data-scroll-target="#torch-autograd-による自動微分"><span class="header-section-number">2.3</span> <code>torch</code> <em>autograd</em> による自動微分</a></li>
   </ul>
 </nav>
     </div>
@@ -227,14 +263,171 @@ Figure&nbsp;2.1: 仮想的な損失函数（放物面）。
 </figure>
 </div>
 <p>これは二変数の二次函数 <code>f(x_1, x_2) = 0.2x_1^2 + 0.2x_2^2 - 5</code> である。 最小値は<code>(0,0)</code>で、この点を求める。 白い点で示した点に立ち、風景を眺めれば、坂を速く降る方法は明確に分かる（坂を下るのを恐れないとする）。 でも、最良の方向を計算で見つけるには、勾配を計算する。</p>
-<p><span class="math inline">\(x_1\)</span>の方向を取り上げる。 <span class="math inline">\(x_1\)</span>に関する函数の微分は、函数値が<span class="math inline">\(x_1\)</span>とともにどのように変化するかを示す。 計算すると<span class="math inline">\(\frac{\partial f}{\partial x_1} = 0.4x_1\)</span>となる。 これは<span class="math inline">\(x_1\)</span>が増えると損失が増えることと、それがどの程度かを示している。 でも損失を減らす必要があるので、逆方向に進む必要がある。</p>
-<p>同じことが<span class="math inline">\(x_2\)</span>軸に対しても成り立つ。 微分を計算すると、<span class="math inline">\(\frac{\partial f}{\partial x_2} = 0.4x_2\)</span>を得る。 再び、微分が示す向きと逆方向を選ぶ。 全体では、降下方向は <span class="math display">\[
+<p><span class="math inline">\(x_1\)</span>の方向を取り上げる。 <span class="math inline">\(x_1\)</span>に関する函数の微分は、函数値が<span class="math inline">\(x_1\)</span>とともにどのように変化するかを示す。 計算すると<span class="math inline">\(\partial f/ x_1 = 0.4x_1\)</span>となる。 これは<span class="math inline">\(x_1\)</span>が増えると損失が増えることと、それがどの程度かを示している。 でも損失を減らす必要があるので、逆方向に進む必要がある。</p>
+<p>同じことが<span class="math inline">\(x_2\)</span>軸に対しても成り立つ。 微分を計算すると、<span class="math inline">\(\partial f/\partial x_2 = 0.4x_2\)</span>を得る。 再び、微分が示す向きと逆方向を選ぶ。 全体では、降下方向は <span class="math display">\[
 \begin{bmatrix}
 -0.4x_1\\
 -0.4x_2
 \end{bmatrix}
 \]</span> である。</p>
-<p>この方法は記述的に最急降下と呼ばれている。 一般的に <em>勾配降下</em> と呼ばれ、機械学習で最も基本的な最適化アルゴリズムである。 おそらく直感に反して、最も効率の良い方法ではない。 さらに別の問いがある。 出発点で計算されたこの方向は降下中にずっと最適なのか。 代わりに、定期的に方向を計算し直した方が良いのかもしれない。 このような質問は後の章で検討する。</p>
+<p>この方法は最急降下と呼ばれている。 一般的に <em>勾配降下</em> と呼ばれ、機械学習で最も基本的な最適化アルゴリズムである。 おそらく直感に反して、最も効率の良い方法ではない。 さらに別の問いがある。 出発点で計算されたこの方向は降下中にずっと最適なのか。 代わりに、定期的に方向を計算し直した方が良いのかもしれない。 このような質問は後の章で検討する。</p>
+</section>
+<section id="自動微分の例" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="自動微分の例"><span class="header-section-number">2.2</span> 自動微分の例</h2>
+<p>微分がなぜ必要か分かったところで、自動微分（AD: automatic differentiation）がどのように計算しているか見てみよう。</p>
+<div id="fig-autograd-compgraph" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-autograd-compgraph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/autograd-compgraph.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-autograd-compgraph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: 計算グラフの例
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-autograd-compgraph" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> は上の函数が計算グラフにどのように表すことができるかを示している。 <code>x1</code>と<code>x2</code>は入力ノードで、対応する函数のパラメタは<span class="math inline">\(x_1\)</span>と<span class="math inline">\(x_2\)</span>である。 <code>xu</code>は函数の出力で、他は全て中間ノードであり正しい順序で実行するために必要である （定数<code>-5</code>、<code>0.2</code>及び<code>2</code>をノードとすることもできるが、定数なので特に気にせずに、簡潔なグラフを選んだ）。</p>
+<p>逆モードADは、<code>torch</code>が実装している自動微分の一種で、まず函数の出力を計算する。 これはグラフの順方向伝播である。 次に逆伝播を行い、両方の入力<code>x1</code>と<code>x2</code>に関する出力の勾配を計算する。 この過程で、右から情報が利用可能となり、積み重なっていく。</p>
+<ul>
+<li><code>x7</code>で、<code>x5</code>と<code>x6</code>に関する偏微分を計算する。 つまり、微分する式は <span class="math inline">\(f(x_5, x_6) = x_5 + x_6 - 5\)</span> なので、偏微分は両方とも1である。</li>
+<li><code>x5</code>から左に動き、<code>x3</code>にどのように依存しているか確認すると、 <span class="math inline">\(\partial x_5/ \partial x_3 = 0.2\)</span>である。 微積分の連鎖律を用いると、出力がどのように<code>x3</code>に依存するか分かるので、<span class="math inline">\(\partial f/\partial x_3 = 0.2 \times 1 = 0.2\)</span>と計算できる。</li>
+<li><code>x_3</code>から、<code>x</code>に最後の段階を踏む。 <span class="math inline">\(\partial x_3/ \partial x_1 = 2x_1\)</span>なので、連鎖律を再度用いて函数が最初の入力にどのように依存するか定式化できる。 つまり <span class="math inline">\(\partial f/\partial x_1 = 2x_1 \times 0.2 \times 0.1 = 0.4x_1\)</span> となる。</li>
+<li>同様に二番目の偏微分も計算し、勾配を求める。<span class="math inline">\(\nabla f = (\partial f/\partial x_1, \partial f/\partial x_2)^\mathrm{T} = (0.4x_1, 0.4x_2)^\mathrm{T}\)</span></li>
+</ul>
+<p>これが原理である。 実際には、フレームワークによって逆モード自動微分の実装は異なる。 次の節で<code>torch</code>がどのように実装しているか簡潔に示す。</p>
+</section>
+<section id="torch-autograd-による自動微分" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="torch-autograd-による自動微分"><span class="header-section-number">2.3</span> <code>torch</code> <em>autograd</em> による自動微分</h2>
+<p>まず、用語について注意しておく。 <code>torch</code>ではADエンジンは <em>autograd</em> と呼ばれ、本書の残りの多くの部分でもそのように記す。 それでは説明に戻る。</p>
+<p>上述の計算グラフを<code>torch</code>で構築するには、入力テンソル<code>x1</code>と<code>x2</code>を作成する。 これは興味のあるバラメタを模している。 これまでしてきたように「いつも通り」テンソルを作成すると、<code>torch</code>はAD向けの準備をしない。 そうせずに、これらのテンソルを作るときに<code>requires_grad = TRUE</code>を渡す必要がある。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>（ところで二つのテンソルに<code>2</code>という値を選んだのは完全に任意である。）</p>
+<p>次に「隠れた」ノード<code>x3</code>と<code>x6</code>を作るには、二乗して掛け算をする。 最後に<code>x7</code>に最終出力を格納する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">&lt;-</span> x1<span class="sc">$</span><span class="fu">square</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x5 <span class="ot">&lt;-</span> x3 <span class="sc">*</span> <span class="fl">0.2</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x4 <span class="ot">&lt;-</span> x2<span class="sc">$</span><span class="fu">square</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>x6 <span class="ot">&lt;-</span> x4 <span class="sc">*</span> <span class="fl">0.2</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>x7 <span class="ot">&lt;-</span> x5 <span class="sc">+</span> x6 <span class="sc">-</span> <span class="dv">5</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>x7</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+-3.4000
+[ CPUFloatType{1} ][ grad_fn = &lt;SubBackward1&gt; ]</code></pre>
+</div>
+</div>
+<p><code>requires_grad = TRUE</code>を追加しなければならなかったのは、入力テンソルを作るときだけであることに注目してほしい。 グラフの依存するノードは全てこの属性を継承する。 確認してみよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x7<span class="sc">$</span>requires_grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>これまでに自動微分が動作するために必要な前提が全て満たされた。 あとは<code>backward()</code>を呼べぱ、<code>x7</code>が’x1<code>と</code>x2`にどのように依存するかが決まる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>x7<span class="sc">$</span><span class="fu">backward</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>この呼び出しにより、<code>x1</code>と<code>x2</code>の<code>$grad</code>フィールドが埋まる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>x1<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 0.8000
+[ CPUFloatType{1} ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x2<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 0.8000
+[ CPUFloatType{1} ]</code></pre>
+</div>
+</div>
+<p>これらは、それぞれ<code>x7</code>の<code>x1</code>と<code>x2</code>に関する偏微分である。 上記の手計算を確認すると、どちらも0.8つまり0.4にテンソル値2及び2をかけたものになっている。</p>
+<p>すでに述べた、端から端の微分を積み上げるのに必要な積算過程はどうなっているのか。 積み上げられるに従って端から端までの微分を「追跡」することはできるのだろうか。 例えば、最終出力がどのように<code>x3</code>に依存しているか見ることはできるだろうか。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x3<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+[ Tensor (undefined) ]</code></pre>
+</div>
+</div>
+<p>このフィールドは埋まっていないようである。 実は、これらを計算することは必要だが、<code>torch</code>は不要になったら中間集計を捨て、メモリを節約する。 しかしながら、保存する<code>retarin_grad = TRUE</code>を渡して保存を指示することも可能だ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">&lt;-</span> x1<span class="sc">$</span><span class="fu">square</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>x3<span class="sc">$</span><span class="fu">retain_grad</span>()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>x5 <span class="ot">&lt;-</span> x3 <span class="sc">*</span> <span class="fl">0.2</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>x5<span class="sc">$</span><span class="fu">retain_grad</span>()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>x4 <span class="ot">&lt;-</span> x2<span class="sc">$</span><span class="fu">square</span>()</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>x4<span class="sc">$</span><span class="fu">retain_grad</span>()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>x6 <span class="ot">&lt;-</span> x4 <span class="sc">*</span> <span class="fl">0.2</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>x6<span class="sc">$</span><span class="fu">retain_grad</span>()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>x7 <span class="ot">&lt;-</span> x5 <span class="sc">+</span> x6 <span class="sc">-</span> <span class="dv">5</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>x7<span class="sc">$</span><span class="fu">backward</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>それでは、<code>x3</code>の<code>grad</code>フィールドが埋まっているか確認してみよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>x3<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 0.2000
+[ CPUFloatType{1} ]</code></pre>
+</div>
+</div>
+<p><code>x4</code>、<code>x5</code>、<code>x6</code>についても同様だ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>x4<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 0.2000
+[ CPUFloatType{1} ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>x5<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 1
+[ CPUFloatType{1} ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>x6<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 1
+[ CPUFloatType{1} ]</code></pre>
+</div>
+</div>
+<p>もう一つ気になることがある。 勾配の蓄積過程を「実行中の勾配」の観点から理解したが、蓄積を進めるのに必要な個々の微分はどのように計算されるのか。 例えば<code>x3$grad</code>が示しているのは出力が中間状態<code>x3</code>にどのように依存しているかであるが、ここから実際の入力ノードである<code>x1</code>にどのように到達するのか。</p>
+<p>この面についても、確認できる。 順伝播で<code>torch</code>はすべきことを書き残しておいて、後で個々の微分を計算する。 この「レシピ」はテンソルの<code>grad_fn</code>フィールドに格納される。 これが<code>x3</code>に対して<code>x1</code>への「失われたつながり」を追加する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>x3<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PowBackward0</code></pre>
+</div>
+</div>
+<p><code>x4</code>、<code>x5</code>、<code>x6</code>についても同様。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>x4<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>PowBackward0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>x5<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MulBackward1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>x6<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MulBackward1</code></pre>
+</div>
+</div>
+<p>これでおしまい。 この節では、<code>torch</code>がどのように微分を計算するかを見た上で、それをどのように行っているかの概要を示した。 ここで、自動微分を応用した最初の二つの課題に取り組む準備が整った。</p>
 
 
 </section>
