@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; 自動微分 – R torchによる深層学習と科学計算</title>
+<title>4&nbsp; 自動微分 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -144,7 +144,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -189,20 +189,38 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>torch</code>とその入手方法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./tensors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">テンソル</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">テンソル</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./autograd.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./optim1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./network1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span></a>
   </div>
 </li>
       </ul>
@@ -223,18 +241,18 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#なぜ微分を計算するのか" id="toc-なぜ微分を計算するのか" class="nav-link active" data-scroll-target="#なぜ微分を計算するのか"><span class="header-section-number">2.1</span> なぜ微分を計算するのか</a></li>
-  <li><a href="#自動微分の例" id="toc-自動微分の例" class="nav-link" data-scroll-target="#自動微分の例"><span class="header-section-number">2.2</span> 自動微分の例</a></li>
-  <li><a href="#torch-autograd-による自動微分" id="toc-torch-autograd-による自動微分" class="nav-link" data-scroll-target="#torch-autograd-による自動微分"><span class="header-section-number">2.3</span> <code>torch</code> <em>autograd</em> による自動微分</a></li>
+  <li><a href="#なぜ微分を計算するのか" id="toc-なぜ微分を計算するのか" class="nav-link active" data-scroll-target="#なぜ微分を計算するのか"><span class="header-section-number">4.1</span> なぜ微分を計算するのか</a></li>
+  <li><a href="#自動微分の例" id="toc-自動微分の例" class="nav-link" data-scroll-target="#自動微分の例"><span class="header-section-number">4.2</span> 自動微分の例</a></li>
+  <li><a href="#torch-autograd-による自動微分" id="toc-torch-autograd-による自動微分" class="nav-link" data-scroll-target="#torch-autograd-による自動微分"><span class="header-section-number">4.3</span> <code>torch</code> <em>autograd</em> による自動微分</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./autograd.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></h1>
 </div>
 
 
@@ -253,18 +271,18 @@ window.Quarto = {
 
 <p>前の章では、テンソルをどのように扱うかを学び、それに対して行うことができる数学的な演算の例を示した。 そのような演算が多数あったとしても、それらが主要な<code>torch</code>の全てだったら、この本は読む必要がない。 <code>torch</code>のようなフレームワークの人気は、それらを使ってできること、一般的には深層学習、機械学習、最適化、大規模科学計算にある。 これらの応用分野の多くは、なんらかの損失函数を最小化と関係している。 これは、さらに函数の <em>微分</em> の計算を必要とする。 ここで、利用者として、個々の微分の函数形を自分で指定しなくてはならないということを想像してみよう。 特にニューラルネットワークでは、すぐに面倒になるだろう。</p>
 <p>実は、<code>torch</code>は微分の函数表現を作ったり、保存したりしない。 代わりに、 <em>自動微分</em> と呼ばれるものを実装している。 自動微分では、より具体的には逆モード形では、微分はテンソル演算のグラフを逆向き走査で計算され、結合される。 この後すぐに例を示すが、その前に一歩引いてなぜ微分を計算する必要があるのか、簡単に議論しておこう。</p>
-<section id="なぜ微分を計算するのか" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="なぜ微分を計算するのか"><span class="header-section-number">2.1</span> なぜ微分を計算するのか</h2>
+<section id="なぜ微分を計算するのか" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="なぜ微分を計算するのか"><span class="header-section-number">4.1</span> なぜ微分を計算するのか</h2>
 <p>教師あり機械学習では、訓練集合が使えて、予測したい変数は既知である。 これが目的変数で真値である。 今予測アルゴリズムを開発し、これを入力変数、予測変数に基づいて訓練する。 この訓練あるいは学習過程は、アルゴリズムの予測と真値とを比べ、 現在の予測がどれくらいよいか悪いか捉える数値が出てくるような比較に基づいている。 この数値を与えるのは、 <em>損失函数</em> の仕事だ。</p>
 <p>一度現在の損失が分かったら、アルゴリズムはパラメタ、つまりニューラルネットワークの重みを調整して、もっとよい予測にする。 アルゴリズムはどの方向に調整するか知る必要がある。 この情報は、 <em>勾配</em> つまり微分のベクトルから得られる。</p>
-<p>例として次のような損失函数を想像してみる <a href="#fig-autograd-paraboloid" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>。</p>
+<p>例として次のような損失函数を想像してみる <a href="#fig-autograd-paraboloid" class="quarto-xref">Figure&nbsp;<span>4.1</span></a>。</p>
 <div id="fig-autograd-paraboloid" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-autograd-paraboloid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="images/autograd-paraboloid.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-autograd-paraboloid-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.1: 仮想的な損失函数（放物面）。
+Figure&nbsp;4.1: 仮想的な損失函数（放物面）。
 </figcaption>
 </figure>
 </div>
@@ -278,8 +296,8 @@ Figure&nbsp;2.1: 仮想的な損失函数（放物面）。
 \]</span> である。</p>
 <p>この方法は最急降下と呼ばれている。 一般的に <em>勾配降下</em> と呼ばれ、機械学習で最も基本的な最適化アルゴリズムである。 おそらく直感に反して、最も効率の良い方法ではない。 さらに別の問いがある。 出発点で計算されたこの方向は降下中にずっと最適なのか。 代わりに、定期的に方向を計算し直した方が良いのかもしれない。 このような質問は後の章で検討する。</p>
 </section>
-<section id="自動微分の例" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="自動微分の例"><span class="header-section-number">2.2</span> 自動微分の例</h2>
+<section id="自動微分の例" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="自動微分の例"><span class="header-section-number">4.2</span> 自動微分の例</h2>
 <p>微分がなぜ必要か分かったところで、自動微分（AD: automatic differentiation）がどのように計算しているか見てみよう。</p>
 <div id="fig-autograd-compgraph" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -287,11 +305,11 @@ Figure&nbsp;2.1: 仮想的な損失函数（放物面）。
 <img src="images/autograd-compgraph.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-autograd-compgraph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.2: 計算グラフの例
+Figure&nbsp;4.2: 計算グラフの例
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-autograd-compgraph" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> は上の函数が計算グラフにどのように表すことができるかを示している。 <code>x1</code>と<code>x2</code>は入力ノードで、対応する函数のパラメタは<span class="math inline">\(x_1\)</span>と<span class="math inline">\(x_2\)</span>である。 <code>xu</code>は函数の出力で、他は全て中間ノードであり正しい順序で実行するために必要である （定数<code>-5</code>、<code>0.2</code>及び<code>2</code>をノードとすることもできるが、定数なので特に気にせずに、簡潔なグラフを選んだ）。</p>
+<p><a href="#fig-autograd-compgraph" class="quarto-xref">Figure&nbsp;<span>4.2</span></a> は上の函数が計算グラフにどのように表すことができるかを示している。 <code>x1</code>と<code>x2</code>は入力ノードで、対応する函数のパラメタは<span class="math inline">\(x_1\)</span>と<span class="math inline">\(x_2\)</span>である。 <code>xu</code>は函数の出力で、他は全て中間ノードであり正しい順序で実行するために必要である （定数<code>-5</code>、<code>0.2</code>及び<code>2</code>をノードとすることもできるが、定数なので特に気にせずに、簡潔なグラフを選んだ）。</p>
 <p>逆モードADは、<code>torch</code>が実装している自動微分の一種で、まず函数の出力を計算する。 これはグラフの順方向伝播である。 次に逆伝播を行い、両方の入力<code>x1</code>と<code>x2</code>に関する出力の勾配を計算する。 この過程で、右から情報が利用可能となり、積み重なっていく。</p>
 <ul>
 <li><code>x7</code>で、<code>x5</code>と<code>x6</code>に関する偏微分を計算する。 つまり、微分する式は <span class="math inline">\(f(x_5, x_6) = x_5 + x_6 - 5\)</span> なので、偏微分は両方とも1である。</li>
@@ -301,8 +319,8 @@ Figure&nbsp;2.2: 計算グラフの例
 </ul>
 <p>これが原理である。 実際には、フレームワークによって逆モード自動微分の実装は異なる。 次の節で<code>torch</code>がどのように実装しているか簡潔に示す。</p>
 </section>
-<section id="torch-autograd-による自動微分" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="torch-autograd-による自動微分"><span class="header-section-number">2.3</span> <code>torch</code> <em>autograd</em> による自動微分</h2>
+<section id="torch-autograd-による自動微分" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="torch-autograd-による自動微分"><span class="header-section-number">4.3</span> <code>torch</code> <em>autograd</em> による自動微分</h2>
 <p>まず、用語について注意しておく。 <code>torch</code>ではADエンジンは <em>autograd</em> と呼ばれ、本書の残りの多くの部分でもそのように記す。 それでは説明に戻る。</p>
 <p>上述の計算グラフを<code>torch</code>で構築するには、入力テンソル<code>x1</code>と<code>x2</code>を作成する。 これは興味のあるバラメタを模している。 これまでしてきたように「いつも通り」テンソルを作成すると、<code>torch</code>はAD向けの準備をしない。 そうせずに、これらのテンソルを作るときに<code>requires_grad = TRUE</code>を渡す必要がある。</p>
 <div class="cell">
@@ -862,12 +880,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./tensors.html" class="pagination-link" aria-label="テンソル">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">テンソル</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">テンソル</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./optim1.html" class="pagination-link" aria-label="*autograd*を使った函数の最小化">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

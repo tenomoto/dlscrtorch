@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; autogradを使った函数の最小化 – R torchによる深層学習と科学計算</title>
+<title>5&nbsp; autogradを使った函数の最小化 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./network1.html" rel="next">
 <link href="./autograd.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -160,20 +160,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>torch</code>とその入手方法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./tensors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">テンソル</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">テンソル</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./autograd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./optim1.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./network1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span></a>
   </div>
 </li>
       </ul>
@@ -194,17 +212,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#最適化の古典" id="toc-最適化の古典" class="nav-link active" data-scroll-target="#最適化の古典"><span class="header-section-number">3.1</span> 最適化の古典</a></li>
-  <li><a href="#最小化を白紙から" id="toc-最小化を白紙から" class="nav-link" data-scroll-target="#最小化を白紙から"><span class="header-section-number">3.2</span> 最小化を白紙から</a></li>
+  <li><a href="#最適化の古典" id="toc-最適化の古典" class="nav-link active" data-scroll-target="#最適化の古典"><span class="header-section-number">5.1</span> 最適化の古典</a></li>
+  <li><a href="#最小化を白紙から" id="toc-最小化を白紙から" class="nav-link" data-scroll-target="#最小化を白紙から"><span class="header-section-number">5.2</span> 最小化を白紙から</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tensors.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./optim1.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></h1>
 </div>
 
 
@@ -227,8 +245,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>ニューラルネットワークを構築して訓練する。</li>
 </ul>
 <p>この章では、最小化からはじめ、ネットワークは次章に回す。</p>
-<section id="最適化の古典" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="最適化の古典"><span class="header-section-number">3.1</span> 最適化の古典</h2>
+<section id="最適化の古典" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="最適化の古典"><span class="header-section-number">5.1</span> 最適化の古典</h2>
 <p>最適化研究において、<em>ローゼンブロック函数</em> は古典である。 この函数は二つの変数をとり、<code>(1, 1)</code>で最小となる。 等値線を眺めると、最小は伸びた細い谷の中にあることが分かる。</p>
 <div id="fig-optim1-rosenbrock" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -236,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <img src="images/optim-1-rosenbrock.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-optim1-rosenbrock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3.1: ローゼンブロック函数
+Figure&nbsp;5.1: ローゼンブロック函数
 </figcaption>
 </figure>
 </div>
@@ -252,8 +270,8 @@ Figure&nbsp;3.1: ローゼンブロック函数
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="最小化を白紙から" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="最小化を白紙から"><span class="header-section-number">3.2</span> 最小化を白紙から</h2>
+<section id="最小化を白紙から" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="最小化を白紙から"><span class="header-section-number">5.2</span> 最小化を白紙から</h2>
 <p>シナリオは次の通り。 与えられた点<code>(x1, x2)</code>から出発し、ローゼンブロック函数が最小になる場所を見つける。</p>
 <p>前の章で説明した方法に従い、現在の位置における函数の勾配を計算し、それを使って逆方向にに進む。 どれくらい遠くまで行けばよいかは分からない。 大きく進みすぎると、簡単に行き過ぎてしまう。 （等値線図を再度確認すると最小値のの西または東の急な崖に立っていると、これがすぐに生じることが分かる。）</p>
 <p>つまり、最良の方法は反復して進むことで、妥当な幅を取り、毎回勾配を再評価することだ。</p>
@@ -787,12 +805,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./autograd.html" class="pagination-link" aria-label="自動微分">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">自動微分</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="参考文献">
-        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./network1.html" class="pagination-link" aria-label="ニューラルネットワークを白紙から">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

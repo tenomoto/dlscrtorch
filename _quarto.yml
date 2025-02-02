@@ -10,9 +10,12 @@ book:
     - index.qmd
     - part: "torchに慣れる"
       chapters:
+        - overview.qmd
+        - about.qmd
         - tensors.qmd
         - autograd.qmd
         - optim1.qmd
+        - network1.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
