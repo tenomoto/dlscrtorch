@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
+<link href="./modules.html" rel="next">
 <link href="./optim1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -223,6 +223,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -307,16 +313,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.3786
- 0.7441
- 2.5972
--1.0787
--0.5974
--1.9972
- 2.0060
--0.9148
- 1.3559
--2.2539
+-0.3516
+ 0.3686
+-2.4985
+-1.6487
+ 1.1395
+ 0.1062
+ 0.7773
+-1.2715
+-1.3361
+ 0.1760
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -393,7 +399,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-9.99998e-05
+9.99999e-05
 [ CPUFloatType{} ]</code></pre>
 </div>
 </div>
@@ -494,26 +500,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  25.94517 
-Epoch:  20    Loss:  24.51599 
-Epoch:  30    Loss:  23.19044 
-Epoch:  40    Loss:  21.95792 
-Epoch:  50    Loss:  20.81307 
-Epoch:  60    Loss:  19.75052 
-Epoch:  70    Loss:  18.76195 
-Epoch:  80    Loss:  17.84116 
-Epoch:  90    Loss:  16.98259 
-Epoch:  100    Loss:  16.1811 
-Epoch:  110    Loss:  15.43275 
-Epoch:  120    Loss:  14.74501 
-Epoch:  130    Loss:  14.12254 
-Epoch:  140    Loss:  13.53919 
-Epoch:  150    Loss:  12.9919 
-Epoch:  160    Loss:  12.4791 
-Epoch:  170    Loss:  11.99773 
-Epoch:  180    Loss:  11.54588 
-Epoch:  190    Loss:  11.12051 
-Epoch:  200    Loss:  10.71998 </code></pre>
+<pre><code>Epoch:  10    Loss:  25.702 
+Epoch:  20    Loss:  23.17088 
+Epoch:  30    Loss:  20.95948 
+Epoch:  40    Loss:  19.02805 
+Epoch:  50    Loss:  17.3309 
+Epoch:  60    Loss:  15.84082 
+Epoch:  70    Loss:  14.52994 
+Epoch:  80    Loss:  13.37462 
+Epoch:  90    Loss:  12.35271 
+Epoch:  100    Loss:  11.4464 
+Epoch:  110    Loss:  10.64033 
+Epoch:  120    Loss:  9.925571 
+Epoch:  130    Loss:  9.290001 
+Epoch:  140    Loss:  8.723757 
+Epoch:  150    Loss:  8.218175 
+Epoch:  160    Loss:  7.765837 
+Epoch:  170    Loss:  7.360248 
+Epoch:  180    Loss:  6.996088 
+Epoch:  190    Loss:  6.668192 
+Epoch:  200    Loss:  6.372187 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>
@@ -951,8 +957,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link" aria-label="参考文献">
-        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./modules.html" class="pagination-link" aria-label="モジュール">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

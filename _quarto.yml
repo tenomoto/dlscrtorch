@@ -16,6 +16,7 @@ book:
         - autograd.qmd
         - optim1.qmd
         - network1.qmd
+        - modules.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
