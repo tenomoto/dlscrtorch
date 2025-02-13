@@ -32,5 +32,5 @@ Rでも類似のライブラリがあるが、カテゴリの「円」は互い�
 
 適合性の問題は一時的なものであるため、本書ではここに記さない。
 同様に具体的なインストールの手順を羅列することも控える。
-いつでも最新情報は[vignett](https://cran.r-project.org/web/packages/torch/vignettes/installation.html)から得られる。
+いつでも最新情報は[vignette](https://cran.r-project.org/web/packages/torch/vignettes/installation.html)から得られる。
 問題や質問があれば、`torch`のGitHubリポジトリに遠慮なくissueを立ててほしい。
