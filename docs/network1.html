@@ -229,6 +229,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -313,16 +319,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.8628
--0.3180
--0.5296
--0.2255
--0.3076
--1.9248
- 0.3803
- 1.2820
- 1.0881
--0.3036
+-0.4757
+ 0.5141
+-0.0675
+-0.2655
+ 1.1238
+ 1.2725
+-0.4228
+-0.4720
+-0.0898
+-1.0123
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -399,7 +405,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-9.99999e-05
+0.0001
 [ CPUFloatType{} ]</code></pre>
 </div>
 </div>
@@ -500,26 +506,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  233.7946 
-Epoch:  20    Loss:  189.635 
-Epoch:  30    Loss:  155.02 
-Epoch:  40    Loss:  127.7168 
-Epoch:  50    Loss:  105.9272 
-Epoch:  60    Loss:  88.38066 
-Epoch:  70    Loss:  74.20101 
-Epoch:  80    Loss:  62.69642 
-Epoch:  90    Loss:  53.2942 
-Epoch:  100    Loss:  45.57936 
-Epoch:  110    Loss:  39.22733 
-Epoch:  120    Loss:  33.96807 
-Epoch:  130    Loss:  29.60548 
-Epoch:  140    Loss:  25.97336 
-Epoch:  150    Loss:  22.93232 
-Epoch:  160    Loss:  20.3822 
-Epoch:  170    Loss:  18.23736 
-Epoch:  180    Loss:  16.4229 
-Epoch:  190    Loss:  14.88319 
-Epoch:  200    Loss:  13.57556 </code></pre>
+<pre><code>Epoch:  10    Loss:  48.49222 
+Epoch:  20    Loss:  42.30035 
+Epoch:  30    Loss:  37.064 
+Epoch:  40    Loss:  32.61459 
+Epoch:  50    Loss:  28.83308 
+Epoch:  60    Loss:  25.61228 
+Epoch:  70    Loss:  22.8615 
+Epoch:  80    Loss:  20.51099 
+Epoch:  90    Loss:  18.49472 
+Epoch:  100    Loss:  16.76286 
+Epoch:  110    Loss:  15.27146 
+Epoch:  120    Loss:  13.98618 
+Epoch:  130    Loss:  12.87646 
+Epoch:  140    Loss:  11.91292 
+Epoch:  150    Loss:  11.07382 
+Epoch:  160    Loss:  10.34126 
+Epoch:  170    Loss:  9.699792 
+Epoch:  180    Loss:  9.136523 
+Epoch:  190    Loss:  8.64028 
+Epoch:  200    Loss:  8.201322 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>

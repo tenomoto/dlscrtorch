@@ -229,6 +229,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -487,9 +493,9 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.9668 -3.4397  1.3921
--0.1012 -1.1745 -0.6549
- 0.3529 -0.6960  1.2615
+-0.1901  2.3751  1.4657
+-0.0026  1.7963 -0.5028
+ 0.0143  0.1005 -0.2214
 [ CPUFloatType{3,3} ]</code></pre>
 </div>
 </div>
@@ -498,9 +504,9 @@ window.Quarto = {
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_rand</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.8582  0.3857  0.9320
- 0.0023  0.5798  0.1573
- 0.2056  0.4880  0.9837
+ 0.1090  0.1586  0.1743
+ 0.1013  0.3956  0.0858
+ 0.0835  0.4567  0.5187
 [ CPUFloatType{3,3} ]</code></pre>
 </div>
 </div>
@@ -951,24 +957,24 @@ nan
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 (1,.,.) = 
- -1.1657  0.5986
- -0.0962  1.4046
-  0.2497 -0.9705
+ -0.2132  1.9324
+ -1.7619 -0.6829
+ -0.3684  0.7180
 
 (2,.,.) = 
-  0.1538  0.1271
- -2.7665  0.1956
-  0.0925  2.0874
+  0.6474  0.5277
+  0.5688  0.0346
+  0.1584 -1.3200
 
 (3,.,.) = 
- -1.0574 -0.1676
-  0.1492  0.1155
-  0.4147 -0.3476
+  0.0685 -1.6107
+  2.1818 -0.2437
+ -0.5219  0.3489
 
 (4,.,.) = 
- -0.7808 -0.6229
-  0.7979  1.1107
- -0.5718  0.6368
+ -0.3442 -1.0882
+  0.0988  0.8733
+ -1.3212 -0.5548
 [ CPUFloatType{4,3,2} ]</code></pre>
 </div>
 </div>
@@ -977,8 +983,9 @@ nan
 <div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">mean</span>(<span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.3817
- 0.3473
+0.01 *
+-6.7260
+-8.8783
 [ CPUFloatType{2} ]</code></pre>
 </div>
 </div>
@@ -987,10 +994,10 @@ nan
 <div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">mean</span>(<span class="at">dim =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.3374  0.3442
--0.8401  0.8034
--0.1645 -0.1333
--0.1849  0.3749
+-0.7812  0.6558
+ 0.4582 -0.2526
+ 0.5761 -0.5018
+-0.5222 -0.2566
 [ CPUFloatType{4,2} ]</code></pre>
 </div>
 </div>
@@ -1032,12 +1039,12 @@ nan
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 (1,.,.) = 
-  0.7313  0.1708
-  0.4167  0.2496
+  0.1977  0.9113
+  0.7884  0.5189
 
 (2,.,.) = 
-  0.5332  0.8570
-  0.6932  0.6506
+  0.0167  0.5779
+  0.3403  0.6448
 [ CPUFloatType{2,2,2} ]</code></pre>
 </div>
 </div>
@@ -1078,27 +1085,27 @@ nan
 <span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>t1[<span class="dv">1</span>, ..]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.1677
--1.3320
+ 0.5666
+ 0.6119
 [ CPUFloatType{2} ]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>t2[<span class="dv">1</span>, ..]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.7398  2.2804
--0.0434 -0.2430
+-0.3859 -0.8272
+ 0.2846  0.9512
 [ CPUFloatType{2,2} ]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>t3[<span class="dv">1</span>, ..]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 (1,.,.) = 
-  0.9650  2.2222
-  0.0502  1.4182
+  1.0822  0.9205
+ -0.6160 -1.0232
 
 (2,.,.) = 
-  0.0504 -0.1269
-  0.6707 -1.4117
+ -0.5291 -0.9767
+ -1.2058 -0.2240
 [ CPUFloatType{2,2,2} ]</code></pre>
 </div>
 </div>
@@ -1107,8 +1114,8 @@ nan
 <div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>t3[<span class="dv">1</span>, .., <span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 2.2222  1.4182
--0.1269 -1.4117
+ 0.9205 -1.0232
+-0.9767 -0.2240
 [ CPUFloatType{2,2} ]</code></pre>
 </div>
 </div>
@@ -1145,11 +1152,11 @@ nan
 <div class="cell">
 <div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x129624080"</code></pre>
+<pre><code>[1] "0x104d7cf40"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb131"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x129624080"</code></pre>
+<pre><code>[1] "0x104d7cf40"</code></pre>
 </div>
 </div>
 <p>どのように実現されているか少し議論する。</p>
@@ -1214,11 +1221,11 @@ nan
 <div class="cell">
 <div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x12964f140"</code></pre>
+<pre><code>[1] "0x106168380"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a>t3<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x12964f140"</code></pre>
+<pre><code>[1] "0x106168380"</code></pre>
 </div>
 </div>
 <p>これは道理にかなっている。 次の行に到達するのに、1要素だけ跳び、次の列には5要素跳べばよいから、うまくいくだろう。 確認する。</p>
@@ -1236,15 +1243,15 @@ nan
 <span id="cb149-2"><a href="#cb149-2" aria-hidden="true" tabindex="-1"></a>t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.8088
--0.0665
- 0.5487
+-0.8741
+ 0.6225
+-1.0001
 [ CPUFloatType{3} ]</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.8088 -0.0665  0.5487
+-0.8741  0.6225 -1.0001
 [ CPUFloatType{1,3} ]</code></pre>
 </div>
 </div>
@@ -1265,11 +1272,11 @@ Use .reshape(...) instead.</code></pre>
 <span id="cb155-3"><a href="#cb155-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb155-4"><a href="#cb155-4" aria-hidden="true" tabindex="-1"></a>t<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x129652f80"</code></pre>
+<pre><code>[1] "0x145b08740"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb157"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb157-1"><a href="#cb157-1" aria-hidden="true" tabindex="-1"></a>t2<span class="sc">$</span><span class="fu">storage</span>()<span class="sc">$</span><span class="fu">data_ptr</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "0x12961b240"</code></pre>
+<pre><code>[1] "0x104d63ec0"</code></pre>
 </div>
 </div>
 <p>想像通り、二つのテンソルは今度は異なる場所に格納されている。</p>
@@ -1285,9 +1292,9 @@ Use .reshape(...) instead.</code></pre>
 <span id="cb159-2"><a href="#cb159-2" aria-hidden="true" tabindex="-1"></a>t1 <span class="sc">*</span> <span class="fl">0.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.6945 -0.1595  1.2725 -0.0319  0.0975
--0.1319  0.0332 -0.4312 -0.3966 -0.2523
--1.0901 -0.0143  0.5796  0.5326 -0.2637
+ 0.8367  0.4526 -0.4635  1.1766  0.5471
+-0.5235 -0.1051  0.0725 -0.2668 -0.1109
+-0.4061 -0.0984  0.3942  0.3866 -0.4269
 [ CPUFloatType{3,5} ]</code></pre>
 </div>
 </div>

@@ -17,6 +17,7 @@ book:
         - optim1.qmd
         - network1.qmd
         - modules.qmd
+        - optimizers.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
