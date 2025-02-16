@@ -392,7 +392,7 @@ t3$matmul(t1)
 ```
 
 同じ函数`torch_matmul()`は二つの行列をかけるときにも使う。
-これが`torch_multiply()`が行う、引数のスカラとどのように異なるかよく見てほしい。
+これが`torch_multiply()`の動作、つまり引数のスカラ積とどのように異なるかよく見てほしい。
 
 ```{r}
 torch_multiply(t1, t2)
