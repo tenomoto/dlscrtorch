@@ -18,6 +18,7 @@ book:
         - network1.qmd
         - modules.qmd
         - optimizers.qmd
+        - loss-functions.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf

@@ -7,9 +7,7 @@
 これまでの応用例でも、損失函数を使ってきた。
 それは平均二乗誤差で手作業で次のように計算した。
 
-```{r}
-library(torch)
-
+```r
 loss <- (y_pred - y)$pow(2)$sum()
 ```
 
@@ -28,6 +26,7 @@ loss <- (y_pred - y)$pow(2)$sum()
 例えば、`nnf_mse_loss()`という組込函数は手作業でコードを書いたものに類似している。
 
 ```{r}
+library(torch)
 nnf_mse_loss(torch_ones(2, 2), torch_zeros(2, 2) + 0.1)
 ```
 

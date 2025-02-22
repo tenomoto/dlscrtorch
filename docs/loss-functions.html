@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>7&nbsp; モジュール – R torchによる深層学習と科学計算</title>
+<title>9&nbsp; 損失函数 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./optimizers.html" rel="next">
-<link href="./network1.html" rel="prev">
+<link href="./references.html" rel="next">
+<link href="./optimizers.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -103,35 +103,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -144,7 +115,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./modules.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -225,7 +196,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./modules.html" class="sidebar-item-text sidebar-link active">
+  <a href="./modules.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span></a>
   </div>
 </li>
@@ -237,7 +208,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link">
+  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></span></a>
   </div>
 </li>
@@ -259,11 +230,11 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#組込のnn_moudle" id="toc-組込のnn_moudle" class="nav-link active" data-scroll-target="#組込のnn_moudle"><span class="header-section-number">7.1</span> 組込の<code>nn_moudle()</code></a></li>
-  <li><a href="#モデルの構築" id="toc-モデルの構築" class="nav-link" data-scroll-target="#モデルの構築"><span class="header-section-number">7.2</span> モデルの構築</a>
+  <li><a href="#torchの損失函数" id="toc-torchの損失函数" class="nav-link active" data-scroll-target="#torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</a></li>
+  <li><a href="#どの損失函数を選択すべきか" id="toc-どの損失函数を選択すべきか" class="nav-link" data-scroll-target="#どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</a>
   <ul class="collapse">
-  <li><a href="#層の列としてのモデル-nn_sequential" id="toc-層の列としてのモデル-nn_sequential" class="nav-link" data-scroll-target="#層の列としてのモデル-nn_sequential"><span class="header-section-number">7.2.1</span> 層の列としてのモデル: <code>nn_sequential()</code></a></li>
-  <li><a href="#独自処理のモデル" id="toc-独自処理のモデル" class="nav-link" data-scroll-target="#独自処理のモデル"><span class="header-section-number">7.2.2</span> 独自処理のモデル</a></li>
+  <li><a href="#最尤法" id="toc-最尤法" class="nav-link" data-scroll-target="#最尤法"><span class="header-section-number">9.2.1</span> 最尤法</a></li>
+  <li><a href="#回帰" id="toc-回帰" class="nav-link" data-scroll-target="#回帰"><span class="header-section-number">9.2.2</span> 回帰</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -271,9 +242,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./modules.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></h1>
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></h1>
 </div>
 
 
@@ -290,194 +261,51 @@ window.Quarto = {
 </header>
 
 
-<p>前の章では、ニューラルネットワークを構築して回帰の問題に適用した。 演算には、線型と非線型の二種類があった。</p>
-<p>非線型に分類されるReLU活性化は、簡単な函数呼び出し<code>nnf_relu()</code>で表されていた。 活性化函数は、函数であり、与えられた入力<span class="math inline">\(\mathbf{x}\)</span>に対して出力<span class="math inline">\(\mathbf{y}\)</span>を呼び出す毎に返す。 つまり、決定論的であるが、線型部分は異なる。</p>
-<p>回帰ネットワークの線型部分は、重みを表す行列との積とバイアスを表すベクトルの和で実装されていた。 このような操作では、結果は当然関係するテンソルに格納されている実際の値に依存する。 言い換えれば、演算は状態依存である。</p>
-<p>状態が関係する場合は、それをオブジェクトにカプセル化して、ユーザが直接管理する必要がないようにするとよい。 これが<code>torch</code>の<em>モジュール</em>が行なっていることだ。</p>
-<p><em>モジュール</em>という用語に注意してほしい。 <code>torch</code>では、モジュールの複雑さの程度はさまざまである。 この後すぐに導入する<code>nn_linear()</code>のような基本的な層から、多層からなる完成された<em>モデル</em>までが含まれる。 コード上では、「層」と「モデル」との違いはない。 そのため、「モジュール」だけが使われることもある。 本書では、一般的な層とモデルの使い方に従い、概念との対応を重視する。</p>
-<p><em>なぜ</em>モジュールかという話に戻る。 カプセル化に加えて、層オブジェクトが提供されているのには、別の理由がある。 よく用いられる層が全部<code>nn_linear()</code>のように軽量ではない。 次の節の最後で、簡単に他のモジュールについて述べ、本書の後の章で詳しく説明する。</p>
-<section id="組込のnn_moudle" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="組込のnn_moudle"><span class="header-section-number">7.1</span> 組込の<code>nn_moudle()</code></h2>
-<p><code>torch</code>では、線型層は<code>nn_linear()</code>で作る。 <code>nn_linear()</code>は、<code>in_features</code>と<code>out_features</code>の（最低）二つの引数が必要である。 入力データに観測が50あり、それぞれ五つの特徴量がある場合、大きさは50 x 5となる。 潜在層には、16のユニットを置く。 この場合、<code>in_features</code>は5、<code>out_features</code>は16である。 （自分で重み行列を作る場合、同じ5と16が行と列の数である。）</p>
+<p>損失函数の概念は機械学習に重要なものだ。 どの反復においても、現在の損失値は推定値が目的からどれくらい離れているかを示す。 そして、その値は損失が減少する方向にパラメタを更新するのに用いられる。</p>
+<p>これまでの応用例でも、損失函数を使ってきた。 それは平均二乗誤差で手作業で次のように計算した。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> (y_pred <span class="sc">-</span> y)<span class="sc">$</span><span class="fu">pow</span>(<span class="dv">2</span>)<span class="sc">$</span><span class="fu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>想像通り、ここでもこのような手作業は不要だ。</p>
+<p>この概念に関する最後の章で、現在の例を見直す前に、二つのことを述べたい。 一つは、<code>torch</code>組込の損失函数の作り方である。 もう一つは、どの損失函数を選択するかについてだ。</p>
+<section id="torchの損失函数" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</h2>
+<p><code>torch</code>では、損失函数は<code>nn_</code>または<code>nnf_</code>で始まる。</p>
+<p><code>nnf_</code>を使う場合、直接函数呼び出しを行う。 これに対応して、その（推定と目的の）引数はどちらもテンソルだ。 例えば、<code>nnf_mse_loss()</code>という組込函数は手作業でコードを書いたものに類似している。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="at">in_features =</span> <span class="dv">5</span>, <span class="at">out_features =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>一度作られれば、モジュールのパラメタの情報は簡単に得られる。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>An `nn_module` containing 96 parameters.
-
-── Parameters ──────────────────────────────────────────────────────────────────
-• weight: Float [1:16, 1:5]
-• bias: Float [1:16]</code></pre>
-</div>
-</div>
-<p>カプセル化されていても、重みとバイアステンソルを確認することができる。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.4092  0.1703 -0.4097 -0.2516 -0.2588
- 0.4400  0.2235 -0.2079  0.2655 -0.2361
--0.3803  0.0923  0.0338 -0.0634 -0.2811
- 0.4434 -0.3469  0.1170 -0.0147  0.1219
- 0.0957 -0.1450  0.0452  0.0765 -0.2608
--0.4279  0.0293 -0.3494 -0.0524 -0.1841
--0.1750 -0.3164  0.2479 -0.0122  0.1207
- 0.2948 -0.1840  0.2093  0.3891  0.2946
--0.0275 -0.3332 -0.0515  0.4374  0.3864
--0.3170 -0.2871 -0.0459  0.0959 -0.1508
- 0.1369 -0.4022  0.1669 -0.2082  0.2024
--0.3099  0.0968 -0.3867  0.2763  0.4359
--0.3716 -0.3656  0.3508  0.1329 -0.4383
- 0.2252 -0.0987  0.0262  0.2400  0.1650
- 0.3479 -0.0648  0.4347  0.0286  0.3225
- 0.0719  0.0617  0.3790 -0.0240  0.2522
-[ CPUFloatType{16,5} ][ requires_grad = TRUE ]</code></pre>
+0.81
+[ CPUFloatType{} ]</code></pre>
 </div>
 </div>
+<p>一方<code>nn_</code>では、まずオブジェクトを作成する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>bias</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_mse_loss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>このオブジェクトはテンソルに対して呼び出すと、求める損失が得られる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">l</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.4203
--0.3574
- 0.3654
--0.0573
--0.1818
- 0.3930
--0.2191
--0.0698
--0.1121
--0.4159
- 0.3902
- 0.2673
- 0.4144
- 0.2159
--0.2861
--0.3794
-[ CPUFloatType{16} ][ requires_grad = TRUE ]</code></pre>
+0.81
+[ CPUFloatType{} ]</code></pre>
 </div>
 </div>
-<p>この時点で、ちょっと立ち止まってほしい。 <code>torch</code>が返した重み行列の大きさは16 x 5で、白紙からコードを書いたときの5 x 16ではない。 これは基礎となるC++実装<code>libtorch</code>に由来する。 性能のため、<code>libtorch</code>の線型モジュールは重みとバイアスを転置で格納している。 Rからは、この点を指摘しておくことくらいしかできない。 混乱が軽減されることを望む。</p>
-<p>続けよう。 このモジュールにデータを適用するには函数のように「呼び出す」だけだ。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">50</span>, <span class="dv">5</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">l</span>(x)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span><span class="fu">size</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 50 16</code></pre>
-</div>
-</div>
-<p>これが順伝播だ。 勾配計算はどうするのか。 以前は、勾配計算の「入力」として必要なテンソルを作るとき、<code>torch</code>に明示的に<code>requires_grad = TRUE</code>を渡す必要があった。 組込<code>nn_module()</code>ではその必要はない。 すぐに<code>output</code>が<code>backward()</code>でどのような計算をすべきか調べることができる。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>AddmmBackward0</code></pre>
-</div>
-</div>
-<p>確認のため、<code>output</code>に基づいて、適当な損失を計算して、<code>backward()</code>を読んでみよう。 線型モジュールの<code>weight</code>テンソルには埋められた<code>grad</code>フィールドがあることが分かる。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> output<span class="sc">$</span><span class="fu">mean</span>()</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>loss<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
-0.01 *
--1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
- -1.4562 -1.1237  1.7362 -1.7758  0.1989
-[ CPUFloatType{16,5} ]</code></pre>
-</div>
-</div>
-<p>つまり、<code>nn_module</code>を使うと、<code>torch</code>は自動的に勾配計算が必要だとみなされる。</p>
-<p><code>nn_linear</code>は簡単に見えるが、ほとんど全てのモデル構成において必須の要素だ。</p>
-<ul>
-<li><code>nn_conv1d()</code>、<code>nn_conv2d()</code>、および<code>nn_conv3d()</code>、いわゆる<em>畳み込み</em>層は入力要素に対するフィルタを異なる次元で適用する。</li>
-<li><code>nn_lstm()</code>と<code>nn_gru()</code>は状態を引き継ぐ再帰層。</li>
-<li><code>nn_embedding()</code>は高次元の質的データにつ分かれる。</li>
-<li>その他多数</li>
-</ul>
+<p>オブジェクトまたは函数のどちらを選択するかは、主に好みと文脈次第だ。 大きなモデルでは、いくつかの損失函数を合わせてつかうことになる。 その際、損失オブジェクトを作る方が部品として扱いやすく、維持しやすいコードになる。 本書では、最初の方法を主に用いるが、特別な理由があれば別の方法を取ることにする。</p>
 </section>
-<section id="モデルの構築" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="モデルの構築"><span class="header-section-number">7.2</span> モデルの構築</h2>
-<p>組込の<code>nn_module()</code>は普通の呼び方では層だが、どのようにモデルに組み上げるのか。 「工場函数」<code>nn_module()</code>を使って、モデルを任意の複雑さで定義できる。 でも、必ずしもそうする必要はない。</p>
-<section id="層の列としてのモデル-nn_sequential" class="level3" data-number="7.2.1">
-<h3 data-number="7.2.1" class="anchored" data-anchor-id="層の列としてのモデル-nn_sequential"><span class="header-section-number">7.2.1</span> 層の列としてのモデル: <code>nn_sequential()</code></h3>
-<p>モデルが単に層を伝播するだけであれば、モデルを作るときに<code>nn_sequential()</code>が使える。 線型層だけからなるモデルは多層パーセプトロン（MPL: Multi-Layer Perceptron）として知られている。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">nn_sequential</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">10</span>, <span class="dv">32</span>),</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">32</span>, <span class="dv">64</span>),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">64</span>, <span class="dv">1</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>関係する層を詳しく見てみよう。 ReLU活性化を実装した函数をであった。 （<code>nnf_</code>の<code>f</code>は汎函数であることを示す。） 以下は<code>nn_relu</code>は<code>nn_linear()</code>と同様でモジュール、つまりオブジェクトで、引数は全てモジュールでなければならない。</p>
-<p>組込モジュール同様、このモデルをデータに適用するには呼び出せばよい。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mlp</span>(<span class="fu">torch_randn</span>(<span class="dv">5</span>, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
--0.1822
--0.1332
--0.0302
--0.1011
--0.0562
-[ CPUFloatType{5,1} ][ grad_fn = &lt;AddmmBackward0&gt; ]</code></pre>
-</div>
-</div>
-<p>一回の呼び出しによりネットワークを通じた順伝播が始動した。 同様に、<code>backward()</code>を呼び出せ全ての層を通じて逆伝播される。</p>
+<section id="どの損失函数を選択すべきか" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</h2>
+<p>深層学習や機械学習全般では、ほとんどの応用は数値の予測または確率の推定のどちらか一つ、または両方を行う。 現在の例の回帰問題は前者を行なっている。 実際の応用では、気温や従業員の離職率を推定したり、売り上げを予測したりする。 後者では、典型的な問題は分類だ。 例えば画像を最も顕著な内容に基づいて分類するには、実際にはそれぞれの確率を計算する。 そして「犬」の確率が0.7で、猫の確率が0.3なら犬と判定する。</p>
+<section id="最尤法" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="最尤法"><span class="header-section-number">9.2.1</span> 最尤法</h3>
+<p>分類も回帰も最も使われている損失函数は最尤原理に基づいている。 最尤とは、モデルのパラメタの選択がデータ、つまり観測したものや観測できたかもしれないことが最大限起こりやすいようにする。 この原理は基本的である「だけ」でなく、直感に訴えるものだ。 簡単な例を考えよう。</p>
+<p>例えば、7.1, 22.14, 11.3という値があり、生じさせる過程が正規分布に則っているものとする。 その場合、これらのデータは平均14、標準偏差7の分布により生じたものである可能性が、平均20、標準偏差 1よりもはるかに可能性が高い。</p>
 </section>
-<section id="独自処理のモデル" class="level3" data-number="7.2.2">
-<h3 data-number="7.2.2" class="anchored" data-anchor-id="独自処理のモデル"><span class="header-section-number">7.2.2</span> 独自処理のモデル</h3>
-<p>既に暗示されているように、ここが<code>nn_module</code>の使いどころだ。</p>
-<p><code>nn_module|()</code>は独自に作成されたR6オブジェクトに対するコンストラクタを作る。 以下、<code>my_linear()</code>はそのようなコンストラクタだ。 呼び出させれると、組込の<code>nn_linear()</code>に似た線型モジュールを返す。</p>
-<p>コンストラクタの定義の中で、二つのメソッドが実装されなければならない。<code>initialize()</code>と<code>forward()</code>である。 <code>initialize()</code>はモジュールのオブジェクトフィールドを作る。 すなわちそれが持つオブジェクトまたは値でどのメソッドの中からも見える。 <code>forward()</code>はモジュールが入力があったときの動作を定義する。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>my_linear <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(in_features, out_features) {</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>w <span class="ot">&lt;-</span> <span class="fu">nn_parameter</span>(<span class="fu">torch_randn</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      in_features, out_features</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>b <span class="ot">&lt;-</span> <span class="fu">nn_parameter</span>(<span class="fu">torch_zeros</span>(out_features))</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(input) {</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    input<span class="sc">$</span><span class="fu">mm</span>(self<span class="sc">$</span>w) <span class="sc">+</span> self<span class="sc">$</span>b</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><code>nn_parameter()</code>の使い方を見てほしい。 <code>nn_parameter()</code>は渡されたテンソルかモジュールの <em>パラメタ</em> として登録されていることを確認する、つまり逆伝播されるのが既定だ。</p>
-<p>新たに定義されたモジュールのインスタンスを作るには、コンストラクタを呼び出す。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">my_linear</span>(<span class="dv">7</span>, <span class="dv">1</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>An `nn_module` containing 8 parameters.
-
-── Parameters ──────────────────────────────────────────────────────────────────
-• w: Float [1:7, 1:1]
-• b: Float [1:1]</code></pre>
-</div>
-</div>
-<p>この例には、モジュールを定義するために必要な独自の計算手順はないが、ここではどんな利用形態にも適用できる雛型である。 後に、より複雑な<code>initialize()</code>と<code>forward()</code>を検討したが、モジュールに定義される追加のメソッドを示す。 基本的な仕組みは一緒だ。</p>
-<p>ここ手では、前の章でモジュールを使ったニューラルネットワークを書き換えることができると感じるかもしれない。 自由に取り組んでもよいし、最適化手法と組込損失函数を学ぶ次の章まで待ってもよい。 それが済んだら、函数最小化と回帰ネットワークの二つの例に戻ることができる。 そして、<code>torch</code>により自作した余計なものを取り除くことができる。</p>
+<section id="回帰" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="回帰"><span class="header-section-number">9.2.2</span> 回帰</h3>
+<p>回帰（目的の分布が正規分布であるという暗黙の仮定をおいたもの^1）では、尤度を最大化するには、これまで計算してきた損失である、平均二乗誤差を引き続き用いればよい。 最尤推定値は望まれる全ての統計的な性質を持つ。 しかしながら、特定の用途では他の損失を使う理由があるかもしれない。 ^1: 仮定があり得ない場合、分布適合損失函数が提供されている（例: Poisson負対数は`nnf_poisson_nll_loss()）。</p>
+<p>例えば、データセットに外れ値があり、何らかの理由で予測と目的がかなりずれていることがある。 平均二乗誤差は外れ値に大きな重みを置く。 そのような場合、代替となりうるのは平均絶対誤差（<code>nnf_l1_loss()</code>）と滑らかなL1損失（`nn_smooth_l1_loss()）である。 後者は混合した型で、既定では絶対（L1）誤差を計算するが二乗（L2）に絶対誤差が非常に小さいところで切り替える。</p>
 
 
 </section>
@@ -906,13 +734,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./network1.html" class="pagination-link" aria-label="ニューラルネットワークを白紙から">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span>
+      <a href="./optimizers.html" class="pagination-link" aria-label="最適化器">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./optimizers.html" class="pagination-link" aria-label="最適化器">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./references.html" class="pagination-link" aria-label="参考文献">
+        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
