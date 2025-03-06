@@ -88,7 +88,7 @@ w1 <- torch_randn(3, 8, requires_grad = TRUE)
 各ユニットにはそれぞれバイアス値もある。
 
 ```r
-b1 = torch_zeros(1, 8, requires_grad = TRUE)
+b1 <- torch_zeros(1, 8, requires_grad = TRUE)
 ```
 
 以前見たように、隠れ層は受け取った入力に重みを掛けてバイアスを加える。

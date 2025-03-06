@@ -325,16 +325,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.0396
--0.8456
--0.0511
--0.6159
--0.5215
--0.8483
- 0.1778
- 0.0294
--0.3373
- 0.4959
+ 1.6521
+-1.6466
+ 0.2126
+-1.2943
+-3.3700
+-4.1808
+-0.8554
+-0.9421
+ 1.3262
+-0.1364
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -351,7 +351,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <p>例えば、隠れ層が一つあるネットワークを作りたいとしよう。 その大きさ、つまり層が持つユニットの数はネットワークの力を決める重要な要因になる。 この数は作成する重み行列の大きさに反映される。 八つのユニットを持つ層には八つの列を持つ行列が必要である。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>w1 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>各ユニットにはそれぞれバイアス値もある。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">=</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>以前見たように、隠れ層は受け取った入力に重みを掛けてバイアスを加える。 つまり、上に示した函数<span class="math inline">\(f\)</span>を適用する。 そして、別の函数を適用する。 この函数は隠れそうから入力を受け取り、最終出力を生成する。 結局、ここで行われているのは函数の合成である。 二番目の函数<span class="math inline">\(g\)</span>を呼び出すと、全体の変換は<span class="math inline">\(g(f(\mathbf{X}))\)</span>つまり<span class="math inline">\(g\circ f\)</span>となる。</p>
 <p>上述の単層構造に類似した出力を<span class="math inline">\(g\)</span>がするには、その重み行列は八つの列の隠れ層を取り、単一の列にしなければならない。 つまり、<code>w2</code> は次のようになる。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>w2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">8</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -512,26 +512,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  32.97625 
-Epoch:  20    Loss:  30.58289 
-Epoch:  30    Loss:  28.40753 
-Epoch:  40    Loss:  26.42452 
-Epoch:  50    Loss:  24.61633 
-Epoch:  60    Loss:  22.9623 
-Epoch:  70    Loss:  21.44905 
-Epoch:  80    Loss:  20.06274 
-Epoch:  90    Loss:  18.79105 
-Epoch:  100    Loss:  17.62292 
-Epoch:  110    Loss:  16.54894 
-Epoch:  120    Loss:  15.56187 
-Epoch:  130    Loss:  14.65133 
-Epoch:  140    Loss:  13.80992 
-Epoch:  150    Loss:  13.03385 
-Epoch:  160    Loss:  12.3165 
-Epoch:  170    Loss:  11.6521 
-Epoch:  180    Loss:  11.03611 
-Epoch:  190    Loss:  10.46439 
-Epoch:  200    Loss:  9.933251 </code></pre>
+<pre><code>Epoch:  10    Loss:  45.18166 
+Epoch:  20    Loss:  42.5666 
+Epoch:  30    Loss:  40.24947 
+Epoch:  40    Loss:  38.17406 
+Epoch:  50    Loss:  36.29874 
+Epoch:  60    Loss:  34.6074 
+Epoch:  70    Loss:  33.07681 
+Epoch:  80    Loss:  31.68569 
+Epoch:  90    Loss:  30.41108 
+Epoch:  100    Loss:  29.23323 
+Epoch:  110    Loss:  28.14919 
+Epoch:  120    Loss:  27.14815 
+Epoch:  130    Loss:  26.22013 
+Epoch:  140    Loss:  25.34853 
+Epoch:  150    Loss:  24.53528 
+Epoch:  160    Loss:  23.77534 
+Epoch:  170    Loss:  23.06123 
+Epoch:  180    Loss:  22.38432 
+Epoch:  190    Loss:  21.75118 
+Epoch:  200    Loss:  21.15572 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>
