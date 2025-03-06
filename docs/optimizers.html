@@ -261,7 +261,7 @@ window.Quarto = {
   <ul>
   <li><a href="#何のための最適化器か" id="toc-何のための最適化器か" class="nav-link active" data-scroll-target="#何のための最適化器か"><span class="header-section-number">8.1</span> 何のための最適化器か</a></li>
   <li><a href="#torch組込最適化器の利用" id="toc-torch組込最適化器の利用" class="nav-link" data-scroll-target="#torch組込最適化器の利用"><span class="header-section-number">8.2</span> <code>torch</code>組込最適化器の利用</a></li>
-  <li><a href="#バラメタの更新手法" id="toc-バラメタの更新手法" class="nav-link" data-scroll-target="#バラメタの更新手法"><span class="header-section-number">8.3</span> バラメタの更新手法</a>
+  <li><a href="#パラメタの更新手法" id="toc-パラメタの更新手法" class="nav-link" data-scroll-target="#パラメタの更新手法"><span class="header-section-number">8.3</span> パラメタの更新手法</a>
   <ul class="collapse">
   <li><a href="#勾配降下法" id="toc-勾配降下法" class="nav-link" data-scroll-target="#勾配降下法"><span class="header-section-number">8.3.1</span> 勾配降下法</a></li>
   <li><a href="#問題となること" id="toc-問題となること" class="nav-link" data-scroll-target="#問題となること"><span class="header-section-number">8.3.2</span> 問題となること</a></li>
@@ -345,8 +345,8 @@ window.Quarto = {
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">optim_sgd</span>(l<span class="sc">$</span>parameters, <span class="at">lr =</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>いつも必要であるを最適化対象のテンソルへの参照に加えて、<code>optim_sgd()</code>は一つだけ任意でないパラメタ学習率<code>lr</code>があ。</p>
-<p>一度最適化器オプジェクトを作れば、パラメタの更新は<code>step()</code>を呼び出すことで実行される。 でも変わってないことが一つある。 訓練の反復に亙って勾配が積み上がらないようにしなければならない。 つまり、<code>zero_grad()</code>を呼び出す必要があるが、今度は最適化器オプジェクトに対して呼べばよい。</p>
+<p>いつも必要であるを最適化対象のテンソルへの参照に加えて、<code>optim_sgd()</code>は一つだけ任意でないパラメタ学習率<code>lr</code>がある。</p>
+<p>一度最適化器オブジェクトを作れば、パラメタの更新は<code>step()</code>を呼び出すことで実行される。 でも変わってないことが一つある。 訓練の反復に亙って勾配が積み上がらないようにしなければならない。 つまり、<code>zero_grad()</code>を呼び出す必要があるが、今度は最適化器オブジェクトに対して呼べばよい。</p>
 <p>以下に示す完全なコードは、上述の手動の手順を置き換えたものだ。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># requires_grad = TRUEがついた</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 全てのテンソルに関して損失の勾配を計算</span></span>
@@ -361,19 +361,19 @@ window.Quarto = {
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>optimizer<span class="sc">$</span>step</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>使いやすくなったことは納得してもらえると思う。 これはすごい改善だ。 ここで、元の質問「何のための最適化器か」に戻り、二つ目の手法面での答えについてもっと議論する。</p>
 </section>
-<section id="バラメタの更新手法" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="バラメタの更新手法"><span class="header-section-number">8.3</span> バラメタの更新手法</h2>
+<section id="パラメタの更新手法" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="パラメタの更新手法"><span class="header-section-number">8.3</span> パラメタの更新手法</h2>
 <p>よい学習率を試行錯誤で探すのは大変だ。 それに学習率だけがはっきりしないものではない。 学習率が指定するのは、歩幅の大きさだけだ。 だが、それだけが未解決の問題ではない。</p>
 <p>これまで、勾配が与える最急降下方向が最良の方向だと仮定してきた。 それはいつも正しいわけではない。 そのため、パラメタ更新の大きさと方向の両方とも不明ということになる。</p>
 <p>ありがたいことに、ここ十年間でニューラルネットワークにおける重みの更新に関する研究が大きく進展した。 ここでは、関係する主要な問題について述べ、<code>torch</code>により提供されている最もよく使われる最適化器のいくつかを位置付ける。</p>
 <p>比較対象となる基準は <em>勾配降下</em> あるいは <em>最急降下</em> で、このアルゴリズムを函数最適化やニューラルネットワークの訓練を手動で実装するときに用いてきた。 簡単にその指導原理をおさらいしよう。</p>
 <section id="勾配降下法" class="level3" data-number="8.3.1">
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="勾配降下法"><span class="header-section-number">8.3.1</span> 勾配降下法</h3>
-<p>最急降下や確率的勾配降下法（SGD: stochastic gradient descent）しても知られている。 勾配は偏微分のベクトルで、各入力特徴量に対して一つの要素がある。 これは、関数が最も増加する方向を表す。 その反対方向に進めば、最も速く降下できる。 そうだろうか。</p>
-<p>残念ながら、そう簡単ではない。 取り囲む地形、より技術的には最小化したい函数の等値線に依存する。 説明のだ、二つの状況を考える。</p>
+<p>最急降下や確率的勾配降下法（SGD: stochastic gradient descent）としても知られている。 勾配は偏微分のベクトルで、各入力特徴量に対して一つの要素がある。 これは、関数が最も増加する方向を表す。 その反対方向に進めば、最も速く降下できる。 そうだろうか。</p>
+<p>残念ながら、そう簡単ではない。 取り囲む地形、より技術的には最小化したい函数の等値線に依存する。 説明のため、二つの状況を考える。</p>
 <p>一つは初めて自動微分を学んだときに出てきたものだ。 その例では二次元の二次函数があった。 そのときは指摘しなかったが、この特定の函数の重要な点は勾配が二つの次元とも同じだった。 そのような条件では、最急降下は最適である。</p>
 <p>確認しよう。 函数は<span class="math inline">\(f(x_1,x_2) = 0.2x_1^2 + 0.2x_2^2-5\)</span>で勾配は<span class="math inline">\(\begin{bmatrix}0.4\\0.4\end{bmatrix}\)</span>だった。</p>
-<p>例えば点<span class="math inline">\((x_1,x_2) = (6, 6)\)</span>にいるとする。 それぞれの座標軸について、現在の値の0.4倍を引く。 これは学習率1の場合だが、その必要はない。 もし学習列2.5を使えば、一歩で最小に到達できる。 <span class="math inline">\((x_1,x_2) = (6 - 2.5 * 0.4 * 6, 6 - 2.5 * 0.4 * 6) = (0, 0)\)</span>. 次の図を見ると、それぞれの場合に何が起きているか分かる。 <img src="images/optimizers-steepest-descent-symmetric.png" class="img-fluid" alt="異なる学習率を用いた、等方的な放物面上の最急降下"></p>
+<p>例えば点<span class="math inline">\((x_1,x_2) = (6, 6)\)</span>にいるとする。 それぞれの座標軸について、現在の値の0.4倍を引く。 これは学習率1の場合だが、その必要はない。 もし学習率2.5を使えば、一歩で最小に到達できる。 <span class="math inline">\((x_1,x_2) = (6 - 2.5 * 0.4 * 6, 6 - 2.5 * 0.4 * 6) = (0, 0)\)</span>. 次の図を見ると、それぞれの場合に何が起きているか分かる。 <img src="images/optimizers-steepest-descent-symmetric.png" class="img-fluid" alt="異なる学習率を用いた、等方的な放物面上の最急降下"></p>
 <p>まとめると、このような等方的な函数は二つの方向の分散が等しいので、学習率を正しく決める「だけ」の問題になる。</p>
 <p>次に両方の方向の傾きが大きく異なるとどうなるか、これと比較してみる。</p>
 <p>今度は<span class="math inline">\(x_2\)</span>の係数が<span class="math inline">\(x_1\)</span>の十倍大きく、<span class="math inline">\(f(x_1,x_2) = 0.2x_1^2 + 2x_2^2 - 5\)</span>である。 つまり<span class="math inline">\(x_2\)</span>方向に進むと函数値は大きくなるが、<span class="math inline">\(x_1\)</span>方向にはもっとゆっくり上昇する。 すなわち、勾配降下の間、一つの方向が他の方向よりも大きく進む。</p>
@@ -388,7 +388,7 @@ window.Quarto = {
 </section>
 <section id="問題となること" class="level3" data-number="8.3.2">
 <h3 data-number="8.3.2" class="anchored" data-anchor-id="問題となること"><span class="header-section-number">8.3.2</span> 問題となること</h3>
-<p>概念から見ると、最急降下法の主な改良は、駆動の考え方、つまり解こうとしてい問題により分類できる。</p>
+<p>概念から見ると、最急降下法の主な改良は、駆動の考え方、つまり解こうとしている問題により分類できる。</p>
 <p>まず、毎回勾配を再計算する度に、全く新しい方向から始める代わりに、古い方向、技術的には慣性を残したい。 これは上の例で見た非効率なジグザクの防止に役立つはずである。</p>
 <p>次に非対称函数の最小化の例では、本当に全ての変数に対して同じ学習率を使わなければならないのか。 明らかに全ての変数が同程度に変化しないことが明らかであるとき、それらを個別に適切な方法で更新したらよいのではないか。</p>
 <p>三つ目は、過度に影響が大きい特徴量に対して学習率を下げようとした場合にだけ生じる問題に対する修正で、学習が進み、パラメタが更新されることを確実にしたい。</p>
@@ -397,7 +397,7 @@ window.Quarto = {
 <section id="軌道に留まる-慣性付勾配降下法" class="level3" data-number="8.3.3">
 <h3 data-number="8.3.3" class="anchored" data-anchor-id="軌道に留まる-慣性付勾配降下法"><span class="header-section-number">8.3.3</span> 軌道に留まる: 慣性付勾配降下法</h3>
 <p>慣性付勾配降下法では、勾配を <em>直接</em> 重みの更新には使用しない。 代わりに、軌道上の粒子として重みの更新を考える。 粒子は進んでいる方向を維持しようとする、物理で言う慣性が働くが、衝突により向きが変化する。 この「衝突」により <em>現在</em> の位置での勾配を考慮するように突かれる。 これらの力学から二段階の更新手順が得られる。</p>
-<p>以下の式で、記号はの選択は物理の類比によるものだ。 <span class="math inline">\(\mathbf{x}\)</span>は位置で、パラメタ空間で現在いるところ、より簡単には 現在のパラメタ値である。 時間変化は上付添字で表し、<span class="math inline">\(\mathbf{y}^{(k)}\)</span>は変数<span class="math inline">\(\mathbf{y}\)</span>の現在時刻<span class="math inline">\(k\)</span>での状態である。 時刻<span class="math inline">\(k\)</span>における瞬間速度は勾配<span class="math inline">\(\mathbf{g}^{(k)}\)</span>で測る。 位置の更新にはこれを直接用いない。 代わりに各反復で、更新された速度は古い速度に慣性パラメタ<span class="math inline">\(m\)</span>で重み付された値と新たに計算した勾配（学習率で重み付けする）の組み合わせとする。 二段階の最初はこの方法を表している。</p>
+<p>以下の式で、記号の選択は物理の類比によるものだ。 <span class="math inline">\(\mathbf{x}\)</span>は位置で、パラメタ空間で現在いるところ、より簡単には 現在のパラメタ値である。 時間変化は上付添字で表し、<span class="math inline">\(\mathbf{y}^{(k)}\)</span>は変数<span class="math inline">\(\mathbf{y}\)</span>の現在時刻<span class="math inline">\(k\)</span>での状態である。 時刻<span class="math inline">\(k\)</span>における瞬間速度は勾配<span class="math inline">\(\mathbf{g}^{(k)}\)</span>で測る。 位置の更新にはこれを直接用いない。 代わりに各反復で、更新された速度は古い速度に慣性パラメタ<span class="math inline">\(m\)</span>で重み付された値と新たに計算した勾配（学習率で重み付けする）の組み合わせとする。 二段階の最初はこの方法を表している。</p>
 <p><span id="eq-optimizers-momentum_velocity"><span class="math display">\[
 \mathbf{v}^{(k+1)} = m\mathbf{v}^{(k)} + lr\mathbf{g}^{(k)}
 \tag{8.1}\]</span></span></p>
@@ -405,7 +405,7 @@ window.Quarto = {
 <p><span id="eq-optimizers-momentum_position"><span class="math display">\[
 \mathbf{x}^{(k+1)} = \mathbf{x}^{(k)} - \mathbf{v}^{(k+1)}
 \tag{8.2}\]</span></span></p>
-<p>物理の類比以外にも、有用かもしれないのは、時系列解析で有名な概念だ。 <span class="math inline">\(m\)</span>と<span class="math inline">\(lr\)</span>の和が1であるように選べば、結果は <em>指数函数的加重移動平均</em> となる。 この概念の適用は理解の助けにはなるが、実際は<span class="math inline">\(m\)</span>s <span class="math inline">\(lr\)</span>との和を1にする必要はない。）</p>
+<p>物理の類比以外にも、有用かもしれないのは、時系列解析で有名な概念だ。 <span class="math inline">\(m\)</span>と<span class="math inline">\(lr\)</span>の和が1であるように選べば、結果は <em>指数函数的加重移動平均</em> となる。 （この概念の適用は理解の助けにはなるが、実際は<span class="math inline">\(m\)</span>と<span class="math inline">\(lr\)</span>との和を1にする必要はない。）</p>
 <p>では、非等方的な放物面に戻り、慣性なしとありのSGDを比較しよう。 後者（明るい曲線）では、<span class="math inline">\(lr = 0.5\)</span>と<span class="math inline">\(m = 0.1\)</span>を用いた。 SGD（暗い曲線）で学習率は上の「よい値」を用いた。 慣性付SDGはかなり少ない歩数で最小に到達する<a href="#fig-optimizers-momentum" class="quarto-xref">Figure&nbsp;<span>8.1</span></a>。</p>
 <div id="fig-optimizers-momentum" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -462,7 +462,7 @@ x_i^{(k+1)} = x_i^{(k)} - \frac{lr}{\epsilon + \sqrt{s_i^{(k)}}}g_i^{(k)}
 <img src="images/optimizers-rmsprop.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-optimizers-rmsprop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.3: RMSProp（白）と素のSGDとの比較
+Figure&nbsp;8.3: RMSProp（白）と素のSGD（灰）との比較
 </figcaption>
 </figure>
 </div>
