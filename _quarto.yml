@@ -19,6 +19,7 @@ book:
         - modules.qmd
         - optimizers.qmd
         - loss-functions.qmd
+        - optim2.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
