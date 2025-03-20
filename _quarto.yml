@@ -20,6 +20,7 @@ book:
         - optimizers.qmd
         - loss-functions.qmd
         - optim2.qmd
+        - network2.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
