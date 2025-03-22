@@ -352,7 +352,7 @@ Figure&nbsp;4.2: 計算グラフの例
 <section id="torch-autograd-による自動微分" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="torch-autograd-による自動微分"><span class="header-section-number">4.3</span> <code>torch</code> <em>autograd</em> による自動微分</h2>
 <p>まず、用語について注意しておく。 <code>torch</code>ではADエンジンは <em>autograd</em> と呼ばれ、本書の残りの多くの部分でもそのように記す。 それでは説明に戻る。</p>
-<p>上述の計算グラフを<code>torch</code>で構築するには、入力テンソル<code>x1</code>と<code>x2</code>を作成する。 これは興味のあるバラメタを模している。 これまでしてきたように「いつも通り」テンソルを作成すると、<code>torch</code>はAD向けの準備をしない。 そうせずに、これらのテンソルを作るときに<code>requires_grad = TRUE</code>を渡す必要がある。</p>
+<p>上述の計算グラフを<code>torch</code>で構築するには、入力テンソル<code>x1</code>と<code>x2</code>を作成する。 これは興味のあるパラメタを模している。 これまでしてきたように「いつも通り」テンソルを作成すると、<code>torch</code>はAD向けの準備をしない。 そうせずに、これらのテンソルを作るときに<code>requires_grad = TRUE</code>を渡す必要がある。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>

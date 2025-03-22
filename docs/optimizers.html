@@ -316,7 +316,7 @@ window.Quarto = {
 <li>予測（順伝播）を計算し、</li>
 <li>損失を算出し、</li>
 <li><em>autograd</em> を使って（<code>loss$backward()</code>を呼びだし）偏微分を計算して、</li>
-<li>バラメタを更新するため、勾配の一定の割合をそれぞれ引く。</li>
+<li>パラメタを更新するため、勾配の一定の割合をそれぞれ引く。</li>
 </ul>
 <p>最後の部分を再掲する。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
@@ -349,7 +349,7 @@ window.Quarto = {
 <section id="torch組込最適化器の利用" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="torch組込最適化器の利用"><span class="header-section-number">8.2</span> <code>torch</code>組込最適化器の利用</h2>
 <p>最適化器は何を最適化するか知る必要がある。 ニューラルネットワークの文脈では、それはネットワークのパラメタである。 とは言っても、「モデルのモジュール」と「層のモジュール」に実質的な差はないので、どのように動作するかを<code>nn_linear</code>のような単一の組込モジュールで説明する。</p>
-<p>まず勾配降下最適化器をある線型モジュールのバラメタに対して働くように作る。</p>
+<p>まず勾配降下最適化器をある線型モジュールのパラメタに対して働くように作る。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>

@@ -337,16 +337,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.8527
- 0.6588
--0.3952
--0.0203
- 0.3355
- 3.1453
--0.4988
--0.2984
--2.9529
- 0.8116
+-0.7559
+-2.6731
+ 3.9140
+-3.5077
+-3.8626
+-2.4116
+ 1.8768
+ 2.9059
+-2.6702
+-6.5128
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -423,7 +423,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-9.99999e-05
+9.99998e-05
 [ CPUFloatType{} ]</code></pre>
 </div>
 </div>
@@ -478,7 +478,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <ul>
 <li>順伝播してネットワークの予測を得る（一行に書くのが好みでないなら、分けて書いてもよい）。</li>
 <li>損失を計算する（これも一行で、いくらかのログ出力を追加しただけだ）。</li>
-<li><em>autograd</em> に損失のバラメタに対する勾配を計算させる。</li>
+<li><em>autograd</em> に損失のパラメタに対する勾配を計算させる。</li>
 <li>パラメタを適切に更新する（ここでも全ての演算を<code>with_no_grad()</code>で囲み、<code>grad</code>フィールドを反復ごとにゼロにしている）。</li>
 </ul>
 <div class="cell">
@@ -524,26 +524,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  225.3017 
-Epoch:  20    Loss:  184.7698 
-Epoch:  30    Loss:  153.1018 
-Epoch:  40    Loss:  128.1251 
-Epoch:  50    Loss:  108.3034 
-Epoch:  60    Loss:  92.40565 
-Epoch:  70    Loss:  79.56443 
-Epoch:  80    Loss:  69.10418 
-Epoch:  90    Loss:  60.50764 
-Epoch:  100    Loss:  53.40104 
-Epoch:  110    Loss:  47.49372 
-Epoch:  120    Loss:  42.55707 
-Epoch:  130    Loss:  38.40695 
-Epoch:  140    Loss:  34.89805 
-Epoch:  150    Loss:  31.91079 
-Epoch:  160    Loss:  29.35745 
-Epoch:  170    Loss:  27.16133 
-Epoch:  180    Loss:  25.27096 
-Epoch:  190    Loss:  23.62715 
-Epoch:  200    Loss:  22.18657 </code></pre>
+<pre><code>Epoch:  10    Loss:  85.70068 
+Epoch:  20    Loss:  76.49223 
+Epoch:  30    Loss:  68.40002 
+Epoch:  40    Loss:  61.2565 
+Epoch:  50    Loss:  54.94706 
+Epoch:  60    Loss:  49.40561 
+Epoch:  70    Loss:  44.52161 
+Epoch:  80    Loss:  40.17591 
+Epoch:  90    Loss:  36.2992 
+Epoch:  100    Loss:  32.83018 
+Epoch:  110    Loss:  29.73237 
+Epoch:  120    Loss:  27.00594 
+Epoch:  130    Loss:  24.56692 
+Epoch:  140    Loss:  22.38251 
+Epoch:  150    Loss:  20.42368 
+Epoch:  160    Loss:  18.66654 
+Epoch:  170    Loss:  17.08488 
+Epoch:  180    Loss:  15.66007 
+Epoch:  190    Loss:  14.37762 
+Epoch:  200    Loss:  13.22645 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>
