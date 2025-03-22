@@ -21,6 +21,9 @@ book:
         - loss-functions.qmd
         - optim2.qmd
         - network2.qmd
+    - part: "他にも`torch` でできること: 行列計算・フーリエ変換・ウェーブレット"
+      chapters:
+        - other-overview.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf

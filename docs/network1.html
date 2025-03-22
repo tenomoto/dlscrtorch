@@ -255,6 +255,23 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">
@@ -337,16 +354,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.7559
--2.6731
- 3.9140
--3.5077
--3.8626
--2.4116
- 1.8768
- 2.9059
--2.6702
--6.5128
+-1.2751
+-0.0524
+-1.2273
+-1.8326
+-2.2359
+-0.9834
+-1.0385
+ 2.5763
+-0.5067
+-1.5408
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -423,7 +440,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-9.99998e-05
+9.99999e-05
 [ CPUFloatType{} ]</code></pre>
 </div>
 </div>
@@ -524,26 +541,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  85.70068 
-Epoch:  20    Loss:  76.49223 
-Epoch:  30    Loss:  68.40002 
-Epoch:  40    Loss:  61.2565 
-Epoch:  50    Loss:  54.94706 
-Epoch:  60    Loss:  49.40561 
-Epoch:  70    Loss:  44.52161 
-Epoch:  80    Loss:  40.17591 
-Epoch:  90    Loss:  36.2992 
-Epoch:  100    Loss:  32.83018 
-Epoch:  110    Loss:  29.73237 
-Epoch:  120    Loss:  27.00594 
-Epoch:  130    Loss:  24.56692 
-Epoch:  140    Loss:  22.38251 
-Epoch:  150    Loss:  20.42368 
-Epoch:  160    Loss:  18.66654 
-Epoch:  170    Loss:  17.08488 
-Epoch:  180    Loss:  15.66007 
-Epoch:  190    Loss:  14.37762 
-Epoch:  200    Loss:  13.22645 </code></pre>
+<pre><code>Epoch:  10    Loss:  30.45211 
+Epoch:  20    Loss:  28.23403 
+Epoch:  30    Loss:  26.21568 
+Epoch:  40    Loss:  24.37669 
+Epoch:  50    Loss:  22.69917 
+Epoch:  60    Loss:  21.16809 
+Epoch:  70    Loss:  19.76815 
+Epoch:  80    Loss:  18.48757 
+Epoch:  90    Loss:  17.31558 
+Epoch:  100    Loss:  16.24108 
+Epoch:  110    Loss:  15.25457 
+Epoch:  120    Loss:  14.34857 
+Epoch:  130    Loss:  13.51589 
+Epoch:  140    Loss:  12.74992 
+Epoch:  150    Loss:  12.04475 
+Epoch:  160    Loss:  11.39503 
+Epoch:  170    Loss:  10.79591 
+Epoch:  180    Loss:  10.24469 
+Epoch:  190    Loss:  9.735221 
+Epoch:  200    Loss:  9.263819 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>
