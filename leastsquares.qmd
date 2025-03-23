@@ -1,0 +1,555 @@
+# 行列演算: 最小二乗問題
+
+本章と次の章では、 `torch` が提供する行列演算を調べる。
+この章では、最小二乗問題を解く様々な方法を見ていく。
+目的は二つある。
+
+まず、この問題はすぐに技術上、計算上の内容になりがちだ。
+読者の素養（や目的）により、これが望むものであるかもしれない。
+基礎的な概念について、よく知っているかもしれないし、あまり興味がないかもしれない。
+純粋に技術的な、つまり同時に概念や問題の基礎となる抽象的な考え方に基づかない説明だと、一部の読者はこの問題が持つ魅力を感じ、知的な関心を持つことができないかもしれない。
+そのため、この章では、主な考え方が「コンピュータ科学的」な詳細（多くの素晴らしい本に書いてある）により覆い隠されないような方法で説明することに努める。
+
+## 最小二乗を求める五つの方法
+
+線型最小二乗回帰をどのように計算するか。
+Rでは、`lm()` を用いる。
+`torch` には、`linalg_lstsq()` がある。
+Rが利用者からややこしいことを隠蔽するのに対し、`torch` のような高性能計算フレームワークではより明示的な作業を求める傾向がある。
+作業とは、説明書を丁寧に読むことや、少し試すこと、もしくはその両方だ。
+例えば、次に示す `linalg_lstsq()` の説明の主要部は `driver` パラメタが詳しく記述されている。
+
+`driver` chooses the LAPACK/MAGMA function that will be used.
+
+For CPU inputs the valid values are `'gels'`, `'gelsy'`, `'gelsd'`, `'gelss'`.
+For CUDA input, the only valid driver is `'gels'`, which assumes that `A` is full-rank.
+
+To choose the best driver on CPU consider:
+
+* If `A` is well-conditioned (its [condition number](https://pytorch.org/docs/master/linalg.html#torch.linalg.cond) is not too large), or you do not mind some precision loss.
+* For a general matrix: `'gelsy'` (QR with pivoting) (default)
+* If `A` is full-rank: `'gels'` (QR)
+* If `A` is not well-conditioned.
+* `'gelsd'` (tridiagonal reduction and SVD)
+* But if you run into memory issues: `'gelss'` (full SVD).
+
+See also the [full description of these drivers](https://netlib.org/lapack/lug/node27.html)
+
+これを知る必要があるかどうかは、解こうとしている問題次第だ。
+でも必要なら、ここで何が議論されているか理解することは、抽象的であっても、役立つだろう。
+
+以下の例では、幸運にもどのドライバを用いても同一の結果が得られる。
+ただし、「秘訣」の類を適用することが必要だ。
+それでも、 `linalg_lstsq()` が使っている様々な手法やよく使われる他の方法を深掘りする。
+具体的には、以下の方法で最小二乗問題を解く。
+
+1. いわゆる *正規方程式* を用いた、最も直接的な方法、その意味は問題の数学的な記述から直ちに得られることを指す。
+2. ここでも正規方程式から出発するが、 *コレスキー分解* を用いて問題を解く。
+3. またまた正規方程式を出発点とし、 *LU分解* を用いて進める。
+4. 四つ目と最後の方法では、異なる種類の分解 *QR* を用いる。
+この分解は「現実に」適用される主要なものだ。
+QR分解を用いる場合、アルゴリズムは正規方程式から出発しない。
+5. 最後の五つ目は、 *特異値分解（SVD: Singular Value Decomposition）* を用いる。
+ここでも、正規方程式は不要である。
+
+全ての方法は、現実のデータセット、次に安定性に欠けることが知られているベンチマーク問題にに適用される。
+
+## 天気予報についての回帰
+
+用いる [データセット](https://doi.org/10.24432/C59K76)  は[UCI機械学習リポジトリ](https://archive.ics.uci.edu/) から得られる。
+Zipを展開して、作業ディレクトリ（ここでは `data`）に配置する。
+ここでの利用方法は、本来の目的とは異なる。
+機械学習で気温を予測する代わりに、原論文 [@Cho-etal:2020] では数値天気予報モデルの予測データのバイアス修正について述べられている。
+本来の用途を気にする必要ない。
+ここでの主眼は行列演算にあり、データセット自体はここで行う調査に非常に適している。
+
+```{r}
+set.seed(777)
+
+library(torch)
+
+weather_df <- na.omit(read.csv("data/Bias_correction_ucl.csv"))
+head(weather_df)
+```
+
+ここでの問題の組み立て方では、基本的にデータセット内の全てが予測変数である。（データセットに残しておけば予測因子になりうる。詳しくは以下で説明する）
+目的変数としては、 `Next_Tmax` 翌日に取った最高気温を用いる。
+この場合、 `Next_Tmin` を予測変数から取り除く必要がある。
+さもないと、これが強力すぎる手掛かりになる。
+同様に `station` 測候所の識別番号と `Date` も削除する。
+結果として、21個の予測変数が得られ、これらには実際の気温（ `Prexent_Tmax` 、 `Present_Tmin`  ）、様々な変数に対するモデルの予報（ `LDAPS_*` ）、そして補助的な情報（ `lat` や、 `lon` `Solar radiation` など）がある。
+
+```{r}
+weather_df <- data.frame(scale(
+  weather_df[!(names(weather_df) %in% c("station", "Date", "Next_Tmin"))]))
+```
+
+ここで予測変数を *標準化* する `scale()` を追加したことに目を向けてほしい。
+これは、上述した「秘訣」である。
+なぜそのようにするかは、すぐに議論する。
+
+`torch`には、データを二つのテンソルに分け、全ての予測変数を行列 `A` に、目的変数を格納した `b` に格納する。
+
+```{r}
+weather <- torch_tensor(weather_df |> as.matrix())
+A <- weather[, 1:-2]
+b <- weather[, -1]
+
+dim(A)
+```
+
+それでは、最初に期待される出力を求めよう。
+
+### 最小二乗法 (I): `lm()` による参照値
+
+「信用できる」最小二乗法の実装があるとすれば、もちろん `lm()` に違いない。
+
+```{r}
+fit <- lm(Next_Tmax ~ . , data = weather_df)
+fit |> summary()
+```
+
+分散説明率78%は、予報がうまくいっていることを示している。
+これを基準として、他の手法を比較調査する。
+そのためにそれぞれの予測と予測誤差を保存する（後で平均二乗誤差 RMSE: root mean squared errorを計算するため）。
+今は、 `lm()` に対する入力だけがある。
+
+```{r}
+rmse <- function(y_true, y_pred) {
+  (y_true - y_pred)^2 |> sum() |> sqrt()
+}
+
+all_preds <- data.frame(
+  b = weather_df$Next_Tmax,
+  lm = fit$fitted.values
+)
+all_errs <- data.frame(lm = rmse(all_preds$b, all_preds$lm))
+all_errs
+```
+
+### 最小二乗法 (II): `linalg_lstsq()`の利用
+
+```{r}
+x_lstsq <- linalg_lstsq(A, b)$solution
+
+all_preds$lstsq <- as.matrix(A$matmul(x_lstsq))
+all_errs$lstsq <- rmse(all_preds$b, all_preds$lstsq)
+
+tail(all_preds)
+```
+
+予測は `lm()` と非常によく似ている。
+実際、想像されるのは、わずかな差が数値誤差がそれぞれの呼び出しスタックの奥から表面化したものだけではないかということで、すなわち、同じはずだということだ。
+```{r}
+all_errs
+```
+
+確かに。これは満足のいく結果だ。
+しかし、これはあの「秘訣」、標準化に基づく結果だ。
+もちろん、「秘訣」というほどのものではない。
+データの標準化は通常の操作で、特にニューラルネットワークでは日常的に使われていおり、訓練を高速化している。
+強調したい点は、 `torch` のような高性能計算のためのフレームワークは適用される領域の知識や、事前の解析がより多く利用者側に求められることが多いということだ。
+
+### 一休み: 標準化しなかった場合
+
+素早く比較するために、今度はデータを標準化 *せずに* 別の予測変数の行列を作ってみる。
+
+```{r}
+weather_df_alt <- data.frame(
+  read.csv("data/Bias_correction_ucl.csv") |>
+  na.omit() |>
+  subset(select = c(-station, -Date, -Next_Tmin)))
+
+weather_alt <- torch_tensor(weather_df_alt |> as.matrix())
+A_alt <- weather_alt[, 1:-2]
+b_alt <- weather_alt[, -1]
+```
+
+```{r}
+fit_alt <- lm(Next_Tmax ~ ., data = weather_df_alt)
+all_preds_alt <- data.frame(
+  b = weather_df_alt$Next_Tmax,
+  lm = fit_alt$fitted.values
+)
+
+all_errs_alt <- data.frame(
+  lm = rmse(
+    all_preds_alt$b,
+    all_preds_alt$lm
+  )
+)
+
+all_errs_alt
+```
+
+次に、前のように既定の引数とともに`linalg_lstsq()` を呼ぶ。
+
+```{r}
+x_lstsq_alt <- linalg_lstsq(A_alt, b_alt)$solution
+
+all_preds_alt$lstsq <- as.matrix(A_alt$matmul(x_lstsq_alt))
+all_errs_alt$lstsq <- rmse(
+  all_preds_alt$b, all_preds_alt$lstsq
+)
+
+all_errs_alt
+```
+
+なんと、何が起きたのか。
+引用した説明書の一部を思い出すと、今度は既定の引数がうまくいかなかったのかもしれない。
+理由を見つけよう。
+
+#### 問題の調査
+
+最小二乗問題を効率的に解くため、 `torch` はLAPACKというFortranのルーチン一式を呼んでいる。
+LAPACKは効率的かつ規模の拡大に対応しつつ、線型代数においてよくある問題を解けるように設計されており、線型方程式の解や固有ベクトルと固有値、特異値を求めることができる。
+
+`linalg_lstsqt()` で利用できる `driver` はLAPACKの異なる手続^1 に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。
+これは、今後行っていくことに類似している。
+
+つまり、何が起きているか調べるには、第一歩はどの手法がなぜ利用されたのか、（可能ならば）なぜ結果が満足いかないのか、代わりに使いたいLAPACKのルーチンを定め、実際に用いたときに何が起こるか確認することである。
+（もちろん、わずかな手間がかかるだけなら、全ての方法を試せばよい。）
+
+#### 概念(I): 行列の階数
+
+「ちょっと待て！」上述の説明書の一部から、最初にすべきことは階数ではなく、 *条件数*、つまり行列が「良条件」 であると思うかもしれない。
+確かに条件数は重要で、この後すぐにこの問題に戻る。
+でも、もっと基本的にことが起きている。
+実際に「目に飛び込んでくる」ものではないことが。
+
+`linalg_lstsq()` について参照してる、LAPACKの説明書の一部に重要な情報がある。
+四つのルーチン `GELS` 、 `GELSY` 、 `GELSD` 、 `GELSS` の間て、違いは実装に限らない。
+最適化の目的も異なっている。
+根拠は次の通りだ。
+一貫して、行列は行が列よりも多い（観測が特徴量より多い通常の場合）と仮定する。
+
+* 行列が完全階数、つまり列が線型独立なら「完璧な」回は存在しない。
+問題は優決定である。
+できることは、最良の近似を見つけることだ。
+これは予測誤差を最小化することである。
+この点は正規方程式について議論するときに再検討する。
+予測誤差の最小化が `GELS` が行うことで、 `GELS` が予測変数の完全階数の行列があるときに使うべきルーチンである。
+
+* 行列が完全階数でない場合、問題は劣決定である。
+このとき、解は無数にある。
+残りの全てのルーチン `GELSY` 、 `GELSD` 、 `GELSS` はこの解に適している。
+計算の進め方は異なっているが、同一の方法をとる。
+これは `GELS` のものとは異なる。
+予測誤差だけではなく、 *加えて* 係数のベクトルも最小化する。
+これは最小ノルム最小二乗解を見つけることである。
+
+まとめると `GELS` （完全階数行列向け）と `GELSY` 、 `GELSD` 、 `GELSS` の三種（階数不足の向け行列向け）は意図的に異なる最適化の基準に従っている。
+
+さて、`linalg_lstsq()` の説明書に従って、 `driver` が明示的に渡されていないときは `GELSY` が呼び出される。
+これは行列が階数不足のときに適切なはずだが、そうなっているだろうか。
+
+```{r}
+linalg_matrix_rank(A_alt)
+```
+
+行列は21列あり、階数は21なら、完全階数である。
+呼び出すべきは確実に `GELS` ルーチンだ。
+
+#### 正しい `linalg_lstsq()` の呼び出し方
+
+何を `driver` に渡すか分かったので、呼び出しを修正する。
+
+```{r}
+x_lstsq_alt <- linalg_lstsq(
+  A_alt, b_alt,
+  driver = "gels"
+)$solution
+
+all_preds_alt$lstsq <- as.matrix(A_alt$matmul(x_lstsq_alt))
+all_errs_alt$lstsq <- rmse(
+  all_preds_alt$b, all_preds_alt$lstsq
+)
+
+all_errs_alt
+```
+
+今度はそれぞれのRMSEが非常に近くなった。
+標準化された行列を使ったときは、なぜFortranのルーチンを指定する必要がなかったのか疑問に思うだろう。
+
+#### 標準化が役立つ理由
+
+用いた行列に対して、標準化がしたことは特異値が範囲をかなり狭めたということだ。
+標準化された行列 `A` では、特異値の最大値は最小値の約10倍である。
+
+```{r}
+svals_normalized_A <- linalg_svdvals(A) / linalg_svdvals(A)[1]
+svals_normalized_A |> as.numeric()
+```
+
+一方 `A_alt` では約100万倍大きい。
+
+```{r}
+svals_normalized_A_alt <- linalg_svdvals(A_alt) / linalg_svdvals(A_alt)[1]
+svals_normalized_A_alt |> as.numeric()
+```
+
+これがなぜ重要なのか。
+ここでついに *条件数* に話が戻る。
+
+#### 概念 (II): 条件数
+
+いわゆる *条件数* が大きいほど、計算の際に数値安定性の問題が生じる可能性が高くなる。
+`torch` では、 `linalg_cond()` を用いて条件数を計算できる。
+`A` と `A_alt` の条件数をそれぞれ比較しよう。
+
+```{r}
+linalg_cond(A)
+linalg_cond(A_alt)
+```
+
+かなりの差だ。
+どこから来たのか。
+
+条件数は `A` の行列ノルムをその逆行列のノルムで割ったものとして定義される。
+様々な種類のノルムが用いられるが、既定は2ノルムである。
+その場合、条件数は行列の特異値はから計算できる。
+つまり、 `A` の2ノルムは最大の特異値であり、その逆行列のものは最小値で与えられる。
+
+以前のように `linalg_svdvals()` でこれを確認できる。
+
+```{r}
+linalg_svdvals(A)[1] / linalg_svdvals(A)[21]
+linalg_svdvals(A_alt)[1] / linalg_svdvals(A_alt)[21]
+```
+
+繰り返しになるが、これはかなりの違いだ。
+同時に `A_alt` の場合、 `linalg_lstsq()` に対するRMSEが `lm()` に対するものよりもわずかに悪くなっていることをご記憶だろうか。
+適切なルーチン `GELS` を使ったにもかかわらず。
+どちらも基本的に同一のアルゴリズム（すぐに説明するQR分解）を用いているとすると、数値誤差が `A_alt` の高い条件数により生じている可能性が高い。
+
+ここまでで、`torch` の `linalg` の部分を使うと、最もよく使われている最小二乗アルゴリズムがどのように動いているか理解することに役立つごとに納得してもらえたと思う。
+これらに馴染もう。
+
+### 最小二乗法 (III): 正規方程式
+
+目的を示すことから始める。
+特徴量を列に観測を行に格納した行列 $\mathbf{A}$ 及び観測された結果のベクトル $\mathbf{b}$ が与えられたとき、各特徴量について $\mathbf{b}$ を最もよく近似する回帰係数を一つ求めたい。
+回帰係数のベクトルを $\mathbf{x}$ とする。
+求めるには、連立方程式を解く必要があり、その行列表記は次のようになる。
+
+$$
+\mathbf{Ax} = \mathbf{b}
+$$
+
+$\mathbf{A}$ が正方行列なら、解を直接求めることができて、$\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$ となる。
+しかし、これはほとんど不可能である。
+予測変数よりも多くの観測が（おそらく）常にある。
+別の方法が必要である。
+
+$\mathbf{A}$ の列を $\mathbf{b}$ の近似に使う場合、この近似は $\mathbf{A}$ の列空間に存在しなければならない。
+$\mathbf{b}$ は通常そうではない。
+これらは可能な限り近づいてほしい。
+つまり、これらの距離を最小化したい。
+距離として2ノルムを使うと、目的は次のようになる。
+
+$$
+\text{minimize} \|\mathbf{Ax} - \mathbf{b}\|
+$$
+
+距離は（二乗された）予測誤差のベクトルの長さである。
+このベクトルは $\mathbf{A}$ と直交していなければならない。
+
+$$
+\mathbf{A}^\mathrm{T}(\mathbf{Ax} - \mathbf{b}) = 0
+$$
+
+これを並び替えるといわゆる *正規方程式* が得られる。
+
+$$
+\mathbf{A}^\mathrm{T} = \mathbf{A}^\mathrm{T}\mathbf{b}
+$$
+
+これを $\mathbf{x}$ について解くため、 $\mathbf{A}^\mathrm{T}\mathbf{A}$ の逆行列を計算する。
+
+$$
+\mathbf{x} = (\mathbf{A}^\mathbf{T}\mathbf{A})^{-1}\mathbf{A}^\mathbf{T}\mathbf{b}
+$$
+
+$\mathbf{A}^\mathrm{T}\mathbf{A}$ は正方行列である。
+逆行列が求まらないかもしれないが、その場合は擬逆行列を代わりに計算すればよい。
+例としている問題はその必要はない。
+$\mathbf{A}$ は完全階数なので、 $\mathbf{A}^\mathrm{T}\mathbf{A}$ も完全階数である。
+
+このように、正規方程式から $\mathbf{b}$ を予測する方法が導出された。
+これを使って、`lm()` や `linalg_lstsq()` を用いて得られたものと比較しよう。
+
+```{r}
+AtA <- A$t()$matmul(A)
+Atb <- A$t()$matmul(b)
+inv <- linalg_inv(AtA)
+x <- inv$matmul(Atb)
+
+all_preds$neq <- as.matrix(A$matmul(x))
+all_errs$neq <- rmse(all_preds$b, all_preds$neq)
+
+all_errs
+```
+
+直説法がうまくいくことを確かめたので、より洗練された手法を試す。
+四つの行列分解が現れる。
+コレスキー、LU、QR、そして特異値分解だ。
+目的は、どの場合でも、（擬）逆行列の重い計算を回避することだ。
+この計算は全ての手法に共通する。
+しかしながら、行列の分解の仕方「だけ」ではなく、どの行列を分解するかも異なる。
+これは様々な手法が課す制約と関係している。
+大まかに述べると、上に並べた順序は前提条件の程度を反映している。
+別の言い方をすれば、後ろほど一般性が高くなる。
+関係する制約に応じて、最初の二つ（コレスキーとLU分解）は $\mathbf{A}^\mathrm{T}\mathbf{A}$ に対して行い、後の二つ（QRとSVD）は $\mathbf{A}$ に直接作用させる。
+これらを使うと $\mathbf{A}^\mathrm{T}\mathbf{A}$ を計算する必要がない。
+
+### 最小二乗法 (IV): コレスキー分解
+
+コレスキー分解では、行列は二つの同じ大きさの三角行列に分解される。一方は他方の転置となっている。
+通常次のように表す。
+
+$$
+\mathbf{A} = \mathbf{LL}^\mathbf{T}
+$$
+
+または
+
+$$
+\mathbf{A} = \mathbf{R}^\mathbf{T}\mathbf{R}
+$$
+ここで記号 $\mathbf{L}$ 及び $\mathbf{R}$ はそれぞれ下三角及び上三角行列である。
+
+コレスキー分解が可能であるためには、行列は対称かつ正定値でなければならない。
+これはかなり強い条件で、実際に満たされることは多くない。
+用いている例では $\mathbf{A}$ は対称ではないので、代わりに $\mathbf{A}^\mathrm{T}\mathbf{A}$ に作用される必要があることが直ち示唆される。
+また $\mathbf{A}$ はすでに正定値なので、 $\mathbf{A}^\mathrm{T}\mathbf{A}$ も正定値であることが分かっている。
+
+`torch` では、コレスキー分解を得るには `linalg_cholesky()` を用いる。
+既定では、呼び出すと下三角行列 $\mathbf{L}$ が返ってくる。
+
+```{r}
+# AtA = L L_t
+AtA <- A$t()$matmul(A)
+L <- linalg_cholesky(AtA)
+```
+
+$\mathbf{A}$ が $\mathbf{L}$ から再構築できるか確認する。
+```{r}
+LLt <- L$matmul(L$t())
+linalg_norm(LLt - AtA, ord = "fro")
+```
+
+ここでは、元の行列と再構築したものとの差に対してフロベニウスノルムを計算した。
+フロベニウスノルムは全ての行列の要素について和を取り、平方根を返す。
+理論的には、ここでは零を見たいが、数値誤差の存在の下では、結果は分解が十分にうまくいったことを示している。
+
+$\mathbf{LL}^\mathrm{T}$ が $\mathbf{A}^\mathrm{T}\mathbf{A}$ の代わりに得られたことがどのように役立つのか。
+ここが魔法が起きるところで、同様な魔法が残りの三つの手法でも働くことを見出すことになる。
+着想は、ある分解のために、問題を構成する連立方程式を解くためのより性能の良い方法が得られるということにある。
+それはよく分かるのは小さな例だ。
+
+$$
+\begin{bmatrix}
+1 & 0 & 0 \\
+2 & 3 & 0 \\
+3 & 4 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{bmatrix}
+ = 
+\begin{bmatrix}
+1 \\
+11 \\
+15
+\end{bmatrix}
+$$
+
+最初の行から始めると、直ちに $x_1$ が $1$ であることが分かる。
+これが分かると、二番目の行から $x_2$ は $3$ に違いないと計算することは容易だ。
+最後の量は $x_3$ は $0$ であることを示している。
+
+コードでは、 `torch_trianglular_solv()` を使うと効率的に予測変数の行列が下または上三角行列である連立方程式を効率的に解くことができる。
+追加の条件は行列が対称であることであるが、これはコレスキー分解を使うために既に満たされている。
+
+既定では、 `torch_triangular_solve()` は上（下ではなく）三角行列を想定するが、函数のパラメタに `upper` があり、想定を修正することができる。
+返り値はリストで、最初の要素が求める解である。
+説明のため、 `torch_triangular_solv()` を、上で暗算で解いたおもちゃの例に適用したものを示す。
+
+```{r}
+some_L <- torch_tensor(
+  matrix(c(1, 0, 0, 2, 3, 0, 3, 4, 1), nrow = 3, byrow = TRUE)
+)
+some_b <- torch_tensor(matrix(c(1, 11, 15), ncol = 1))
+
+x <- torch_triangular_solve(
+  some_b,
+  some_L,
+  upper = FALSE
+)[[1]]
+x
+```
+
+現在の例に戻ると、正規方程式は次のようになる。
+
+$$
+\mathbf{LL}^\mathrm{T}\mathbf{x} = \mathbf{A}^\mathrm{T}\mathbf{b}
+$$
+
+新しい変数 $\mathbf{y}$ を $\mathbf{L}^\mathrm{T}\mathbf{x}$ を表すために導入する。
+
+$$
+\mathbf{Ly} = \mathbf{A}^\mathrm{T}\mathbf{b}
+$$
+そして *この* 系の解を求める。
+
+```{r}
+Atb <- A$t()$matmul(b)
+
+y <- torch_triangular_solve(
+  Atb$unsqueeze(2),
+  L,
+  upper = FALSE
+)[[1]]
+```
+
+$\mathbf{y}$ がもとまったので、これがどのように定義されていたか振り返る。
+
+$$
+\mathbf{y} = \mathbf{L}^\mathrm{T}\mathbf{x}
+$$
+
+$\mathbf{x}$ を定めるには、また `torch_triangular_solve()` を用いる。
+
+```{r}
+x <- torch_triangular_solve(y, L$t())[[1]]
+```
+
+これで完了。
+
+通常通り、誤差を計算する。
+
+```{r}
+all_preds$chol <- as.matrix(A$matmul(x))
+all_errs$chol <- rmse(all_preds$b, all_preds$chol)
+
+all_errs
+```
+
+コレスキー分解の理論的根拠を理解した。
+既に述べたが、この考え方は他の全ての分解にも適用される。
+実は、専用の便利な函数 `torch_cholesky_solve` を利用すると作業を節約できる。
+これを使うと、二つの `torch_triangular_solve()` の呼び出しが不要になる。
+
+```{r}
+L <- linalg_cholesky(AtA)
+
+x <- torch_cholesky_solve(Atb$unsqueeze(2), L)
+
+all_preds$chol2 <- as.matrix(A$matmul(x))
+all_errs$chol2 <- rmse(all_preds$b, all_preds$chol2)
+all_errs
+```
+
+次の手法、つまり次の分解に進もう。

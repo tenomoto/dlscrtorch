@@ -24,10 +24,12 @@ book:
     - part: "他にも`torch` でできること: 行列計算・フーリエ変換・ウェーブレット"
       chapters:
         - other-overview.qmd
+        - leastsquares.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
 bibliography: references.bib
+csl: /Users/eno/Writings/dlscrtorch/american-meteorological-society.csl
 
 format:
   html:
