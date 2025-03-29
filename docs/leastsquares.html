@@ -322,6 +322,10 @@ window.Quarto = {
   <li><a href="#最小二乗法-iii-正規方程式" id="toc-最小二乗法-iii-正規方程式" class="nav-link" data-scroll-target="#最小二乗法-iii-正規方程式"><span class="header-section-number">13.2.4</span> 最小二乗法 (III): 正規方程式</a></li>
   <li><a href="#最小二乗法-iv-コレスキー分解" id="toc-最小二乗法-iv-コレスキー分解" class="nav-link" data-scroll-target="#最小二乗法-iv-コレスキー分解"><span class="header-section-number">13.2.5</span> 最小二乗法 (IV): コレスキー分解</a></li>
   </ul></li>
+  <li><a href="#最小二乗法-v-lu分解" id="toc-最小二乗法-v-lu分解" class="nav-link" data-scroll-target="#最小二乗法-v-lu分解"><span class="header-section-number">13.3</span> 最小二乗法 (V): LU分解</a>
+  <ul class="collapse">
+  <li><a href="#最小二乗法-vi-qr分解" id="toc-最小二乗法-vi-qr分解" class="nav-link" data-scroll-target="#最小二乗法-vi-qr分解"><span class="header-section-number">13.3.1</span> 最小二乗法 (VI): QR分解</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -853,6 +857,97 @@ x_3
 </div>
 </div>
 <p>次の手法、つまり次の分解に進もう。</p>
+</section>
+</section>
+<section id="最小二乗法-v-lu分解" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="最小二乗法-v-lu分解"><span class="header-section-number">13.3</span> 最小二乗法 (V): LU分解</h2>
+<p>LU分解という名前は、分解により得られる二つの因子に由来している。 下三角行列 <span class="math inline">\(\mathbf{L}\)</span> と上三角行列 <span class="math inline">\(\mathbf{U}\)</span> である。 理論的には、LU分解に制約はない。 つまり、行の交換を許して、実質的に <span class="math inline">\(\mathbf{A} = \mathbf{LU}\)</span> を <span class="math inline">\(\mathbf{A} = \mathbf{PLU}\)</span> （ここで <span class="math inline">\(\mathbf{P}\)</span> は置換行列）とすれば、どんな行列も分解できる。</p>
+<p>実際には、 <code>torch_triangular_solve()</code> を使う場合は、入力する行列は対称でなければならない。 そのため、 <span class="math inline">\(\mathbf{A}\)</span> ではなく、 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うことになる。 （そのため、LU分解をコレスキーの直後に説明している。これらは使い方が似ているものの、考え方は全く異なる。）</p>
+<p><span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うということは、この方法も正規方程式から出発することを意味する。 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を分解し、二つの三角行列を解いて、最終的な解を得る。 ここで手順を示す。 常に必要とは限らない置換行列 <span class="math inline">\(\mathbf{P}\)</span> も含まれている。</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{A}^\mathrm{T}\mathbf{Ax} &amp;= \mathbf{A}^\mathrm{T}\mathbf{b}\\
+\mathbf{PLUx} &amp;= \mathbf{A}^\mathrm{T}\mathbf{b}\\
+\mathbf{Ly} &amp;= \mathbf{P}^\mathrm{T}\mathbf{A}\mathrm{T}\mathbf{b}\\
+\mathbf{y} &amp;= \mathbf{Ux}
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\mathbf{P}\)</span> が必要な場合、追加の計算が生じる。 コレスキーで使った方法と同様に <span class="math inline">\(\mathbf{P}\)</span> を左辺から右辺に移したい。 幸いにも、大変そうな逆行列の計算は重くない。 置換行列に対しては、その転置が逆演算となる。</p>
+<p>コード上は、しなければならないことは既に馴染みのあるものだ。 てできてないのは <code>torch_lu()</code> だけだ。 <code>torch_lu()</code>は二つのテンソルのリストを返す。 最初の要素は三つの行列 <span class="math inline">\(\mathbf{P}\)</span> 、 <span class="math inline">\(\mathbf{L}\)</span> 、 <span class="math inline">\(\mathbf{U}\)</span>で、二つ目はピボットだ。 <code>torch_lu_unpack()</code> で三つの行列に展開できる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>plu <span class="ot">&lt;-</span> <span class="fu">torch_lu_unpack</span>(lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(plu) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>, <span class="st">"L"</span>, <span class="st">"U"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><span class="math inline">\(\mathbf{P}\)</span> を右辺に移す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> plu<span class="sc">$</span>P<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>あとは、二つの三角行列を解けば完了する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  plu<span class="sc">$</span>L,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="cn">FALSE</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>)[[<span class="dv">1</span>]]</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, plu<span class="sc">$</span>U)[[<span class="dv">1</span>]]</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>lu <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>lu <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lu)</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       lm   lstsq     neq    chol   chol2      lu
+1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
+</div>
+</div>
+<p>コレスキー分解と同様に、<code>torch_triangular_solve()</code> を二回呼び出す手間を省ける。 <code>torch_lu_solve()</code> は分解を取り、直接最終的な解を返す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_lu_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>lu2 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>lu2 <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lu2)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       lm   lstsq     neq    chol   chol2      lu     lu2
+1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
+</div>
+</div>
+<p>次に、<span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> の計算が必要ない二つの方法を見る。</p>
+<section id="最小二乗法-vi-qr分解" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="最小二乗法-vi-qr分解"><span class="header-section-number">13.3.1</span> 最小二乗法 (VI): QR分解</h3>
+<p>どんな行列も直交行列 <span class="math inline">\(\mathbf{Q}\)</span> と上三角行列 <span class="math inline">\(\mathbf{R}\)</span> に分解できる。 QR分解は、最小二乗問題の解法としておそらく最もよく使われており、Rの <code>lm()</code> にも採用されている。 どのようにして、問題を簡単にしているのか。</p>
+<p><span class="math inline">\(\mathbf{F}\)</span> については、どのように便利かを既に述べた。 三角行列により、代入だけで順に解くことができる連立方程式が得られる。 <span class="math inline">\(\mathbf{Q}\)</span> はもっと便利である。 直交行列は、列が直交するものを指す。 これが意味するのは、相互内積が全て0で、ノルムが1であるということだ。 そのため、こののような行列はその逆行列が転置に等しい。 一般的には、逆行列は計算が困難である一方、転置は容易である。 逆行列を計算し、 <span class="math inline">\(\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}\)</span> を解くことが最小二乗法の中心的な問題であることを考慮すると、その重要性は明らかだ。</p>
+<p>これまでの方法と比較して、手順は少し短くなる。 ダミー変数 <span class="math inline">\(\mathbf{y}\)</span> はもう不要だ。 代わりに <span class="math inline">\(\mathbf{Q}\)</span> を右辺に移し、転置（逆行列）を求める。 残りは、後退代入だけだ。 また、全ての行列に対してQR分解が存在するので、 <span class="math inline">\(\mathbf{A}\)</span> から直接始め、<span class="math inline">\(\mathbf{A}\mathrm{T}\mathbf{A}\)</span>は不要だ。</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{Ax} &amp;= \mathbf{b}\\
+\mathbf{QRx} &amp;= \mathbf{b}\\
+\mathbf{Rx} &amp;= \mathbf{Q}^\mathrm{T}\mathbf{b}
+\end{aligned}
+\]</span></p>
+<p><code>torch</code> では <code>linalg_qr()</code> が行列 <span class="math inline">\(\mathbf{Q}\)</span> と<span class="math inline">\(\mathbf{R}\)</span> を計算する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>qr <span class="ot">&lt;-</span> <span class="fu">linalg_qr</span>(A)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(qr) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Q"</span>, <span class="st">"R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>右辺に <span class="math inline">\(\mathbf{A}\mathrm{T}\mathbf{b}\)</span> を格納した「便宜的な」変数を用いてきたがこの手順は省略でき、変わりに「すぐに役立つ」ことをする。 つまり<span class="math inline">\(\mathbf{Q}\)</span> を右辺に移す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>Qtb <span class="ot">&lt;-</span> qr<span class="sc">$</span>Q<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>残りの手順は、三角行列を解くことだけだ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(Qtb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), qr<span class="sc">$</span>R)[[<span class="dv">1</span>]]</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>qr <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>qr <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>qr)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       lm   lstsq     neq    chol      lu      qr
+1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
+</div>
+</div>
+<p>ここまで読んでくると、節の終わりに「専用の函数が <code>torch</code> / <code>torch_linalg</code> にある…」という記述を期待しているかもしれない。 文字通りのものはないが、実質上はある。 <code>linalg_lstsq()</code> を呼び出すときに <code>driver = "gels"</code> を渡すと、QR分解が使われる。</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">

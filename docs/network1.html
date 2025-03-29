@@ -360,16 +360,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 1.0035
--0.8038
- 0.1961
- 0.3263
--0.8162
- 0.8385
--0.3256
- 0.0313
--0.5554
- 0.9093
+ 1.7947
+-1.2422
+-2.3139
+ 0.9107
+-0.7159
+-1.0562
+ 0.5843
+-2.7183
+ 0.7517
+-0.3422
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -547,26 +547,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  27.90099 
-Epoch:  20    Loss:  25.75243 
-Epoch:  30    Loss:  23.81697 
-Epoch:  40    Loss:  22.06579 
-Epoch:  50    Loss:  20.48105 
-Epoch:  60    Loss:  19.03977 
-Epoch:  70    Loss:  17.72605 
-Epoch:  80    Loss:  16.53541 
-Epoch:  90    Loss:  15.46772 
-Epoch:  100    Loss:  14.49364 
-Epoch:  110    Loss:  13.6043 
-Epoch:  120    Loss:  12.79129 
-Epoch:  130    Loss:  12.04768 
-Epoch:  140    Loss:  11.3668 
-Epoch:  150    Loss:  10.74349 
-Epoch:  160    Loss:  10.17172 
-Epoch:  170    Loss:  9.646621 
-Epoch:  180    Loss:  9.170671 
-Epoch:  190    Loss:  8.738029 
-Epoch:  200    Loss:  8.339023 </code></pre>
+<pre><code>Epoch:  10    Loss:  151.1276 
+Epoch:  20    Loss:  124.1112 
+Epoch:  30    Loss:  103.1426 
+Epoch:  40    Loss:  86.58415 
+Epoch:  50    Loss:  73.32508 
+Epoch:  60    Loss:  62.63496 
+Epoch:  70    Loss:  53.94563 
+Epoch:  80    Loss:  46.80367 
+Epoch:  90    Loss:  40.88149 
+Epoch:  100    Loss:  35.94563 
+Epoch:  110    Loss:  31.81036 
+Epoch:  120    Loss:  28.3109 
+Epoch:  130    Loss:  25.35415 
+Epoch:  140    Loss:  22.82649 
+Epoch:  150    Loss:  20.65158 
+Epoch:  160    Loss:  18.78553 
+Epoch:  170    Loss:  17.17746 
+Epoch:  180    Loss:  15.77484 
+Epoch:  190    Loss:  14.54263 
+Epoch:  200    Loss:  13.45404 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>

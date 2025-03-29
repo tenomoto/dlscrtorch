@@ -478,6 +478,8 @@ $$
 説明のため、 `torch_triangular_solv()` を、上で暗算で解いたおもちゃの例に適用したものを示す。
 
 ```{r}
+#| warning: false
+
 some_L <- torch_tensor(
   matrix(c(1, 0, 0, 2, 3, 0, 3, 4, 1), nrow = 3, byrow = TRUE)
 )
@@ -553,3 +555,139 @@ all_errs
 ```
 
 次の手法、つまり次の分解に進もう。
+
+## 最小二乗法 (V): LU分解
+
+LU分解という名前は、分解により得られる二つの因子に由来している。
+下三角行列 $\mathbf{L}$ と上三角行列 $\mathbf{U}$ である。
+理論的には、LU分解に制約はない。
+つまり、行の交換を許して、実質的に $\mathbf{A} = \mathbf{LU}$ を $\mathbf{A} = \mathbf{PLU}$ （ここで $\mathbf{P}$ は置換行列）とすれば、どんな行列も分解できる。
+
+実際には、 `torch_triangular_solve()` を使う場合は、入力する行列は対称でなければならない。
+そのため、 $\mathbf{A}$ ではなく、 $\mathbf{A}^\mathrm{T}\mathbf{A}$ を使うことになる。
+（そのため、LU分解をコレスキーの直後に説明している。これらは使い方が似ているものの、考え方は全く異なる。）
+
+$\mathbf{A}^\mathrm{T}\mathbf{A}$ を使うということは、この方法も正規方程式から出発することを意味する。
+$\mathbf{A}^\mathrm{T}\mathbf{A}$ を分解し、二つの三角行列を解いて、最終的な解を得る。
+ここで手順を示す。
+常に必要とは限らない置換行列 $\mathbf{P}$ も含まれている。
+
+$$
+\begin{aligned}
+\mathbf{A}^\mathrm{T}\mathbf{Ax} &= \mathbf{A}^\mathrm{T}\mathbf{b}\\
+\mathbf{PLUx} &= \mathbf{A}^\mathrm{T}\mathbf{b}\\
+\mathbf{Ly} &= \mathbf{P}^\mathrm{T}\mathbf{A}\mathrm{T}\mathbf{b}\\
+\mathbf{y} &= \mathbf{Ux}
+\end{aligned}
+$$
+
+$\mathbf{P}$ が必要な場合、追加の計算が生じる。
+コレスキーで使った方法と同様に $\mathbf{P}$ を左辺から右辺に移したい。
+幸いにも、大変そうな逆行列の計算は重くない。
+置換行列に対しては、その転置が逆演算となる。
+
+コード上は、しなければならないことは既に馴染みのあるものだ。
+てできてないのは `torch_lu()` だけだ。
+`torch_lu()`は二つのテンソルのリストを返す。
+最初の要素は三つの行列 $\mathbf{P}$ 、 $\mathbf{L}$ 、 $\mathbf{U}$で、二つ目はピボットだ。
+`torch_lu_unpack()` で三つの行列に展開できる。
+
+```{r}
+lu <- torch_lu(AtA)
+plu <- torch_lu_unpack(lu[[1]], lu[[2]])
+names(plu) <- c("P", "L", "U")
+```
+
+$\mathbf{P}$ を右辺に移す。
+
+```{r}
+Atb <- plu$P$t()$matmul(Atb)
+```
+
+あとは、二つの三角行列を解けば完了する。
+
+```{r}
+y <- torch_triangular_solve(
+  Atb$unsqueeze(2),
+  plu$L,
+  upper = FALSE
+)[[1]]
+x <- torch_triangular_solve(y, plu$U)[[1]]
+
+all_preds$lu <- as.matrix(A$matmul(x))
+all_errs$lu <- rmse(all_preds$b, all_preds$lu)
+all_errs
+```
+
+コレスキー分解と同様に、`torch_triangular_solve()` を二回呼び出す手間を省ける。
+`torch_lu_solve()` は分解を取り、直接最終的な解を返す。
+
+```{r}
+lu <- torch_lu(AtA)
+x <- torch_lu_solve(Atb$unsqueeze(2), lu[[1]], lu[[2]])
+
+all_preds$lu2 <- as.matrix(A$matmul(x))
+all_errs$lu2 <- rmse(all_preds$b, all_preds$lu2)
+all_errs
+```
+
+次に、$\mathbf{A}^\mathrm{T}\mathbf{A}$ の計算が必要ない二つの方法を見る。
+
+
+### 最小二乗法 (VI): QR分解
+
+どんな行列も直交行列 $\mathbf{Q}$ と上三角行列 $\mathbf{R}$ に分解できる。
+QR分解は、最小二乗問題の解法としておそらく最もよく使われており、Rの `lm()` にも採用されている。
+どのようにして、問題を簡単にしているのか。
+
+$\mathbf{F}$ については、どのように便利かを既に述べた。
+三角行列により、代入だけで順に解くことができる連立方程式が得られる。
+$\mathbf{Q}$ はもっと便利である。
+直交行列は、列が直交するものを指す。
+これが意味するのは、相互内積が全て0で、ノルムが1であるということだ。
+そのため、こののような行列はその逆行列が転置に等しい。
+一般的には、逆行列は計算が困難である一方、転置は容易である。
+逆行列を計算し、 $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$ を解くことが最小二乗法の中心的な問題であることを考慮すると、その重要性は明らかだ。
+
+これまでの方法と比較して、手順は少し短くなる。
+ダミー変数 $\mathbf{y}$ はもう不要だ。
+代わりに $\mathbf{Q}$ を右辺に移し、転置（逆行列）を求める。
+残りは、後退代入だけだ。
+また、全ての行列に対してQR分解が存在するので、 $\mathbf{A}$ から直接始め、$\mathbf{A}\mathrm{T}\mathbf{A}$は不要だ。
+
+$$
+\begin{aligned}
+\mathbf{Ax} &= \mathbf{b}\\
+\mathbf{QRx} &= \mathbf{b}\\
+\mathbf{Rx} &= \mathbf{Q}^\mathrm{T}\mathbf{b}
+\end{aligned}
+$$
+
+`torch` では `linalg_qr()` が行列 $\mathbf{Q}$ と$\mathbf{R}$ を計算する。
+
+```{r}
+qr <- linalg_qr(A)
+names(qr) <- c("Q", "R")
+```
+
+右辺に $\mathbf{A}\mathrm{T}\mathbf{b}$ を格納した「便宜的な」変数を用いてきたがこの手順は省略でき、変わりに「すぐに役立つ」ことをする。
+つまり$\mathbf{Q}$ を右辺に移す。
+
+```{r}
+Qtb <- qr$Q$t()$matmul(b)
+```
+
+残りの手順は、三角行列を解くことだけだ。
+
+```{r}
+x <- torch_triangular_solve(Qtb$unsqueeze(2), qr$R)[[1]]
+
+all_preds$qr <- as.matrix(A$matmul(x))
+all_errs$qr <- rmse(all_preds$b, all_preds$qr)
+all_errs[1, -c(5,7)]
+```
+
+ここまで読んでくると、節の終わりに「専用の函数が `torch` / `torch_linalg` にある...」という記述を期待しているかもしれない。
+文字通りのものはないが、実質上はある。
+`linalg_lstsq()` を呼び出すときに `driver = "gels"` を渡すと、QR分解が使われる。
+
