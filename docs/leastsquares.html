@@ -321,11 +321,12 @@ window.Quarto = {
   <li><a href="#一休み-標準化しなかった場合" id="toc-一休み-標準化しなかった場合" class="nav-link" data-scroll-target="#一休み-標準化しなかった場合"><span class="header-section-number">13.2.3</span> 一休み: 標準化しなかった場合</a></li>
   <li><a href="#最小二乗法-iii-正規方程式" id="toc-最小二乗法-iii-正規方程式" class="nav-link" data-scroll-target="#最小二乗法-iii-正規方程式"><span class="header-section-number">13.2.4</span> 最小二乗法 (III): 正規方程式</a></li>
   <li><a href="#最小二乗法-iv-コレスキー分解" id="toc-最小二乗法-iv-コレスキー分解" class="nav-link" data-scroll-target="#最小二乗法-iv-コレスキー分解"><span class="header-section-number">13.2.5</span> 最小二乗法 (IV): コレスキー分解</a></li>
+  <li><a href="#最小二乗法-v-lu分解" id="toc-最小二乗法-v-lu分解" class="nav-link" data-scroll-target="#最小二乗法-v-lu分解"><span class="header-section-number">13.2.6</span> 最小二乗法 (V): LU分解</a></li>
+  <li><a href="#最小二乗法-vi-qr分解" id="toc-最小二乗法-vi-qr分解" class="nav-link" data-scroll-target="#最小二乗法-vi-qr分解"><span class="header-section-number">13.2.7</span> 最小二乗法 (VI): QR分解</a></li>
+  <li><a href="#最小二乗法-vii-特異値分解svd" id="toc-最小二乗法-vii-特異値分解svd" class="nav-link" data-scroll-target="#最小二乗法-vii-特異値分解svd"><span class="header-section-number">13.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</a></li>
+  <li><a href="#実行時間の比較" id="toc-実行時間の比較" class="nav-link" data-scroll-target="#実行時間の比較"><span class="header-section-number">13.2.9</span> 実行時間の比較</a></li>
   </ul></li>
-  <li><a href="#最小二乗法-v-lu分解" id="toc-最小二乗法-v-lu分解" class="nav-link" data-scroll-target="#最小二乗法-v-lu分解"><span class="header-section-number">13.3</span> 最小二乗法 (V): LU分解</a>
-  <ul class="collapse">
-  <li><a href="#最小二乗法-vi-qr分解" id="toc-最小二乗法-vi-qr分解" class="nav-link" data-scroll-target="#最小二乗法-vi-qr分解"><span class="header-section-number">13.3.1</span> 最小二乗法 (VI): QR分解</a></li>
-  </ul></li>
+  <li><a href="#簡単な数値安定性の確認" id="toc-簡単な数値安定性の確認" class="nav-link" data-scroll-target="#簡単な数値安定性の確認"><span class="header-section-number">13.3</span> 簡単な数値安定性の確認</a></li>
   </ul>
 </nav>
     </div>
@@ -584,7 +585,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="問題の調査" class="level4" data-number="13.2.3.1">
 <h4 data-number="13.2.3.1" class="anchored" data-anchor-id="問題の調査"><span class="header-section-number">13.2.3.1</span> 問題の調査</h4>
 <p>最小二乗問題を効率的に解くため、 <code>torch</code> はLAPACKというFortranのルーチン一式を呼んでいる。 LAPACKは効率的かつ規模の拡大に対応しつつ、線型代数においてよくある問題を解けるように設計されており、線型方程式の解や固有ベクトルと固有値、特異値を求めることができる。</p>
-<p><code>linalg_lstsqt()</code> で利用できる <code>driver</code> はLAPACKの異なる手続^1 に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。 これは、今後行っていくことに類似している。</p>
+<p><code>linalg_lstsqt()</code> で利用できる <code>driver</code> はLAPACKの異なる手続<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。 これは、今後行っていくことに類似している。</p>
 <p>つまり、何が起きているか調べるには、第一歩はどの手法がなぜ利用されたのか、（可能ならば）なぜ結果が満足いかないのか、代わりに使いたいLAPACKのルーチンを定め、実際に用いたときに何が起こるか確認することである。 （もちろん、わずかな手間がかかるだけなら、全ての方法を試せばよい。）</p>
 </section>
 <section id="概念i-行列の階数" class="level4" data-number="13.2.3.2">
@@ -858,9 +859,8 @@ x_3
 </div>
 <p>次の手法、つまり次の分解に進もう。</p>
 </section>
-</section>
-<section id="最小二乗法-v-lu分解" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="最小二乗法-v-lu分解"><span class="header-section-number">13.3</span> 最小二乗法 (V): LU分解</h2>
+<section id="最小二乗法-v-lu分解" class="level3" data-number="13.2.6">
+<h3 data-number="13.2.6" class="anchored" data-anchor-id="最小二乗法-v-lu分解"><span class="header-section-number">13.2.6</span> 最小二乗法 (V): LU分解</h3>
 <p>LU分解という名前は、分解により得られる二つの因子に由来している。 下三角行列 <span class="math inline">\(\mathbf{L}\)</span> と上三角行列 <span class="math inline">\(\mathbf{U}\)</span> である。 理論的には、LU分解に制約はない。 つまり、行の交換を許して、実質的に <span class="math inline">\(\mathbf{A} = \mathbf{LU}\)</span> を <span class="math inline">\(\mathbf{A} = \mathbf{PLU}\)</span> （ここで <span class="math inline">\(\mathbf{P}\)</span> は置換行列）とすれば、どんな行列も分解できる。</p>
 <p>実際には、 <code>torch_triangular_solve()</code> を使う場合は、入力する行列は対称でなければならない。 そのため、 <span class="math inline">\(\mathbf{A}\)</span> ではなく、 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うことになる。 （そのため、LU分解をコレスキーの直後に説明している。これらは使い方が似ているものの、考え方は全く異なる。）</p>
 <p><span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うということは、この方法も正規方程式から出発することを意味する。 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を分解し、二つの三角行列を解いて、最終的な解を得る。 ここで手順を示す。 常に必要とは限らない置換行列 <span class="math inline">\(\mathbf{P}\)</span> も含まれている。</p>
@@ -914,8 +914,9 @@ x_3
 </div>
 </div>
 <p>次に、<span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> の計算が必要ない二つの方法を見る。</p>
-<section id="最小二乗法-vi-qr分解" class="level3" data-number="13.3.1">
-<h3 data-number="13.3.1" class="anchored" data-anchor-id="最小二乗法-vi-qr分解"><span class="header-section-number">13.3.1</span> 最小二乗法 (VI): QR分解</h3>
+</section>
+<section id="最小二乗法-vi-qr分解" class="level3" data-number="13.2.7">
+<h3 data-number="13.2.7" class="anchored" data-anchor-id="最小二乗法-vi-qr分解"><span class="header-section-number">13.2.7</span> 最小二乗法 (VI): QR分解</h3>
 <p>どんな行列も直交行列 <span class="math inline">\(\mathbf{Q}\)</span> と上三角行列 <span class="math inline">\(\mathbf{R}\)</span> に分解できる。 QR分解は、最小二乗問題の解法としておそらく最もよく使われており、Rの <code>lm()</code> にも採用されている。 どのようにして、問題を簡単にしているのか。</p>
 <p><span class="math inline">\(\mathbf{F}\)</span> については、どのように便利かを既に述べた。 三角行列により、代入だけで順に解くことができる連立方程式が得られる。 <span class="math inline">\(\mathbf{Q}\)</span> はもっと便利である。 直交行列は、列が直交するものを指す。 これが意味するのは、相互内積が全て0で、ノルムが1であるということだ。 そのため、こののような行列はその逆行列が転置に等しい。 一般的には、逆行列は計算が困難である一方、転置は容易である。 逆行列を計算し、 <span class="math inline">\(\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}\)</span> を解くことが最小二乗法の中心的な問題であることを考慮すると、その重要性は明らかだ。</p>
 <p>これまでの方法と比較して、手順は少し短くなる。 ダミー変数 <span class="math inline">\(\mathbf{y}\)</span> はもう不要だ。 代わりに <span class="math inline">\(\mathbf{Q}\)</span> を右辺に移し、転置（逆行列）を求める。 残りは、後退代入だけだ。 また、全ての行列に対してQR分解が存在するので、 <span class="math inline">\(\mathbf{A}\)</span> から直接始め、<span class="math inline">\(\mathbf{A}\mathrm{T}\mathbf{A}\)</span>は不要だ。</p>
@@ -948,14 +949,371 @@ x_3
 </div>
 </div>
 <p>ここまで読んでくると、節の終わりに「専用の函数が <code>torch</code> / <code>torch_linalg</code> にある…」という記述を期待しているかもしれない。 文字通りのものはないが、実質上はある。 <code>linalg_lstsq()</code> を呼び出すときに <code>driver = "gels"</code> を渡すと、QR分解が使われる。</p>
+</section>
+<section id="最小二乗法-vii-特異値分解svd" class="level3" data-number="13.2.8">
+<h3 data-number="13.2.8" class="anchored" data-anchor-id="最小二乗法-vii-特異値分解svd"><span class="header-section-number">13.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</h3>
+<p>まさに、頂点に向かう順序で、最後に説明する分解手法は万能で、用途が広く、意味論において価値がある、特異値分解（SVD: singular value decomposition）である。 三つ目の側面は、興味深いものの、現在の問題に関係しないので省略する。 ここでは、汎用性が重要である。 全ての行列は、SVDの形式に分解して構成することができる。</p>
+<p>特異値分解は、入力 <span class="math inline">\(\mathbf{A}\)</span> を二つの直交行列 <span class="math inline">\(\mathbf{U}\)</span> と <span class="math inline">\(\mathbf{V}^\mathrm{T}\)</span> と対角行列 <span class="math inline">\(\boldsymbol{\Sigma}\)</span> に分解し、 <span class="math inline">\(\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\)</span> という形にする。 ここで、 <span class="math inline">\(\mathbf{U}\)</span> と <span class="math inline">\(\mathbf{V}^\mathrm{T}\)</span> は <em>左</em> と <em>右</em> 特異ベクトルであり、 <span class="math inline">\(\boldsymbol{\Sigma}\)</span> には特異値が格納されている。</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbf{Ax} &amp;= \mathbf{b}\\
+\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\mathbf{x} &amp;= \mathbf{b}\\
+\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\mathbf{x} &amp;= \mathbf{U}^\mathrm{T}\mathbf{b}\\
+\mathbf{V}^\mathrm{T}\mathbf{x} &amp;= \mathbf{y}
+\end{aligned}
+\]</span></p>
+<p>行列の分解を <code>linalg_svd()</code> を用いて求めることから始める。 引数 <code>full_matrices = FALSE</code> は <code>torch</code> に <span class="math inline">\(\mathbf{U}\)</span> が <span class="math inline">\(\mathbf{A}\)</span> と同じ次元であることを伝え、7588 x 7588に展開されるのを防ぐ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>svd <span class="ot">&lt;-</span> <span class="fu">linalg_svd</span>(A, <span class="at">full_matrices =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(svd) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"U"</span>, <span class="st">"S"</span>, <span class="st">"Vt"</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>U)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7588   21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>S)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>Vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21 21</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(\mathbf{U}\)</span>を右辺に移す。 これは <span class="math inline">\(\mathbf{U}\)</span> が直交行列なので軽い計算である。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>Utb <span class="ot">&lt;-</span> svd<span class="sc">$</span>U<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><span class="math inline">\(\mathbf{U}^\mathrm{T}\mathbf{b}\)</span> と <span class="math inline">\(\boldsymbol\Sigma\)</span> は同じ長さのベクトルなので、要素毎の積を使って <span class="math inline">\(\boldsymbol\Sigma\)</span>　を右辺に移すことができる。 一時変数 <code>y</code> に結果を保存する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>最後に残ったのは、方程式系 <span class="math inline">\(\mathbf{V}^\mathrm{T}\mathbf{x} = \mathbf{y}\)</span> を解くことだが、今回は行列 <span class="math inline">\(\mathbf{V}\)</span> に関して再び直交性が役立つ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>まとめに予測値と予測誤差を計算しよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>svd <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>svd <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>svd)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       lm   lstsq     neq    chol      lu      qr     svd
+1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
+</div>
+</div>
+<p>これで、重要な最小二乗アルゴリズムが一巡した。 この例の仕上げに、簡単に性能を見ておこう。</p>
+</section>
+<section id="実行時間の比較" class="level3" data-number="13.2.9">
+<h3 data-number="13.2.9" class="anchored" data-anchor-id="実行時間の比較"><span class="header-section-number">13.2.9</span> 実行時間の比較</h3>
+<p>既に述べたように、本章の主眼は概念であり、性能ではない。 しかしより大きなデータセットを扱い始めると、スピードが気になることは避けられない。 また、これらの手法がどのくらい速いか確認すること自体は、興味深い。 ということで、簡単な性能比較をしよう。 ただし、結果を外挿しないように。 扱うデータに対して、類似のコードを実行すること。</p>
+<p>時間計測のために各アルゴリズムを対応する函数にまとめる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>ls_normal_eq <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">linalg_inv</span>(AtA)<span class="sc">$</span><span class="fu">matmul</span>(A<span class="sc">$</span><span class="fu">t</span>())<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式にコレスキー分解（自作）</span></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="co"># A_t A x = A_t b</span></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="co"># L L_t x = A_t b</span></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="co"># L y = A_t b</span></span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a><span class="co"># L_t x = y</span></span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>ls_cholesky_diy <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>    Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>    L,</span>
+<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> <span class="cn">FALSE</span></span>
+<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a>  )[[<span class="dv">1</span>]]</span>
+<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, L<span class="sc">$</span><span class="fu">t</span>())[[<span class="dv">1</span>]]</span>
+<span id="cb69-23"><a href="#cb69-23" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-24"><a href="#cb69-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-25"><a href="#cb69-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-26"><a href="#cb69-26" aria-hidden="true" tabindex="-1"></a><span class="co"># torchのコレスキー分解</span></span>
+<span id="cb69-27"><a href="#cb69-27" aria-hidden="true" tabindex="-1"></a>ls_cholesky_solve <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-28"><a href="#cb69-28" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb69-29"><a href="#cb69-29" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-30"><a href="#cb69-30" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span>
+<span id="cb69-31"><a href="#cb69-31" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_cholesky_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), L)</span>
+<span id="cb69-32"><a href="#cb69-32" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-33"><a href="#cb69-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-34"><a href="#cb69-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-35"><a href="#cb69-35" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式にLU分解（自作）</span></span>
+<span id="cb69-36"><a href="#cb69-36" aria-hidden="true" tabindex="-1"></a><span class="co"># A_t A x = A_t b</span></span>
+<span id="cb69-37"><a href="#cb69-37" aria-hidden="true" tabindex="-1"></a><span class="co"># P L U x = A_t b</span></span>
+<span id="cb69-38"><a href="#cb69-38" aria-hidden="true" tabindex="-1"></a><span class="co"># L y = P_t A_t b</span></span>
+<span id="cb69-39"><a href="#cb69-39" aria-hidden="true" tabindex="-1"></a><span class="co"># U x = y</span></span>
+<span id="cb69-40"><a href="#cb69-40" aria-hidden="true" tabindex="-1"></a>ls_lu_diy <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-41"><a href="#cb69-41" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb69-42"><a href="#cb69-42" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-43"><a href="#cb69-43" aria-hidden="true" tabindex="-1"></a>  lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb69-44"><a href="#cb69-44" aria-hidden="true" tabindex="-1"></a>  plu <span class="ot">&lt;-</span> <span class="fu">torch_lu_unpack</span>(lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb69-45"><a href="#cb69-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(plu) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>, <span class="st">"L"</span>, <span class="st">"U"</span>)</span>
+<span id="cb69-46"><a href="#cb69-46" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> plu<span class="sc">$</span>P<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span>
+<span id="cb69-47"><a href="#cb69-47" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<span id="cb69-48"><a href="#cb69-48" aria-hidden="true" tabindex="-1"></a>    Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
+<span id="cb69-49"><a href="#cb69-49" aria-hidden="true" tabindex="-1"></a>    plu<span class="sc">$</span>L,</span>
+<span id="cb69-50"><a href="#cb69-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> <span class="cn">FALSE</span></span>
+<span id="cb69-51"><a href="#cb69-51" aria-hidden="true" tabindex="-1"></a>  )[[<span class="dv">1</span>]]</span>
+<span id="cb69-52"><a href="#cb69-52" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, plu<span class="sc">$</span>U)[[<span class="dv">1</span>]]</span>
+<span id="cb69-53"><a href="#cb69-53" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-54"><a href="#cb69-54" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-55"><a href="#cb69-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-56"><a href="#cb69-56" aria-hidden="true" tabindex="-1"></a><span class="co"># torchのLU分解</span></span>
+<span id="cb69-57"><a href="#cb69-57" aria-hidden="true" tabindex="-1"></a>ls_lu_solve <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-58"><a href="#cb69-58" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb69-59"><a href="#cb69-59" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-60"><a href="#cb69-60" aria-hidden="true" tabindex="-1"></a>  lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb69-61"><a href="#cb69-61" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_lu_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb69-62"><a href="#cb69-62" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-63"><a href="#cb69-63" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-64"><a href="#cb69-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-65"><a href="#cb69-65" aria-hidden="true" tabindex="-1"></a><span class="co"># QR分解</span></span>
+<span id="cb69-66"><a href="#cb69-66" aria-hidden="true" tabindex="-1"></a><span class="co"># A x = b</span></span>
+<span id="cb69-67"><a href="#cb69-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Q R x = b</span></span>
+<span id="cb69-68"><a href="#cb69-68" aria-hidden="true" tabindex="-1"></a><span class="co"># R x = Q_t b</span></span>
+<span id="cb69-69"><a href="#cb69-69" aria-hidden="true" tabindex="-1"></a>ls_qr <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-70"><a href="#cb69-70" aria-hidden="true" tabindex="-1"></a>  qr <span class="ot">&lt;-</span> <span class="fu">linalg_qr</span>(A)</span>
+<span id="cb69-71"><a href="#cb69-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(qr) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Q"</span>, <span class="st">"R"</span>)</span>
+<span id="cb69-72"><a href="#cb69-72" aria-hidden="true" tabindex="-1"></a>  Qtb <span class="ot">&lt;-</span> qr<span class="sc">$</span>Q<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-73"><a href="#cb69-73" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(Qtb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), qr<span class="sc">$</span>R)[[<span class="dv">1</span>]]</span>
+<span id="cb69-74"><a href="#cb69-74" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-75"><a href="#cb69-75" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-76"><a href="#cb69-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-77"><a href="#cb69-77" aria-hidden="true" tabindex="-1"></a><span class="co"># SVD</span></span>
+<span id="cb69-78"><a href="#cb69-78" aria-hidden="true" tabindex="-1"></a><span class="co"># A x = b</span></span>
+<span id="cb69-79"><a href="#cb69-79" aria-hidden="true" tabindex="-1"></a><span class="co"># U S V_t x = b</span></span>
+<span id="cb69-80"><a href="#cb69-80" aria-hidden="true" tabindex="-1"></a><span class="co"># S V_t x = U_t b</span></span>
+<span id="cb69-81"><a href="#cb69-81" aria-hidden="true" tabindex="-1"></a><span class="co"># S y = U_t b</span></span>
+<span id="cb69-82"><a href="#cb69-82" aria-hidden="true" tabindex="-1"></a><span class="co"># V_t x = y</span></span>
+<span id="cb69-83"><a href="#cb69-83" aria-hidden="true" tabindex="-1"></a>ls_svd <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb69-84"><a href="#cb69-84" aria-hidden="true" tabindex="-1"></a>  svd <span class="ot">&lt;-</span> <span class="fu">linalg_svd</span>(A, <span class="at">full_matrices =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb69-85"><a href="#cb69-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(svd) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"U"</span>, <span class="st">"S"</span>, <span class="st">"Vt"</span>)</span>
+<span id="cb69-86"><a href="#cb69-86" aria-hidden="true" tabindex="-1"></a>  Utb <span class="ot">&lt;-</span> svd<span class="sc">$</span>U<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb69-87"><a href="#cb69-87" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span>
+<span id="cb69-88"><a href="#cb69-88" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span>
+<span id="cb69-89"><a href="#cb69-89" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb69-90"><a href="#cb69-90" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>mircrobenchmark</code> バッケージを使って、これらの手法を計測する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_manual_seed</span>(<span class="dv">777</span>)</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">microbenchmark</span>(</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_normal_eq</span>(A, b),</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_cholesky_diy</span>(A, b),</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_cholesky_solve</span>(A, b),</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_lu_diy</span>(A, b),</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_lu_solve</span>(A, b),</span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_qr</span>(A, b),</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls_svd</span>(A, b),</span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">linalg_lstsq</span>(A, b),</span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">1000</span>,</span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="st">"ms"</span></span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in microbenchmark(ls_normal_eq(A, b), ls_cholesky_diy(A, b),
+ls_cholesky_solve(A, : less accurate nanosecond times to avoid potential
+integer overflows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>ylabs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NE"</span>, <span class="st">"CHD"</span>, <span class="st">"CHS"</span>, <span class="st">"LUD"</span>, <span class="st">"LUS"</span>, <span class="st">"QR"</span>, <span class="st">"SVD"</span>, <span class="st">"LST"</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(res, <span class="at">unit =</span> <span class="st">"us"</span>, <span class="at">horizontal =</span> <span class="cn">TRUE</span>, <span class="at">xlab =</span> <span class="st">"method"</span>,</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Least Squares Benchmark"</span>, <span class="at">yaxt =</span> <span class="st">"n"</span>)</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side =</span> <span class="dv">2</span>, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(ylabs), <span class="at">labels =</span> ylabs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="leastsquares_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>結論として、様々な方法で行列を分解することが、最小二乗問題を解くために役立つことが分かった。 また、これらの手法の時間を計測する方法を簡単に示したが、スピードだけが重要ではない。 同時に、解が信頼できるものであることも望まれる。 これを専門用語では <em>数値安定性</em> と呼ぶ。</p>
+</section>
+</section>
+<section id="簡単な数値安定性の確認" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="簡単な数値安定性の確認"><span class="header-section-number">13.3</span> 簡単な数値安定性の確認</h2>
+<p>既に条件数について議論した。 数値安定性の概念は、考え方としては類似しているが、行列ではなくアルゴリズムを参照している。 どちらの場合も、考え方は入力における微小な変化は出力においても微小であるべきだというものだ。 この話題について一冊全体割いた本がいくつもあるので、詳細に立ち入ることは避ける。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>代わりに、悪条件な最小二乗問題の例を用いる。 つまり、行列が悪条件となっている。 この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>予測変数の行列は、悪条件になるように作られた100 x 15のファンデルモンド行列である。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_manual_seed</span>(<span class="dv">777</span>)</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_linspace</span>(<span class="dv">0</span>, <span class="dv">1</span>, m)<span class="sc">$</span><span class="fu">to</span>(<span class="at">dtype =</span> <span class="fu">torch_double</span>())</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">torch_vander</span>(t, <span class="at">N =</span> n, <span class="at">increasing =</span> <span class="cn">TRUE</span>)<span class="sc">$</span><span class="fu">to</span>(</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">dtype =</span> <span class="fu">torch_double</span>()</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>条件数はとても大きい。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+2.27178e+10
+[ CPUDoubleType{} ]</code></pre>
+</div>
+</div>
+<p>次に、予測対象を作成する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">torch_exp</span>(<span class="fu">torch_sin</span>(<span class="dv">4</span> <span class="sc">*</span> t))</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> b <span class="sc">/</span> <span class="fl">2006.787453080206</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>上記の最小二乗問題では全ての手法で同じRMSEを得た。 今回の問題では興味深いことが起きる。 以前に示したもののうち、「自作」函数だけに絞る。 便宜上、再掲する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>ls_normal_eq <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">linalg_inv</span>(AtA)<span class="sc">$</span><span class="fu">matmul</span>(A<span class="sc">$</span><span class="fu">t</span>())<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式にコレスキー分解（自作）</span></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="co"># A_t A x = A_t b</span></span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a><span class="co"># L L_t x = A_t b</span></span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a><span class="co"># L y = A_t b</span></span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a><span class="co"># L_t x = y</span></span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>ls_cholesky_diy <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 単位行列に微小な係数を掛けて</span></span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 数値不安定に対処する。</span></span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># コレスキー分解が失敗する場合はepsを大きくする。</span></span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>  eps <span class="ot">&lt;-</span> <span class="fl">1e-10</span></span>
+<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>  id <span class="ot">&lt;-</span> eps <span class="sc">*</span> <span class="fu">torch_diag</span>(<span class="fu">torch_ones</span>(<span class="fu">dim</span>(A)[<span class="dv">2</span>]))</span>
+<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A) <span class="sc">+</span> id</span>
+<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-21"><a href="#cb77-21" aria-hidden="true" tabindex="-1"></a>  L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span>
+<span id="cb77-22"><a href="#cb77-22" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<span id="cb77-23"><a href="#cb77-23" aria-hidden="true" tabindex="-1"></a>    Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
+<span id="cb77-24"><a href="#cb77-24" aria-hidden="true" tabindex="-1"></a>    L,</span>
+<span id="cb77-25"><a href="#cb77-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> <span class="cn">FALSE</span></span>
+<span id="cb77-26"><a href="#cb77-26" aria-hidden="true" tabindex="-1"></a>  )[[<span class="dv">1</span>]]</span>
+<span id="cb77-27"><a href="#cb77-27" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, L<span class="sc">$</span><span class="fu">t</span>())[[<span class="dv">1</span>]]</span>
+<span id="cb77-28"><a href="#cb77-28" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-29"><a href="#cb77-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-30"><a href="#cb77-30" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式にLU分解（自作）</span></span>
+<span id="cb77-31"><a href="#cb77-31" aria-hidden="true" tabindex="-1"></a><span class="co"># A_t A x = A_t b</span></span>
+<span id="cb77-32"><a href="#cb77-32" aria-hidden="true" tabindex="-1"></a><span class="co"># P L U x = A_t b</span></span>
+<span id="cb77-33"><a href="#cb77-33" aria-hidden="true" tabindex="-1"></a><span class="co"># L y = P_t A_t b</span></span>
+<span id="cb77-34"><a href="#cb77-34" aria-hidden="true" tabindex="-1"></a><span class="co"># U x = y</span></span>
+<span id="cb77-35"><a href="#cb77-35" aria-hidden="true" tabindex="-1"></a>ls_lu_diy <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-36"><a href="#cb77-36" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb77-37"><a href="#cb77-37" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-38"><a href="#cb77-38" aria-hidden="true" tabindex="-1"></a>  lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb77-39"><a href="#cb77-39" aria-hidden="true" tabindex="-1"></a>  plu <span class="ot">&lt;-</span> <span class="fu">torch_lu_unpack</span>(lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb77-40"><a href="#cb77-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(plu) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>, <span class="st">"L"</span>, <span class="st">"U"</span>)</span>
+<span id="cb77-41"><a href="#cb77-41" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> plu<span class="sc">$</span>P<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span>
+<span id="cb77-42"><a href="#cb77-42" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<span id="cb77-43"><a href="#cb77-43" aria-hidden="true" tabindex="-1"></a>    Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
+<span id="cb77-44"><a href="#cb77-44" aria-hidden="true" tabindex="-1"></a>    plu<span class="sc">$</span>L,</span>
+<span id="cb77-45"><a href="#cb77-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> <span class="cn">FALSE</span></span>
+<span id="cb77-46"><a href="#cb77-46" aria-hidden="true" tabindex="-1"></a>  )[[<span class="dv">1</span>]]</span>
+<span id="cb77-47"><a href="#cb77-47" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, plu<span class="sc">$</span>U)[[<span class="dv">1</span>]]</span>
+<span id="cb77-48"><a href="#cb77-48" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-49"><a href="#cb77-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-50"><a href="#cb77-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-51"><a href="#cb77-51" aria-hidden="true" tabindex="-1"></a><span class="co"># torchのLU分解</span></span>
+<span id="cb77-52"><a href="#cb77-52" aria-hidden="true" tabindex="-1"></a>ls_lu_solve <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-53"><a href="#cb77-53" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<span id="cb77-54"><a href="#cb77-54" aria-hidden="true" tabindex="-1"></a>  Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-55"><a href="#cb77-55" aria-hidden="true" tabindex="-1"></a>  lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<span id="cb77-56"><a href="#cb77-56" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_lu_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
+<span id="cb77-57"><a href="#cb77-57" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-58"><a href="#cb77-58" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-59"><a href="#cb77-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-60"><a href="#cb77-60" aria-hidden="true" tabindex="-1"></a><span class="co"># QR分解</span></span>
+<span id="cb77-61"><a href="#cb77-61" aria-hidden="true" tabindex="-1"></a><span class="co"># A x = b</span></span>
+<span id="cb77-62"><a href="#cb77-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Q R x = b</span></span>
+<span id="cb77-63"><a href="#cb77-63" aria-hidden="true" tabindex="-1"></a><span class="co"># R x = Q_t b</span></span>
+<span id="cb77-64"><a href="#cb77-64" aria-hidden="true" tabindex="-1"></a>ls_qr <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-65"><a href="#cb77-65" aria-hidden="true" tabindex="-1"></a>  qr <span class="ot">&lt;-</span> <span class="fu">linalg_qr</span>(A)</span>
+<span id="cb77-66"><a href="#cb77-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(qr) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Q"</span>, <span class="st">"R"</span>)</span>
+<span id="cb77-67"><a href="#cb77-67" aria-hidden="true" tabindex="-1"></a>  Qtb <span class="ot">&lt;-</span> qr<span class="sc">$</span>Q<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-68"><a href="#cb77-68" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(Qtb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), qr<span class="sc">$</span>R)[[<span class="dv">1</span>]]</span>
+<span id="cb77-69"><a href="#cb77-69" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-70"><a href="#cb77-70" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-71"><a href="#cb77-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-72"><a href="#cb77-72" aria-hidden="true" tabindex="-1"></a><span class="co"># SVD</span></span>
+<span id="cb77-73"><a href="#cb77-73" aria-hidden="true" tabindex="-1"></a><span class="co"># A x = b</span></span>
+<span id="cb77-74"><a href="#cb77-74" aria-hidden="true" tabindex="-1"></a><span class="co"># U S V_t x = b</span></span>
+<span id="cb77-75"><a href="#cb77-75" aria-hidden="true" tabindex="-1"></a><span class="co"># S V_t x = U_t b</span></span>
+<span id="cb77-76"><a href="#cb77-76" aria-hidden="true" tabindex="-1"></a><span class="co"># S y = U_t b</span></span>
+<span id="cb77-77"><a href="#cb77-77" aria-hidden="true" tabindex="-1"></a><span class="co"># V_t x = y</span></span>
+<span id="cb77-78"><a href="#cb77-78" aria-hidden="true" tabindex="-1"></a>ls_svd <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
+<span id="cb77-79"><a href="#cb77-79" aria-hidden="true" tabindex="-1"></a>  svd <span class="ot">&lt;-</span> <span class="fu">linalg_svd</span>(A, <span class="at">full_matrices =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb77-80"><a href="#cb77-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(svd) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"U"</span>, <span class="st">"S"</span>, <span class="st">"Vt"</span>)</span>
+<span id="cb77-81"><a href="#cb77-81" aria-hidden="true" tabindex="-1"></a>  Utb <span class="ot">&lt;-</span> svd<span class="sc">$</span>U<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<span id="cb77-82"><a href="#cb77-82" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span>
+<span id="cb77-83"><a href="#cb77-83" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span>
+<span id="cb77-84"><a href="#cb77-84" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb77-85"><a href="#cb77-85" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>それでは実行してみよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>algorithms <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_normal_eq"</span>,</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_cholesky_diy"</span>,</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_lu_diy"</span>,</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_qr"</span>,</span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_svd"</span></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>rmses <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>  algorithms,</span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(m) {</span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rmse</span>(</span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(b),</span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(A<span class="sc">$</span><span class="fu">matmul</span>(<span class="fu">get</span>(m)(A, b)))</span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>rmse_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">algorithm =</span> algorithms,</span>
+<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">rmse =</span> <span class="fu">unlist</span>(rmses)</span>
+<span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>rmse_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        algorithm         rmse
+1    ls_normal_eq 4.730447e-04
+2 ls_cholesky_diy 3.013914e-06
+3       ls_lu_diy 1.170186e-07
+4           ls_qr 3.436748e-08
+5          ls_svd 3.436749e-08</code></pre>
+</div>
+</div>
+<p>これはかなり興味深い！ 正規方程式は簡単だが、問題が良条件でなくなった場合には良い選択ではないかもしれないことが明らかだ。 コレスキーもLU分解もかなり改善されているが、明らかな「勝者」はQR分解とSVDだ。 これら二つ（とそれぞれの派生型）が <code>linalg_lstsq()</code> で使われているのは当然だ。</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-Cho-etal:2020" class="csl-entry" role="listitem">
 Cho, D., C. Yoo, J. Im, and D.-H. Cha, 2020: Comparative assessment ofvarious machine learning-based bias correction methods for numerical weather prediction model forecasts of extreme air temperatures in urban areas. <em>Earth and Space Science</em>, <strong>7</strong>, e2019EA000740, <a href="https://doi.org/10.1029/2019EA000740">https://doi.org/10.1029/2019EA000740</a>.
 </div>
+<div id="ref-Trefethen" class="csl-entry" role="listitem">
+Trefethen, L. N., and D. Bau, 1997: <em>Numerical linear algebra</em>. SIAM,.
+</div>
 </div>
 </section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>上で引用した <code>driver</code> の説明は、基本的にLAPACKの<a href="https://netlib.org/lapack/lug/node27.html">説明書</a> からの抜粋である。 問題のページは便利のため <code>linalg_lstsq()</code> の説明からリンクされているので、これを確認することは容易だ。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>詳しくは、そのような本の一つ、例えば、広く使われ（かつ簡明な） <span class="citation" data-cites="Trefethen">Trefethen and Bau (<a href="references.html#ref-Trefethen" role="doc-biblioref">1997</a>)</span> の記述を参照。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>この例は上の脚注にある <span class="citation" data-cites="Trefethen">Trefethen and Bau (<a href="references.html#ref-Trefethen" role="doc-biblioref">1997</a>)</span> の本から取った。<a href="https://github.com/fastai/numerical-linear-algebra">Computational Linear Algebra for Code</a> （プログラマのための数値線型代数）の講義資料を通じて、この例を教えてくれたRachel Thomasに感謝する。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->

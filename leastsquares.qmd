@@ -204,8 +204,11 @@ all_errs_alt
 最小二乗問題を効率的に解くため、 `torch` はLAPACKというFortranのルーチン一式を呼んでいる。
 LAPACKは効率的かつ規模の拡大に対応しつつ、線型代数においてよくある問題を解けるように設計されており、線型方程式の解や固有ベクトルと固有値、特異値を求めることができる。
 
-`linalg_lstsqt()` で利用できる `driver` はLAPACKの異なる手続^1 に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。
+`linalg_lstsqt()` で利用できる `driver` はLAPACKの異なる手続[^1]に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。
 これは、今後行っていくことに類似している。
+
+[^1]: 上で引用した `driver` の説明は、基本的にLAPACKの[説明書](https://netlib.org/lapack/lug/node27.html) からの抜粋である。
+問題のページは便利のため `linalg_lstsq()` の説明からリンクされているので、これを確認することは容易だ。
 
 つまり、何が起きているか調べるには、第一歩はどの手法がなぜ利用されたのか、（可能ならば）なぜ結果が満足いかないのか、代わりに使いたいLAPACKのルーチンを定め、実際に用いたときに何が起こるか確認することである。
 （もちろん、わずかな手間がかかるだけなら、全ての方法を試せばよい。）
@@ -556,7 +559,7 @@ all_errs
 
 次の手法、つまり次の分解に進もう。
 
-## 最小二乗法 (V): LU分解
+### 最小二乗法 (V): LU分解
 
 LU分解という名前は、分解により得られる二つの因子に由来している。
 下三角行列 $\mathbf{L}$ と上三角行列 $\mathbf{U}$ である。
@@ -691,3 +694,372 @@ all_errs[1, -c(5,7)]
 文字通りのものはないが、実質上はある。
 `linalg_lstsq()` を呼び出すときに `driver = "gels"` を渡すと、QR分解が使われる。
 
+### 最小二乗法 (VII): 特異値分解（SVD）
+
+まさに、頂点に向かう順序で、最後に説明する分解手法は万能で、用途が広く、意味論において価値がある、特異値分解（SVD: singular value decomposition）である。
+三つ目の側面は、興味深いものの、現在の問題に関係しないので省略する。
+ここでは、汎用性が重要である。
+全ての行列は、SVDの形式に分解して構成することができる。
+
+特異値分解は、入力 $\mathbf{A}$ を二つの直交行列 $\mathbf{U}$ と $\mathbf{V}^\mathrm{T}$ と対角行列 $\boldsymbol{\Sigma}$ に分解し、 $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}$ という形にする。
+ここで、  $\mathbf{U}$ と $\mathbf{V}^\mathrm{T}$ は *左* と *右* 特異ベクトルであり、 $\boldsymbol{\Sigma}$ には特異値が格納されている。
+
+$$
+\begin{aligned}
+\mathbf{Ax} &= \mathbf{b}\\
+\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\mathbf{x} &= \mathbf{b}\\
+\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\mathbf{x} &= \mathbf{U}^\mathrm{T}\mathbf{b}\\
+\mathbf{V}^\mathrm{T}\mathbf{x} &= \mathbf{y}
+\end{aligned}
+$$
+
+行列の分解を `linalg_svd()` を用いて求めることから始める。
+引数 `full_matrices = FALSE` は `torch` に $\mathbf{U}$ が $\mathbf{A}$ と同じ次元であることを伝え、7588 x 7588に展開されるのを防ぐ。
+
+```{r}
+svd <- linalg_svd(A, full_matrices = FALSE)
+names(svd) <- c("U", "S", "Vt")
+
+dim(svd$U)
+dim(svd$S)
+dim(svd$Vt)
+```
+
+$\mathbf{U}$を右辺に移す。
+これは $\mathbf{U}$ が直交行列なので軽い計算である。
+
+```{r}
+Utb <- svd$U$t()$matmul(b)
+```
+
+$\mathbf{U}^\mathrm{T}\mathbf{b}$ と $\boldsymbol\Sigma$ は同じ長さのベクトルなので、要素毎の積を使って $\boldsymbol\Sigma$　を右辺に移すことができる。
+一時変数 `y` に結果を保存する。
+
+```{r}
+y <- Utb / svd$S
+```
+
+最後に残ったのは、方程式系 $\mathbf{V}^\mathrm{T}\mathbf{x} = \mathbf{y}$ を解くことだが、今回は行列 $\mathbf{V}$ に関して再び直交性が役立つ。
+
+```{r}
+x <- svd$Vt$t()$matmul(y)
+```
+
+まとめに予測値と予測誤差を計算しよう。
+
+```{r}
+all_preds$svd <- as.matrix(A$matmul(x))
+all_errs$svd <- rmse(all_preds$b, all_preds$svd)
+
+all_errs[1, -c(5,7)]
+```
+
+これで、重要な最小二乗アルゴリズムが一巡した。
+この例の仕上げに、簡単に性能を見ておこう。
+
+### 実行時間の比較
+
+既に述べたように、本章の主眼は概念であり、性能ではない。
+しかしより大きなデータセットを扱い始めると、スピードが気になることは避けられない。
+また、これらの手法がどのくらい速いか確認すること自体は、興味深い。
+ということで、簡単な性能比較をしよう。
+ただし、結果を外挿しないように。
+扱うデータに対して、類似のコードを実行すること。
+
+時間計測のために各アルゴリズムを対応する函数にまとめる。
+
+```{r}
+# 正規方程式
+ls_normal_eq <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  x <- linalg_inv(AtA)$matmul(A$t())$matmul(b)
+  x
+}
+
+# 正規方程式にコレスキー分解（自作）
+# A_t A x = A_t b
+# L L_t x = A_t b
+# L y = A_t b
+# L_t x = y
+ls_cholesky_diy <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  L <- linalg_cholesky(AtA)
+  y <- torch_triangular_solve(
+    Atb$unsqueeze(2),
+    L,
+    upper = FALSE
+  )[[1]]
+  x <- torch_triangular_solve(y, L$t())[[1]]
+  x
+}
+
+# torchのコレスキー分解
+ls_cholesky_solve <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  L <- linalg_cholesky(AtA)
+  x <- torch_cholesky_solve(Atb$unsqueeze(2), L)
+  x
+}
+
+# 正規方程式にLU分解（自作）
+# A_t A x = A_t b
+# P L U x = A_t b
+# L y = P_t A_t b
+# U x = y
+ls_lu_diy <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  lu <- torch_lu(AtA)
+  plu <- torch_lu_unpack(lu[[1]], lu[[2]])
+  names(plu) <- c("P", "L", "U")
+  Atb <- plu$P$t()$matmul(Atb)
+  y <- torch_triangular_solve(
+    Atb$unsqueeze(2),
+    plu$L,
+    upper = FALSE
+  )[[1]]
+  x <- torch_triangular_solve(y, plu$U)[[1]]
+  x
+}
+
+# torchのLU分解
+ls_lu_solve <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  lu <- torch_lu(AtA)
+  x <- torch_lu_solve(Atb$unsqueeze(2), lu[[1]], lu[[2]])
+  x
+}
+
+# QR分解
+# A x = b
+# Q R x = b
+# R x = Q_t b
+ls_qr <- function(A, b) {
+  qr <- linalg_qr(A)
+  names(qr) <- c("Q", "R")
+  Qtb <- qr$Q$t()$matmul(b)
+  x <- torch_triangular_solve(Qtb$unsqueeze(2), qr$R)[[1]]
+  x
+}
+
+# SVD
+# A x = b
+# U S V_t x = b
+# S V_t x = U_t b
+# S y = U_t b
+# V_t x = y
+ls_svd <- function(A, b) {
+  svd <- linalg_svd(A, full_matrices = FALSE)
+  names(svd) <- c("U", "S", "Vt")
+  Utb <- svd$U$t()$matmul(b)
+  y <- Utb / svd$S
+  x <- svd$Vt$t()$matmul(y)
+  x
+}
+```
+
+`mircrobenchmark` バッケージを使って、これらの手法を計測する。
+
+```{r}
+library(microbenchmark)
+
+set.seed(777)
+torch_manual_seed(777)
+
+res <- microbenchmark(
+  ls_normal_eq(A, b),
+  ls_cholesky_diy(A, b),
+  ls_cholesky_solve(A, b),
+  ls_lu_diy(A, b),
+  ls_lu_solve(A, b),
+  ls_qr(A, b),
+  ls_svd(A, b),
+  linalg_lstsq(A, b),
+  times = 1000,
+  unit = "ms"
+)
+
+ylabs <- c("NE", "CHD", "CHS", "LUD", "LUS", "QR", "SVD", "LST")
+
+boxplot(res, unit = "us", horizontal = TRUE, xlab = "method",
+     main = "Least Squares Benchmark", yaxt = "n")
+axis(side = 2, las = 2, at = 1:length(ylabs), labels = ylabs)
+```
+
+結論として、様々な方法で行列を分解することが、最小二乗問題を解くために役立つことが分かった。
+また、これらの手法の時間を計測する方法を簡単に示したが、スピードだけが重要ではない。
+同時に、解が信頼できるものであることも望まれる。
+これを専門用語では *数値安定性* と呼ぶ。
+
+## 簡単な数値安定性の確認
+
+既に条件数について議論した。
+数値安定性の概念は、考え方としては類似しているが、行列ではなくアルゴリズムを参照している。
+どちらの場合も、考え方は入力における微小な変化は出力においても微小であるべきだというものだ。
+この話題について一冊全体割いた本がいくつもあるので、詳細に立ち入ることは避ける。[^2]
+
+[^2]: 詳しくは、そのような本の一つ、例えば、広く使われ（かつ簡明な） @Trefethen の記述を参照。
+
+代わりに、悪条件な最小二乗問題の例を用いる。
+つまり、行列が悪条件となっている。
+この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。[^3]
+
+[^3]: この例は上の脚注にある @Trefethen の本から取った。[Computational Linear Algebra for Code](https://github.com/fastai/numerical-linear-algebra) （プログラマのための数値線型代数）の講義資料を通じて、この例を教えてくれたRachel Thomasに感謝する。
+
+予測変数の行列は、悪条件になるように作られた100 x 15のファンデルモンド行列である。
+
+```{r}
+set.seed(777)
+torch_manual_seed(777)
+
+m <- 100
+n <- 15
+t <- torch_linspace(0, 1, m)$to(dtype = torch_double())
+
+A <- torch_vander(t, N = n, increasing = TRUE)$to(
+  dtype = torch_double()
+)
+```
+
+条件数はとても大きい。
+
+```{r}
+linalg_cond(A)
+```
+
+次に、予測対象を作成する。
+ 
+```{r}
+b <- torch_exp(torch_sin(4 * t))
+b <- b / 2006.787453080206
+```
+
+上記の最小二乗問題では全ての手法で同じRMSEを得た。
+今回の問題では興味深いことが起きる。
+以前に示したもののうち、「自作」函数だけに絞る。
+便宜上、再掲する。
+
+```{r}
+# 正規方程式
+ls_normal_eq <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  x <- linalg_inv(AtA)$matmul(A$t())$matmul(b)
+  x
+}
+
+# 正規方程式にコレスキー分解（自作）
+# A_t A x = A_t b
+# L L_t x = A_t b
+# L y = A_t b
+# L_t x = y
+ls_cholesky_diy <- function(A, b) {
+  # 単位行列に微小な係数を掛けて
+  # 数値不安定に対処する。
+  # コレスキー分解が失敗する場合はepsを大きくする。
+  eps <- 1e-10
+  id <- eps * torch_diag(torch_ones(dim(A)[2]))
+  AtA <- A$t()$matmul(A) + id
+  Atb <- A$t()$matmul(b)
+  L <- linalg_cholesky(AtA)
+  y <- torch_triangular_solve(
+    Atb$unsqueeze(2),
+    L,
+    upper = FALSE
+  )[[1]]
+  x <- torch_triangular_solve(y, L$t())[[1]]
+  x
+}
+# 正規方程式にLU分解（自作）
+# A_t A x = A_t b
+# P L U x = A_t b
+# L y = P_t A_t b
+# U x = y
+ls_lu_diy <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  lu <- torch_lu(AtA)
+  plu <- torch_lu_unpack(lu[[1]], lu[[2]])
+  names(plu) <- c("P", "L", "U")
+  Atb <- plu$P$t()$matmul(Atb)
+  y <- torch_triangular_solve(
+    Atb$unsqueeze(2),
+    plu$L,
+    upper = FALSE
+  )[[1]]
+  x <- torch_triangular_solve(y, plu$U)[[1]]
+  x
+}
+
+# torchのLU分解
+ls_lu_solve <- function(A, b) {
+  AtA <- A$t()$matmul(A)
+  Atb <- A$t()$matmul(b)
+  lu <- torch_lu(AtA)
+  x <- torch_lu_solve(Atb$unsqueeze(2), lu[[1]], lu[[2]])
+  x
+}
+
+# QR分解
+# A x = b
+# Q R x = b
+# R x = Q_t b
+ls_qr <- function(A, b) {
+  qr <- linalg_qr(A)
+  names(qr) <- c("Q", "R")
+  Qtb <- qr$Q$t()$matmul(b)
+  x <- torch_triangular_solve(Qtb$unsqueeze(2), qr$R)[[1]]
+  x
+}
+
+# SVD
+# A x = b
+# U S V_t x = b
+# S V_t x = U_t b
+# S y = U_t b
+# V_t x = y
+ls_svd <- function(A, b) {
+  svd <- linalg_svd(A, full_matrices = FALSE)
+  names(svd) <- c("U", "S", "Vt")
+  Utb <- svd$U$t()$matmul(b)
+  y <- Utb / svd$S
+  x <- svd$Vt$t()$matmul(y)
+  x
+}
+```
+
+それでは実行してみよう。
+
+```{r}
+algorithms <- c(
+  "ls_normal_eq",
+  "ls_cholesky_diy",
+  "ls_lu_diy",
+  "ls_qr",
+  "ls_svd"
+)
+
+rmses <- lapply(
+  algorithms,
+  function(m) {
+    rmse(
+      as.numeric(b),
+      as.numeric(A$matmul(get(m)(A, b)))
+    )
+  }
+)
+
+rmse_df <- data.frame(
+  algorithm = algorithms,
+  rmse = unlist(rmses)
+)
+
+rmse_df
+```
+
+これはかなり興味深い！
+正規方程式は簡単だが、問題が良条件でなくなった場合には良い選択ではないかもしれないことが明らかだ。
+コレスキーもLU分解もかなり改善されているが、明らかな「勝者」はQR分解とSVDだ。
+これら二つ（とそれぞれの派生型）が `linalg_lstsq()` で使われているのは当然だ。
