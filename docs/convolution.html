@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>14&nbsp; 行列計算: 畳み込み – R torchによる深層学習と科学計算</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./leastsquares.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R torchによる深層学習と科学計算</a> 
+        <div class="sidebar-tools-main">
+    <a href="./R-torchによる深層学習と科学計算.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">torchに慣れる</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>torch</code>とその入手方法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tensors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">テンソル</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autograd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">自動微分</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optim1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><em>autograd</em>を使った函数の最小化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./network1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ニューラルネットワークを白紙から</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">モジュール</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optimizers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./optim2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">L-BFGSを用いた函数の最適化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./network2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ニューラルネットワークのモジュール化</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./leastsquares.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convolution.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">参考文献</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#畳み込みの意義" id="toc-畳み込みの意義" class="nav-link active" data-scroll-target="#畳み込みの意義"><span class="header-section-number">14.1</span> 畳み込みの意義</a></li>
+  <li><a href="#一次元の畳み込み" id="toc-一次元の畳み込み" class="nav-link" data-scroll-target="#一次元の畳み込み"><span class="header-section-number">14.2</span> 一次元の畳み込み</a></li>
+  <li><a href="#畳み込みの二つの考え方" id="toc-畳み込みの二つの考え方" class="nav-link" data-scroll-target="#畳み込みの二つの考え方"><span class="header-section-number">14.3</span> 畳み込みの二つの考え方</a>
+  <ul class="collapse">
+  <li><a href="#実装" id="toc-実装" class="nav-link" data-scroll-target="#実装"><span class="header-section-number">14.3.1</span> 実装</a></li>
+  </ul></li>
+  <li><a href="#二次元での畳み込み" id="toc-二次元での畳み込み" class="nav-link" data-scroll-target="#二次元での畳み込み"><span class="header-section-number">14.4</span> 二次元での畳み込み</a>
+  <ul class="collapse">
+  <li><a href="#仕組み出力からの見方" id="toc-仕組み出力からの見方" class="nav-link" data-scroll-target="#仕組み出力からの見方"><span class="header-section-number">14.4.1</span> 仕組み（出力からの見方）</a></li>
+  <li><a href="#実装-1" id="toc-実装-1" class="nav-link" data-scroll-target="#実装-1"><span class="header-section-number">14.4.2</span> 実装</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>機械学習では、畳み込みや畳み込み層、畳み込みニューラルネットワークが話題となる。しかしながら、画像処理の章で説明したように、そのように呼んで行っているものは実際は少し異なり、相互相関である。</p>
+<p>形式的には、差は重要ではなく、符号が逆になるだけである。 意味の上では、これらは全く異なる。 既に見たように、相互相関は類似性を見つけ、特徴抽出器として働く。 畳み込みは、抽象的に特徴づけるのは難しい。 信号処理において果たしている傑出した役割やその数学的な意義については、本が何冊も書けるほどである。 ここでは、深く基礎を掘り下げることはしない。 その代わりに、その作用について何らかの洞察を得ることにする。 まず、関わる手順について考察し示すこと、そしてコードとして実装することによりこれを行う。 前の章と同様に、読者が興味を持てるよう、焦点は理解と更なる探究のための基礎作りに合わせる。</p>
+<section id="畳み込みの意義" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="畳み込みの意義"><span class="header-section-number">14.1</span> 畳み込みの意義</h2>
+<p>信号処理では、 <em>フィルタ</em> を用いることにより、信号を変えて目的の形、例えば高振動数が除去されたものにする。 手元に、時系列をフーリエ変換した表現、つまり振動数毎に大きさと位相があるとする。 ある閾値より高い振動数をを除去したいとしよう。 最も簡単な方法は、振動数のデータに1と0の列を掛けることだ。 このようにすると、フィルタの作用は振動数領域で生じ、これが断然最も便利な方法だ。</p>
+<p>もし、同様の結果を時間領域で得たい、つまり生の時系列データを扱うとしたらどうするか。 その場合、フィルタの時間領域での表現（逆フーリエ変換から得られる）を見つけなくてはならない。 そして、この表現を時系列に <em>畳み込む</em> 。 言い換えれば、時間領域における畳み込みは振動数領域における掛け算に対応する。 この基本的な事実は常に利用される。</p>
+<p>それでは、畳み込みは何にをするものかや、どのように実装されているかについて、より詳しく理解しよう。 単一の次元から始めて、二次元の場合にどのようになるか、少し探究する。</p>
+</section>
+<section id="一次元の畳み込み" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="一次元の畳み込み"><span class="header-section-number">14.2</span> 一次元の畳み込み</h2>
+<p>簡単な信号 <code>x</code> と簡単なフィルタ <code>h</code> を作るところから取り掛かる。 変数の名前は思いつきで決めたのではない、信号処理で <span class="math inline">\(h\)</span> は、この後すぐに現れる用語 <em>インパルス</em> 応答を表すのに通常使われる記号だ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">4</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>さて、 <code>torch_conv1d()</code> があるので、これを呼んで何が起こるか見てみよう。 畳み込みの定義によると、出力の長さは入力の長さとフィルタの長さとの和より一つ少ない。 <code>torch_conv1d()</code> を使って、長さ6の出力を得るには、フィルタの長さが3なので、両側に二つずつ広げる必要がある。</p>
+<p>次のコードで、 <code>view()</code> の呼び出しに気を取られてはいけない。 これはただ <code>torch</code> が3次元の入力を必要としているためだ。 最初と次の次元は、いつも通りそれぞれバッチとチャンネルを表す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>)),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  h<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>)),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">padding =</span> <span class="dv">2</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+(1,.,.) = 
+  1  2  2  2 -3 -4
+[ CPUFloatType{1,1,6} ]</code></pre>
+</div>
+</div>
+<p><code>torchconv1d()</code> は畳み込みではなく相互相関を計算するのだったのではないか、と考えているかもしれない。 Rには <code>convolve()</code> があるので確認しよう<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x_ <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>h_ <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(h)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, h_, <span class="at">type =</span> <span class="st">"open"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  1  2  2  2 -3 -4</code></pre>
+</div>
+</div>
+<p>結果は同じである。 しかしながら、 <code>convolve()</code> の説明を読むと</p>
+<blockquote class="blockquote">
+<p>二つの列 <code>x</code> と <code>y</code> の畳み込みに対する通常の定義は次で与えられることに注意する。 <code>convolve(x, rev(y), type="o")</code></p>
+</blockquote>
+<p>明らかに、フィルタの要素の順序を逆転させる必要がある。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, <span class="fu">rev</span>(h_), <span class="at">type =</span> <span class="st">"open"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -1 -2 -2 -2  3  4</code></pre>
+</div>
+</div>
+<p>確かに、今度の結果は異なっている。 同様なことを <code>torch_conv1d()</code> でやってみよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>)),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  h<span class="sc">$</span><span class="fu">flip</span>(<span class="dv">1</span>)<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>)),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">padding =</span> <span class="dv">2</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+(1,.,.) = 
+ -1 -2 -2 -2  3  4
+[ CPUFloatType{1,1,6} ]</code></pre>
+</div>
+</div>
+<p>ここでも結果は <code>torch</code> とRで同じである。 <code>convolve()</code> の説明の中の “Details”部にある、あの簡潔な記述は相互総観と畳み込みの違いを完璧に捉えている。 畳み込みでは、二つ目の引数は逆順になっている。 信号処理の言葉では、 <em>反転</em> である。 （「反転」の方がかなり良い用語だ。高次元にも一般化できるからだ。）</p>
+<p>技術的にはさはわずかだ。 単に符号が逆転するだけである。 しかし、数学的には、フィルタが何であり、何をするかに関わるという意味で重要である。 これは、この後説明する。</p>
+<p>畳み込みの基礎となる演算は二つの方法で示すことができる。</p>
+</section>
+<section id="畳み込みの二つの考え方" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="畳み込みの二つの考え方"><span class="header-section-number">14.3</span> 畳み込みの二つの考え方</h2>
+<p>一つは、単一の出力に着目しどのように得られたか定めるものだ。 つまり、どの入力要素がその値に寄与したか、どのように組み合わされたかを問う。 これは「出力からの見方」と呼ぶことができ、相互相関で馴染みのあるものである。</p>
+<p>相互相関と同様に、次のようにも述べることもできる。 フィルタが画像を「移動」し、個々の画像中の位置（画素）で、周囲の入力画素と対応する「重ねられた」フィルタ値とを掛け算し、全ての画素を足し合わせる。 つまり、個々の出力画素は入力とフィルタ値の組の間の内積の計算から得られる。</p>
+<p>二つ目の考え方は、入力の観点から見たもの（「入力からの見方」と呼ぶ）だ。 問いは、どのように各入力が出力に寄与するかである。 この見方は、最初の見方よりも慣れを要するが、単に馴染み、ニューラルネットワークの文脈でのよくある説明のされ方の問題かもしれない。 どちらにしても、入力からの見方は、畳み込みの数学的な意味について学ぶという点で非常に有益である。</p>
+<p>両方の見方を学ぶ。 まず、馴染みのある、出力からの見方から始める。</p>
+<section id="出力からの見方" class="level4" data-number="14.3.0.1">
+<h4 data-number="14.3.0.1" class="anchored" data-anchor-id="出力からの見方"><span class="header-section-number">14.3.0.1</span> 出力からの見方</h4>
+<p>出力からの見方では、<code>torch_conv1d()</code> で <code>padding = 2</code> を指定したときのように、まず入力信号の両側を延長する。 指定通りに、インパルス応答を反転し、<code>1, 0, -1</code> とする。 次に、「移動」を示す。</p>
+<p>以下は、表形式でこれを示したものだ（<a href="#tbl-convolution_output_view" class="quarto-xref">Table&nbsp;<span>14.1</span></a>）。</p>
+<div id="tbl-convolution_output_view" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-convolution_output_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;14.1: 畳み込み: 出力からの見方
+</figcaption>
+<div aria-describedby="tbl-convolution_output_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">信号</th>
+<th style="text-align: right;">反転 IR</th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+<th style="text-align: right;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>2</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>3</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>4</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>0</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>結果</strong></td>
+<td style="text-align: right;"><code>-1</code></td>
+<td style="text-align: right;"><code>-2</code></td>
+<td style="text-align: right;"><code>-2</code></td>
+<td style="text-align: right;"><code>-2</code></td>
+<td style="text-align: right;"><code>3</code></td>
+<td style="text-align: right;"><code>4</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>結局この話題について既に述べたように、書き出してみた結果に驚くことは何もない。 次に入力からの見方を考える。</p>
+</section>
+<section id="入力からの見方" class="level4" data-number="14.3.0.2">
+<h4 data-number="14.3.0.2" class="anchored" data-anchor-id="入力からの見方"><span class="header-section-number">14.3.0.2</span> 入力からの見方</h4>
+<p>入力からの考え方で重要なことは、入力信号をどのように考えるかである。 個々の要素は、拡大縮小され、移動されたインパルスと見なされる。</p>
+<p><em>インパルス</em> は単位標本（またはインパルス）函数、デルタ（<span class="math inline">\(\delta\)</span>）で与えられる。 この函数は値が1となる0を除いたすべての位置において0である。</p>
+<p><span class="math display">\[
+\delta[n] = \begin{cases}1,\;n = 0\\0,\;n \ne 0\end{cases}
+\]</span></p>
+<p>これは、クロネッカーのデルタ <span class="math inline">\(\delta_{ij}\)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> に似ており、一つの添字を 0 に固定したものである。</p>
+<p><span class="math display">\[
+\delta[n] = \delta_{n0} = \delta_{0n}
+\]</span></p>
+<p>つまり、この函数 <span class="math inline">\(\delta[n]\)</span> だけがあれば、 <span class="math inline">\(n\)</span> が、例えば離散時間を表すとすると、厳密に一つの信号値、時刻 <span class="math inline">\(n=0\)</span><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> における値を表すことができ、その唯一とりうる値は <code>1</code> である。 今、この操作に拡大縮小と移動を加える。</p>
+<ul>
+<li>拡大縮小により、<span class="math inline">\(n=0\)</span> でのいかなる値も作れる。例えば <span class="math inline">\(x_0 = 0 * \delta[n]\)</span>。</li>
+<li>移動により、他の時刻での値に影響を与えることができる。例えば、時刻 <span class="math inline">\(n = 3\)</span>は <span class="math inline">\(n - 3 = 0\)</span> なので<span class="math inline">\(\delta[n-3] = \delta_{n3}\)</span> で与えられる。</li>
+<li>両方を組み合わせることにより、どんな時刻のどんな値でも表すことができる。例えば <span class="math inline">\(x_5 = 1.11 * \delta[n-5]\)</span>。</li>
+</ul>
+<p>これまで、信号についてだけ考えてきた。 フィルタはどうなるか。 インパルスを特徴づけたのと同様に、フィルタも * インパルス応答* で完全に記述できる[^4]。 インパルス応答は、定義により、入力がインパルスである（つまり、時刻 <span class="math inline">\(n=0\)</span> で生じる）ときに現れるものである。 信号に対して用いた表記にならい、<span class="math inline">\(h\)</span> をインパルス応答とすると次のように書ける。</p>
+<p><span class="math display">\[
+h[n] = h[n - 0] \equiv h(\delta[n-0])
+\]</span> [^4]: この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。</p>
+<p>扱っている例では、数列 <code>-1, 0, 1</code> となるだろう。 でも信号は0だけでなく、他の時刻においても表すことが必要であるように、フィルタも他の位置でも適用できなければならない。 その目的のためにも、移動操作が用いられ、似た方法で定式化される。 例えば、<span class="math inline">\(h[n-1]\)</span> はフィルタが時刻1、<span class="math inline">\(n-1\)</span>が0となる時刻に適用されることを意味する。 このような移動は、俗に「ずらし」と呼んでいるものに相当する。</p>
+<p>さて、残されている仕事は部品を組み合わせることだ。 時刻 <span class="math inline">\(n=0\)</span> において、移動なしのインパルス応答を受け取り、信号の振幅で拡大縮小する。 例においては、その値は1なので、<span class="math inline">\(1 * h[n- 0] = 1 * [-1, 0, 1] = [-1, 0, 1]\)</span>となる。 他の時刻においては、インパルスオス等を考えている入力位置に移動し掛け算する。 最後に、すべての入力位置からすべての寄与を得たら、足し合わせて畳み込まれた出力を得る。</p>
+<p>次の表は、それを説明するものである<a href="#tbl-convolution_input_view" class="quarto-xref">Table&nbsp;<span>14.2</span></a>。</p>
+<div id="tbl-convolution_input_view" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-convolution_input_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;14.2: 畳み込み: 入力からの見方
+</figcaption>
+<div aria-describedby="tbl-convolution_input_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">信号</th>
+<th style="text-align: right;">インパルス入力</th>
+<th style="text-align: right;">積</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"><code>h[n - 0]</code></td>
+<td style="text-align: right;"><code>-1  0  1  0  0  0</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>2</code></td>
+<td style="text-align: right;"><code>h[n - 1]</code></td>
+<td style="text-align: right;"><code>0 -2  0  2  0  0</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><code>3</code></td>
+<td style="text-align: right;"><code>h[n - 2]</code></td>
+<td style="text-align: right;"><code>0  0 -3  0  3  0</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><code>4</code></td>
+<td style="text-align: right;"><code>h[n - 3]</code></td>
+<td style="text-align: right;"><code>0  0  0 -4  0  4</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"><strong>和</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><code>-1 -2 -2 -2  3  4</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>個人的には、出力からの見方の方が理解しやすいものの、入力からの見方から得られる洞察が多いように感じる。 特に、避けられない問い、なぜインパルス応答を反転させるのかに答えている。</p>
+<p>謎の力のようなものからは程遠く、負号は信号の表現のされ方から生じた機械的な結果にすぎない。 時刻 <span class="math inline">\(n=2\)</span> において測定された信号は <span class="math inline">\(\delta[n-2]\)</span> （2から2を引くと0）と表され、その信号に適用されるフィルタも <span class="math inline">\(h[n-2]\)</span> となる。</p>
+</section>
+<section id="実装" class="level3" data-number="14.3.1">
+<h3 data-number="14.3.1" class="anchored" data-anchor-id="実装"><span class="header-section-number">14.3.1</span> 実装</h3>
+<p>出力からの見方についての説明から、どのようにコードにするか述べることはあまりないと思うかもしれない。 入力ベクトルに亙ってループし、期待される出力位置において内積を計算するのは容易に見える。 しかし、これは多数のベクトル積を計算することを意味し、さらに入力が長ければ長いほどその計算が増加する。</p>
+<p>幸運にも、もっと良い方法がある。 単一次元（線型）畳み込みは、対角成分がいくつかの定数で、他の要素が0であるToeplitz行列により計算される。 フィルタがToeplitz行列で定式化れれば、行われる積はToeplitz行列と入力との間の一つだけである。 行列の列数は入力の長さと同じだけ必要である（さもなくば積が計算できない）といっても、行列は「ほぼ空」なので計算量は少ない。</p>
+<p>扱っている例に対して、Toeplitz行列を作ったものを示す。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>h</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+-1  0  0  0
+ 0 -1  0  0
+ 1  0 -1  0
+ 0  1  0 -1
+ 0  0  1  0
+ 0  0  0  1
+[ CPUFloatType{6,4} ]</code></pre>
+</div>
+</div>
+<p>例の入力との積が期待通りの結果になるか確認しよう。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h<span class="sc">$</span><span class="fu">matmul</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+-1
+-2
+-2
+-2
+ 3
+ 4
+[ CPUFloatType{6} ]</code></pre>
+</div>
+</div>
+<p>期待通りになった。 次に二次元の場合を考えよう。 概念的には、差はないが、実際の計算（「自作」と行列の両方）はもっと複雑になる。 つまり、手計算の（一般化可能な）一部を示すことで満足し、計算の部分ではいちいち詳細を示さないことにする。</p>
+</section>
+</section>
+<section id="二次元での畳み込み" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="二次元での畳み込み"><span class="header-section-number">14.4</span> 二次元での畳み込み</h2>
+<p>一次元と二次元の畳み込みがどのように類似しているか外見的に示すために、出力からの見方を考える。</p>
+<section id="仕組み出力からの見方" class="level3" data-number="14.4.1">
+<h3 data-number="14.4.1" class="anchored" data-anchor-id="仕組み出力からの見方"><span class="header-section-number">14.4.1</span> 仕組み（出力からの見方）</h3>
+<p>今回の例では、入力は二次元で、次のようなものである。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 4 &amp; 1\\
+2 &amp; 5 &amp; 3
+\end{bmatrix}
+\]</span></p>
+<p>フィルタについても同様である。 ありうる例を示す。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 1\\
+1 &amp; -1
+\end{bmatrix}
+\]</span></p>
+<p>出力からの見方では、フィルタを入力に対して「ずらす」。 しかし、見やすくするために、一つの出力値（「画素」）に着目する。 入力が <code>m1 x n1</code> で出力が <code>m2 x n2</code> なら出力の大きさは <code>(m + m2 -1) x (n1 + n2 -1)</code> である。 つまり、例では <code>3 x 4</code> となる。 <code>(0, 1)</code> での値を選ぶ。 画像処理では、通常行を下から数える。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\cdot &amp; \cdot &amp; \cdot &amp; \cdot\\
+\cdot &amp; \cdot &amp; \cdot &amp; \cdot\\
+\cdot &amp; y_{01} &amp; \cdot &amp; \cdot
+\end{bmatrix}
+\]</span></p>
+<p>存在しない（負）位置を含めた表で入力を示す。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>位置 (<code>x</code>/<code>y</code>)</th>
+<th><code>-1</code></th>
+<th><code>0</code></th>
+<th><code>1</code></th>
+<th><code>2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>1</code></strong></td>
+<td></td>
+<td><code>1</code></td>
+<td><code>4</code></td>
+<td><code>1</code></td>
+</tr>
+<tr class="even">
+<td><strong><code>0</code></strong></td>
+<td></td>
+<td><code>2</code></td>
+<td><code>5</code></td>
+<td><code>3</code></td>
+</tr>
+<tr class="odd">
+<td><strong><code>-1</code></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>対応する位置に値を置いたフィルタは次のように表される。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>位置 (<code>x</code>/<code>y</code>)</th>
+<th><code>-1</code></th>
+<th><code>0</code></th>
+<th><code>1</code></th>
+<th><code>2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>1</code></strong></td>
+<td></td>
+<td><code>1</code></td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong><code>0</code></strong></td>
+<td></td>
+<td><code>1</code></td>
+<td><code>-1</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong><code>-1</code></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>一次元の場合のように、まずはフィルタを反転させる。 反転は180°の回転である。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>位置 (<code>x</code>/<code>y</code>)</th>
+<th><code>-1</code></th>
+<th><code>0</code></th>
+<th><code>1</code></th>
+<th><code>2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>1</code></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong><code>0</code></strong></td>
+<td><code>-1</code></td>
+<td><code>1</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong><code>-1</code></strong></td>
+<td><code>1</code></td>
+<td><code>1</code></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>次にフィルタを必要ない出力位置に移動する。 ここでは右に一つ移動して、上下には移動しない。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>位置 (<code>x</code>/<code>y</code>)</th>
+<th><code>-1</code></th>
+<th><code>0</code></th>
+<th><code>1</code></th>
+<th><code>2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>1</code></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong><code>0</code></strong></td>
+<td></td>
+<td><code>-1</code></td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong><code>-1</code></strong></td>
+<td></td>
+<td><code>1</code></td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>(0, 1)</code>での出力を計算する準備が完了した。 計算は重なっている画像とフィルタ値の内積である。</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">位置 (<code>x</code>/<code>y</code>)</th>
+<th style="text-align: center;"><code>-1</code></th>
+<th style="text-align: center;"><code>0</code></th>
+<th style="text-align: center;"><code>1</code></th>
+<th style="text-align: center;"><code>2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong><code>1</code></strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong><code>0</code></strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><code>-1*2=-2</code></td>
+<td style="text-align: center;"><code>1*5=5</code></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong><code>-1</code></strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<p>最終結果は <code>-2 + 5 = 3</code> である。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\cdot &amp; \cdot &amp; \cdot &amp; \cdot\\
+\cdot &amp; \cdot &amp; \cdot &amp; \cdot\\
+\cdot &amp; 3   &amp; \cdot &amp; \cdot
+\end{bmatrix}
+\]</span></p>
+<p>まだ値のない残りについても同様に計算できる。 その計算は省略して、どのように実際の計算が行われるか見ることにする。</p>
+</section>
+<section id="実装-1" class="level3" data-number="14.4.2">
+<h3 data-number="14.4.2" class="anchored" data-anchor-id="実装-1"><span class="header-section-number">14.4.2</span> 実装</h3>
+<p>二次元の畳み込みの実装にもToeplitz行列を使う。 すでに述べたように、なぜすべての手順がそのなるか <em>厳密な形</em> では示さない。 ここでの意図は扱っている例を示すことであり、その例を踏まえて、必要ならいろいろと探究してほしい。</p>
+<section id="手順1-フィルタ行列の準備" class="level4" data-number="14.4.2.1">
+<h4 data-number="14.4.2.1" class="anchored" data-anchor-id="手順1-フィルタ行列の準備"><span class="header-section-number">14.4.2.1</span> 手順1: フィルタ行列の準備</h4>
+<p>フィルタを出力の大きさに合わせる。</p>
+<pre><code>0  0 0 0
+1  1 0 0
+1 -1 0 0</code></pre>
+<p>次にフィルタの全ての行について、下からToeplitz行列を作成する。</p>
+<pre><code># H0
+ 1  0  0  
+-1  1  0  
+ 0 -1  1  
+ 0  0 -1  
+ 
+# H1
+ 1  0  0  
+ 1  1  0  
+ 0  1  1  
+ 0  0  1  
+ 
+# H2
+ 0  0  0  
+ 0  0  0  
+ 0  0  0  </code></pre>
+<p>コードは次のように書ける。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>H0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>H1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>H2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>次に、これら三つの行列を組み合わせて、次のように <em>二重ブロックToeplitz</em> <em>行列</em> を作る。</p>
+<pre><code>H0   0
+H1  H0
+H2  H1</code></pre>
+<p>これをコードにする一つの方法は <code>torch_block_diag()</code> を二回使って二つの非0ブロックを作り、 で結合することだ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_block_diag</span>(<span class="fu">list</span>(H0, H0)), <span class="fu">torch_zeros</span>(<span class="dv">4</span>, <span class="dv">6</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_cat</span>(</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">torch_zeros</span>(<span class="dv">4</span>, <span class="dv">6</span>),</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">torch_block_diag</span>(<span class="fu">list</span>(H1, H1))</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 1  0  0  0  0  0
+-1  1  0  0  0  0
+ 0 -1  1  0  0  0
+ 0  0 -1  0  0  0
+ 1  0  0  1  0  0
+ 1  1  0 -1  1  0
+ 0  1  1  0 -1  1
+ 0  0  1  0  0 -1
+ 0  0  0  1  0  0
+ 0  0  0  1  1  0
+ 0  0  0  0  1  1
+ 0  0  0  0  0  1
+[ CPUFloatType{12,6} ]</code></pre>
+</div>
+</div>
+<pre><code>torch_tensor
+ 1  0  0  0  0  0
+-1  1  0  0  0  0
+ 0 -1  1  0  0  0
+ 0  0 -1  0  0  0
+ 1  0  0  1  0  0
+ 1  1  0 -1  1  0
+ 0  1  1  0 -1  1
+ 0  0  1  0  0 -1
+ 0  0  0  1  0  0
+ 0  0  0  1  1  0
+ 0  0  0  0  1  1
+ 0  0  0  0  0  1
+[ CPUFloatType{12,6} ]</code></pre>
+<p>最終的な行列は二つの非0の「バンド」を持ち、二つの全てが0の対角線で分けられている。 この行列は、行列積のために必要なフィルタの最終的な形である。</p>
+</section>
+<section id="手順2-入力の準備" class="level4" data-number="14.4.2.2">
+<h4 data-number="14.4.2.2" class="anchored" data-anchor-id="手順2-入力の準備"><span class="header-section-number">14.4.2.2</span> 手順2: 入力の準備</h4>
+<p>この <code>12 x 6</code> 行列と掛け算できるように、入力をベクトルに平坦化する必要がある。 再び、行を下から順に進める。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">3</span>)) </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(<span class="fu">list</span>(x0, x1))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 2
+ 5
+ 3
+ 1
+ 4
+ 1
+[ CPUFloatType{6} ]</code></pre>
+</div>
+</div>
+</section>
+<section id="手順3-行列積" class="level4" data-number="14.4.2.3">
+<h4 data-number="14.4.2.3" class="anchored" data-anchor-id="手順3-行列積"><span class="header-section-number">14.4.2.3</span> 手順3: 行列積</h4>
+<p>ここまでで、畳み込みは単純な行列積に変わった。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> H<span class="sc">$</span><span class="fu">matmul</span>(x)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+  2
+  3
+ -2
+ -3
+  3
+ 10
+  5
+  2
+  1
+  5
+  5
+  1
+[ CPUFloatType{12} ]</code></pre>
+</div>
+</div>
+<p>残るは、出力を正しい二次元の構造に変形することだけだ。 行を（下から）順に組み立てると、次のようになる。</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+  1 &amp; 5 &amp; 5 &amp; 1\\
+  3 &amp; 10 &amp; 5 &amp; 2\\
+  2 &amp; 3 &amp; -2 &amp; -3\\
+\end{bmatrix}
+\]</span></p>
+<p><code>(0, 1)</code> の要素に着目する、手計算の結果と一致していることがわかる。</p>
+<p>ここで、 <code>torch</code> の行列計算の話題を終える。 しかし、次の話題であるフーリエ変換は、行列計算から余り離れていない。 フーリエ変換は、時間領域の畳み込みが振動数領域の掛け算に対応することを覚えているだろうか。</p>
+<p>この対応は、計算の高速化によく利用される。 入力データをフーリエ変換し、結果をフィルタで掛け算し、フィルタされた振動数領域の表現を再び逆変換する。 Rの <code>colvolve()</code> の説明を見てみよう。 出だしにはっきりと書いてある。</p>
+<blockquote class="blockquote">
+<p>フーリエ変換を使って、二つの数列の畳み込みを計算する。</p>
+</blockquote>
+<p>それでは、フーリエ変換に進もう。</p>
+
+
+</section>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>引数 <code>type = "open"</code> を渡すことにより、単調で周期的でない畳み込みにすることを指定できる。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>クロネッカーのデルタは、 <span class="math inline">\(i=j\)</span> のときに1、そうでないときに0となる。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><span class="math inline">\(n\)</span> を <span class="math inline">\(t\)</span> の代わりに異なる位置として使っている。 信号その他離散化された値は、時間（あるいは空間）の離散点においてのみ「存在」するからである。 文脈によって、少しぎこちなく見えるかもしれないが少なくとも一貫している。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./leastsquares.html" class="pagination-link" aria-label="行列演算: 最小二乗問題">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="参考文献">
+        <span class="nav-page-text">参考文献</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

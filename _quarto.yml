@@ -25,6 +25,7 @@ book:
       chapters:
         - other-overview.qmd
         - leastsquares.qmd
+        - convolution.qmd
     - references.qmd
   page-navigation: true
   downloads: pdf
