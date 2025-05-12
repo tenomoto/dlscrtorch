@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./other-overview.html" rel="next">
+<link href="./dl-overview.html" rel="next">
 <link href="./optim2.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -229,7 +229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+ <span class="menu-text">torchで深層学習</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -237,20 +237,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./leastsquares.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./convolution.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
   </div>
 </li>
       </ul>
@@ -366,26 +389,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  opt<span class="sc">$</span><span class="fu">step</span>()</span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>エポック:  10  損失:  2.106624 
-エポック:  20  損失:  1.970411 
-エポック:  30  損失:  1.840077 
-エポック:  40  損失:  1.716137 
-エポック:  50  損失:  1.599851 
-エポック:  60  損失:  1.491782 
-エポック:  70  損失:  1.392739 
-エポック:  80  損失:  1.304369 
-エポック:  90  損失:  1.228256 
-エポック:  100  損失:  1.164533 
-エポック:  110  損失:  1.112996 
-エポック:  120  損失:  1.072856 
-エポック:  130  損失:  1.042295 
-エポック:  140  損失:  1.01944 
-エポック:  150  損失:  1.002318 
-エポック:  160  損失:  0.9887993 
-エポック:  170  損失:  0.9776061 
-エポック:  180  損失:  0.9679108 
-エポック:  190  損失:  0.9592363 
-エポック:  200  損失:  0.9509732 </code></pre>
+<pre><code>エポック:  10  損失:  2.832665 
+エポック:  20  損失:  2.665599 
+エポック:  30  損失:  2.506462 
+エポック:  40  損失:  2.353123 
+エポック:  50  損失:  2.203764 
+エポック:  60  損失:  2.057494 
+エポック:  70  損失:  1.916324 
+エポック:  80  損失:  1.783049 
+エポック:  90  損失:  1.659109 
+エポック:  100  損失:  1.546306 
+エポック:  110  損失:  1.446665 
+エポック:  120  損失:  1.361843 
+エポック:  130  損失:  1.292294 
+エポック:  140  損失:  1.237168 
+エポック:  150  損失:  1.195005 
+エポック:  160  損失:  1.162809 
+エポック:  170  損失:  1.137725 
+エポック:  180  損失:  1.11738 
+エポック:  190  損失:  1.100669 
+エポック:  200  損失:  1.086426 </code></pre>
 </div>
 </div>
 <p>コードが短くなり、効率的になっただけでなく、変更により性能も大きく向上した。</p>
@@ -821,7 +844,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./other-overview.html" class="pagination-link" aria-label="概要">
+      <a href="./dl-overview.html" class="pagination-link" aria-label="概要">
         <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>

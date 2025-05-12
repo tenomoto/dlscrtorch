@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>9&nbsp; 損失函数 – R torchによる深層学習と科学計算</title>
+<title>13&nbsp; データの読み込み – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./optim2.html" rel="next">
-<link href="./optimizers.html" rel="prev">
+<link href="./other-overview.html" rel="next">
+<link href="./dl-overview.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dl-overview.html">torchで深層学習</a></li><li class="breadcrumb-item"><a href="./data.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -208,7 +208,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></span></a>
   </div>
 </li>
@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data.html" class="sidebar-item-text sidebar-link">
+  <a href="./data.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
   </div>
 </li>
@@ -294,21 +294,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#torchの損失函数" id="toc-torchの損失函数" class="nav-link active" data-scroll-target="#torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</a></li>
-  <li><a href="#どの損失函数を選択すべきか" id="toc-どの損失函数を選択すべきか" class="nav-link" data-scroll-target="#どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</a>
+  <li><a href="#データと-dataset-とdataloader-の違い" id="toc-データと-dataset-とdataloader-の違い" class="nav-link active" data-scroll-target="#データと-dataset-とdataloader-の違い"><span class="header-section-number">13.1</span> データと <code>dataset()</code> と<code>dataloader()</code> の違い</a></li>
+  <li><a href="#dataset-の使い方" id="toc-dataset-の使い方" class="nav-link" data-scroll-target="#dataset-の使い方"><span class="header-section-number">13.2</span> <code>dataset()</code> の使い方</a>
   <ul class="collapse">
-  <li><a href="#最尤法" id="toc-最尤法" class="nav-link" data-scroll-target="#最尤法"><span class="header-section-number">9.2.1</span> 最尤法</a></li>
-  <li><a href="#回帰" id="toc-回帰" class="nav-link" data-scroll-target="#回帰"><span class="header-section-number">9.2.2</span> 回帰</a></li>
+  <li><a href="#自作-dataset" id="toc-自作-dataset" class="nav-link" data-scroll-target="#自作-dataset"><span class="header-section-number">13.2.1</span> 自作 <code>dataset()</code></a></li>
+  <li><a href="#tensor_dataset" id="toc-tensor_dataset" class="nav-link" data-scroll-target="#tensor_dataset"><span class="header-section-number">13.2.2</span> <code>tensor_dataset()</code></a></li>
+  <li><a href="#torchvisionmnist_dataset" id="toc-torchvisionmnist_dataset" class="nav-link" data-scroll-target="#torchvisionmnist_dataset"><span class="header-section-number">13.2.3</span> <code>torchvision::mnist_dataset()</code></a></li>
   </ul></li>
+  <li><a href="#dataloader-の使い方" id="toc-dataloader-の使い方" class="nav-link" data-scroll-target="#dataloader-の使い方"><span class="header-section-number">13.3</span> <code>dataloader()</code> の使い方</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dl-overview.html">torchで深層学習</a></li><li class="breadcrumb-item"><a href="./data.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></h1>
+<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></h1>
 </div>
 
 
@@ -325,54 +327,215 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>損失函数の概念は機械学習に重要なものだ。 どの反復においても、現在の損失値は推定値が目的からどれくらい離れているかを示す。 そして、その値は損失が減少する方向にパラメタを更新するのに用いられる。</p>
-<p>これまでの応用例でも、損失函数を使ってきた。 それは平均二乗誤差で手作業で次のように計算した。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> (y_pred <span class="sc">-</span> y)<span class="sc">$</span><span class="fu">pow</span>(<span class="dv">2</span>)<span class="sc">$</span><span class="fu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>想像通り、ここでもこのような手作業は不要だ。</p>
-<p>この概念に関する最後の章で、現在の例を見直す前に、二つのことを述べたい。 一つは、<code>torch</code>組込の損失函数の作り方である。 もう一つは、どの損失函数を選択するかについてだ。</p>
-<section id="torchの損失函数" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</h2>
-<p><code>torch</code>では、損失函数は<code>nn_</code>または<code>nnf_</code>で始まる。</p>
-<p><code>nnf_</code>を使う場合、直接函数呼び出しを行う。 これに対応して、その（推定と目的の）引数はどちらもテンソルだ。 例えば、<code>nnf_mse_loss()</code>という組込函数は手作業でコードを書いたものに類似している。</p>
+<p>おもちゃの例については、第三版（最終版）を次の章で見るが、小さなデータの集合に対して訓練した。 あまりに小さいので、全ての観測を一挙にモデルに対して学習できる。 そうでない場合はどうなるのか。 例えば、10,000要素あり、各要素が256 x 256画素のRGB画像だったとしたら。 非常に強力な装置でも、モデルの訓練を一度に全てのデータに対して行うことはおそらくできないだろう。</p>
+<p>その理由から、<code>torch</code> のようなフレームワークは入力パイプラインが含まれており、データをモデルに <em>バッチ</em> つまり観測の一部 を渡せるようになっている。 この過程に関わるのは、二つのクラス <code>dataset()</code> と <code>dataloader()</code> だ。 こられのインスタンスの作り方を見る前に、それらの目的に応じた特徴づけをしておこう。</p>
+<section id="データと-dataset-とdataloader-の違い" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="データと-dataset-とdataloader-の違い"><span class="header-section-number">13.1</span> データと <code>dataset()</code> と<code>dataloader()</code> の違い</h2>
+<p>本書では、「データセット」（可変幅フォント、括弧なし）あるいは単に「データ」は、通常Rの行列、<code>data.frame</code>やそれらに含まれるものを指す。 <code>dataset()</code> （固定幅フォント、括弧つき）は、<code>torch</code> のオブジェクトでできることが一つある。 それは、呼び出し相手に対して単一の項目を渡すことだ。 その項目は通常リストで、一つの入力と一つの目的テンソルから構成されている。 （実は課題に対して意味をなすものであればなんでもよい。例えば、単一のテンソルで入力と出力を兼ねることもありうる。二つ以上のテンソルが異なる入力として異なるモジュールに渡されることも考えられる。）</p>
+<p>上述の目的を満たす限り、<code>dataset()</code> は必要なことを自由にできる。 例えば、データをインターネットからダウンロードし一時的な場所に保存したり、何んらかの前処理をしたり、 ある種類のモデルに必要とされるデータのバイト単位の塊を返したりすることもある。 裏で何をしようとも、呼び出しの相手が求めるのは単一の項目を返すことだ。 呼び出すのは、<code>dataloader()</code> である。</p>
+<p><code>dataloader()</code> の役割は、モデルにバッチで入力することだ。 一つの直接的な理由は、コンピュータのメモリだ。 多くの <code>dataset()</code> は一度にモデルに渡すには大きすぎる。 他にもバッチにする利点がある。 勾配の計算（そしてモデルの重みの更新）をバッチ毎に行うと、過程に対する固有の確率的な性質があり、これがモデルの訓練に役立つ。 これは、後の章で詳しく議論する。</p>
+</section>
+<section id="dataset-の使い方" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="dataset-の使い方"><span class="header-section-number">13.2</span> <code>dataset()</code> の使い方</h2>
+<p><code>dataset()</code> には様々なものがある。 <code>torchvision</code> や <code>torchdatasets</code> 、その他<code>torch</code> で使えるように準備済のデータを提供しているパッケージに含まれ、すぐに使えるようになっているものから、完全に変更できる（つまりユーザ自身による準備が必要な）ものまである。 <code>dataset()</code> を作るのは簡単だ。 これらはR6オブジェクトで、実装が必要なメソッドは次の三つだけだ。</p>
+<ol type="1">
+<li><p><code>initialize(...)</code>。 <code>initialize()</code>に渡すパラメタは、<code>dataset()</code>のインスタンスが作られた時に渡される。 考えられるのは、Rの <code>data.frame</code> やファイルシステムのパス、ダウンロードのURL、<code>dataset()</code> が期待する様々な設定やパラメタがあるが、それらに限定されない。</p></li>
+<li><p><code>.getitem(i)</code>。これは契約を満たすことを担うメソッドである。 返すものは全て単一の要素である。 パラメタ <code>i</code> は、多くの場合、背景のデータ構造（例えば、ファイルシステムのパスの <code>data.frame</code>） における開始位置を示すインデックスである。 でも、 <code>dataset()</code> は、このパラメタを使わなければならないわけではない。 例えば、非常に巨大な <code>dataset()</code> や、クラスにかなりの不均衡がある場合、代わりに標本抽出に基づいた要素を返すこともできる。</p></li>
+<li><p><code>.length()</code> 通常これは一行で、唯一の目的は <code>dataset()</code> で利用できる要素の数を返すことだ。</p></li>
+</ol>
+<p><code>dataset()</code> の青写真を示す。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> <span class="fu">dataset</span>()(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(...) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(index) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>ということで、作業に用いる <code>dataset()</code> を得る三つの方法について、注文仕立てから、最も楽なものまで、比較してみよう。</p>
+<section id="自作-dataset" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="自作-dataset"><span class="header-section-number">13.2.1</span> 自作 <code>dataset()</code></h3>
+<p><code>iris</code> の代替である <code>palmerpenguins</code> に基づく判別器を構築したいとする。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
-0.81
-[ CPUFloatType{} ]</code></pre>
+<pre><code>tibble [344 × 8] (S3: tbl_df/tbl/data.frame)
+ $ species          : Factor w/ 3 levels "Adelie","Chinstrap",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ island           : Factor w/ 3 levels "Biscoe","Dream",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ bill_length_mm   : num [1:344] 39.1 39.5 40.3 NA 36.7 39.3 38.9 39.2 34.1 42 ...
+ $ bill_depth_mm    : num [1:344] 18.7 17.4 18 NA 19.3 20.6 17.8 19.6 18.1 20.2 ...
+ $ flipper_length_mm: int [1:344] 181 186 195 NA 193 190 181 195 193 190 ...
+ $ body_mass_g      : int [1:344] 3750 3800 3250 NA 3450 3650 3625 4675 3475 4250 ...
+ $ sex              : Factor w/ 2 levels "female","male": 2 1 1 NA 1 2 1 2 NA NA ...
+ $ year             : int [1:344] 2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...</code></pre>
 </div>
 </div>
-<p>一方<code>nn_</code>では、まずオブジェクトを作成する。</p>
+<p><code>species</code> の予測において <code>bill_length_mm</code> と <code>bill_depth_mm</code> 、 <code>flipper_length_mm</code> 、 <code>body_mass_g</code> の一部を用いる。 必要なものをちょうど返す <code>dataset()</code> を作る。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_mse_loss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>penguins_dataset <span class="ot">&lt;-</span> <span class="fu">dataset</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"penguins_dataset"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(df) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(df)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df[, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>]) <span class="sc">|&gt;</span> <span class="fu">torch_tensor</span>()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(df<span class="sc">$</span>species)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    )<span class="sc">$</span><span class="fu">to</span>(<span class="fu">torch_long</span>())</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">x =</span> self<span class="sc">$</span>x[i, ], <span class="at">y =</span> self<span class="sc">$</span>y[i])</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dim</span>(self<span class="sc">$</span>x)[<span class="dv">1</span>]</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>このオブジェクトはテンソルに対して呼び出すと、求める損失が得られる。</p>
+<p>一度 <code>penguins_dataset</code> のインスタンスを作成したら、すぐに簡単な確認をしよう。 まず、期待される長さから。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">l</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> <span class="fu">penguins_dataset</span>(penguins)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(ds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
-0.81
-[ CPUFloatType{} ]</code></pre>
+<pre><code>[1] 333</code></pre>
 </div>
 </div>
-<p>オブジェクトまたは函数のどちらを選択するかは、主に好みと文脈次第だ。 大きなモデルでは、いくつかの損失函数を合わせてつかうことになる。 その際、損失オブジェクトを作る方が部品として扱いやすく、維持しやすいコードになる。 本書では、最初の方法を主に用いるが、特別な理由があれば別の方法を取ることにする。</p>
+<p>次に、ここの要素は期待通りの形状とデータ型であるか。 インデックスを使って、<code>dataset()</code> の要素にテンソルの値のように表示できるのは便利だ。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ds[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$x
+torch_tensor
+   39.1000
+   18.7000
+  181.0000
+ 3750.0000
+[ CPUFloatType{4} ]
+
+$y
+torch_tensor
+1
+[ CPULongType{} ]</code></pre>
+</div>
+</div>
+<p>これは <code>dataset()</code> を掘り下げて行ったときにも動作するし、しなければならない。 <code>dataset()</code> のインデックスは、裏では 求める位置 <code>i</code> で <code>.getitem()</code> を呼び出す。</p>
+<p>実際には、自作の <code>dataset()</code> を作成しなかった。 ほとんど前処理が不要な、代替となる <code>tensor_dataset()</code> がある。</p>
 </section>
-<section id="どの損失函数を選択すべきか" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</h2>
-<p>深層学習や機械学習全般では、ほとんどの応用は数値の予測または確率の推定のどちらか一つ、または両方を行う。 現在の例の回帰問題は前者を行なっている。 実際の応用では、気温や従業員の離職率を推定したり、売り上げを予測したりする。 後者では、典型的な問題は分類だ。 例えば画像を最も顕著な内容に基づいて分類するには、実際にはそれぞれの確率を計算する。 そして「犬」の確率が0.7で、「猫」の確率が0.3なら犬と判定する。</p>
-<section id="最尤法" class="level3" data-number="9.2.1">
-<h3 data-number="9.2.1" class="anchored" data-anchor-id="最尤法"><span class="header-section-number">9.2.1</span> 最尤法</h3>
-<p>分類も回帰も最も使われている損失函数は最尤原理に基づいている。 最尤とは、モデルのパラメタの選択がデータ、つまり観測したものや観測できたかもしれないことが最大限起こりやすいようにする。 この原理は基本的である「だけ」でなく、直感に訴えるものだ。 簡単な例を考えよう。</p>
-<p>例えば、7.1, 22.14, 11.3という値があり、生じさせる過程が正規分布に則っているものとする。 その場合、これらのデータは平均14、標準偏差7の分布により生じたものである可能性が、平均20、標準偏差 1よりもはるかに可能性が高い。</p>
+<section id="tensor_dataset" class="level3" data-number="13.2.2">
+<h3 data-number="13.2.2" class="anchored" data-anchor-id="tensor_dataset"><span class="header-section-number">13.2.2</span> <code>tensor_dataset()</code></h3>
+<p>テンソルが既にあるときや、容易に変換できるときは、組込の <code>dataset()</code> ジェネレータ である <code>tensor_dataset()</code> を使うことができる。 この函数は任意の数のテンソルを受け取ることができる。 個々のバッチ要素は、テンソル値のリストである。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>three <span class="ot">&lt;-</span> <span class="fu">tensor_dataset</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_randn</span>(<span class="dv">10</span>), <span class="fu">torch_randn</span>(<span class="dv">10</span>), <span class="fu">torch_randn</span>(<span class="dv">10</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>three[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+torch_tensor
+-2.6347
+[ CPUFloatType{1} ]
+
+[[2]]
+torch_tensor
+ 0.5663
+[ CPUFloatType{1} ]
+
+[[3]]
+torch_tensor
+ 1.0616
+[ CPUFloatType{1} ]</code></pre>
+</div>
+</div>
+<p><code>penguins</code> の文脈では、二行のコードになる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>penguies <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(penguins)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> <span class="fu">tensor_dataset</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_tensor</span>(<span class="fu">as.matrix</span>(penguins[, <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>])),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_tensor</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>(penguins<span class="sc">$</span>species)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">$</span><span class="fu">to</span>(<span class="fu">torch_long</span>())</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>ds[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+torch_tensor
+   39.1000    18.7000   181.0000  3750.0000
+[ CPUFloatType{1,4} ]
+
+[[2]]
+torch_tensor
+ 1
+[ CPULongType{1} ]</code></pre>
+</div>
+</div>
+<p>しかしながら、データセットの全ての列を使っていないことは認めざるを得ない。 より多く前処理を <code>dataset()</code> に行わせるには、より多くのコードを書く必要がある。</p>
+<p>三番目かつ、最後に最も楽な方法を示す。</p>
 </section>
-<section id="回帰" class="level3" data-number="9.2.2">
-<h3 data-number="9.2.2" class="anchored" data-anchor-id="回帰"><span class="header-section-number">9.2.2</span> 回帰</h3>
-<p>回帰（目的の分布が正規分布であるという暗黙の仮定をおいたもの^1）では、尤度を最大化するには、これまで計算してきた損失である、平均二乗誤差を引き続き用いればよい。 最尤推定値は望まれる全ての統計的な性質を持つ。 しかしながら、特定の用途では他の損失を使う理由があるかもしれない。 ^1: 仮定があり得ない場合、分布適合損失函数が提供されている（例: Poisson負対数は`nnf_poisson_nll_loss()）。</p>
-<p>例えば、データセットに外れ値があり、何らかの理由で予測と目的がかなりずれていることがある。 平均二乗誤差は外れ値に大きな重みを置く。 そのような場合、代替となりうるのは平均絶対誤差（<code>nnf_l1_loss()</code>）と滑らかなL1損失（`nn_smooth_l1_loss()）である。 後者は混合した型で、既定では絶対（L1）誤差を計算するが二乗（L2）に絶対誤差が非常に小さいところで切り替える。</p>
+<section id="torchvisionmnist_dataset" class="level3" data-number="13.2.3">
+<h3 data-number="13.2.3" class="anchored" data-anchor-id="torchvisionmnist_dataset"><span class="header-section-number">13.2.3</span> <code>torchvision::mnist_dataset()</code></h3>
+<p><code>torch</code> のエコシステムにおけるパッケージを使っているとき、実例かデータ自体が目的かは別として、何らかの <code>dataset()</code> を含んでいる可能性が高い。 <code>torchvision</code> は、古典的な画像のデータセットを提供している。 その中で、典型中の典型が MNIST である。</p>
+<p>後の章で画像処理を議論するので、 <code>minst_dataset()</code> の引数についてここで述べることにする。 ここでは、データが期待されるものに適合しているか簡単に確認する。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dir <span class="ot">&lt;-</span> <span class="st">"~/.torch-datasets"</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ds <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">root =</span> dir,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">train =</span> <span class="cn">TRUE</span>, <span class="co"># 既定</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    x <span class="sc">|&gt;</span> <span class="fu">transform_to_tensor</span>()</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>first <span class="ot">&lt;-</span> ds[<span class="dv">1</span>]</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Image shape: "</span>, first<span class="sc">$</span>x<span class="sc">$</span>shape, <span class="st">" Label: "</span>, first<span class="sc">$</span>y, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Image shape:  1 28 28  Label:  6 </code></pre>
+</div>
+</div>
+<p>この時点では、<code>dateset()</code> について知っておくことは全てだ。 本書を読み進める中で多く出会うことになる。 それでは、単一から複数のデータに進もう。</p>
+</section>
+</section>
+<section id="dataloader-の使い方" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="dataloader-の使い方"><span class="header-section-number">13.3</span> <code>dataloader()</code> の使い方</h2>
+<p>新たに作成したMNISTの <code>dataset()</code> を使って、これに対する <code>dataloader()</code> のインスタンスを作成する。 <code>dataloader()</code> は、一度に32個のバッチにおいて画像とラベルの組みを返す。 各エポックで、異なる順序で返す（<code>shuffle = TRUE</code>）。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">32</span>, <span class="at">shuffle =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>dataset()</code> 同様に <code>dataloader()</code> も長さを確認できる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(dl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1875</code></pre>
+</div>
+</div>
+<p>今回は、返り値は要素の数ではなく、バッチの数である。</p>
+<p>バッチに亙り繰り返すには、先にイテレータを得る。 このオブジェクトは、この <code>dataloader()</code> の要素を辿りかたを知っている。 <code>datalader_next()</code> を呼び足すと、一つずつ次のバッチを得ることができる。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>first_batch <span class="ot">&lt;-</span> dl <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># この dataloader に対するイテレータを得る。</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dataloader_make_iter</span>() <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dataloader_next</span>()</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(first_batch<span class="sc">$</span>x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32  1 28 28</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(first_batch<span class="sc">$</span>y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 32</code></pre>
+</div>
+</div>
+<p><code>x</code> の形状、画像部分と個々の（上で確認した）画像、今追加された次元が、バッチにある画像の数を反映していることが分かる。</p>
+<p>次の段階は、バッチをモデルに与えることである。 実は、これと完全な、端から端までの深層学習の手順は次の章で扱う内容である。</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -798,13 +961,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./optimizers.html" class="pagination-link" aria-label="最適化器">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span>
+      <a href="./dl-overview.html" class="pagination-link" aria-label="概要">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./optim2.html" class="pagination-link" aria-label="L-BFGSを用いた函数の最適化">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">L-BFGSを用いた函数の最適化</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./other-overview.html" class="pagination-link" aria-label="概要">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

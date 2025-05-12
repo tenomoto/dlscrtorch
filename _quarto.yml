@@ -21,6 +21,10 @@ book:
         - loss-functions.qmd
         - optim2.qmd
         - network2.qmd
+    - part: "torchで深層学習"
+      chapters:
+        - dl-overview.qmd
+        - data.qmd
     - part: "他にも`torch` でできること: 行列計算・フーリエ変換・ウェーブレット"
       chapters:
         - other-overview.qmd

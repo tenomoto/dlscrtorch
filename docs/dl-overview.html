@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>9&nbsp; 損失函数 – R torchによる深層学習と科学計算</title>
+<title>12&nbsp; 概要 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -64,8 +30,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./optim2.html" rel="next">
-<link href="./optimizers.html" rel="prev">
+<link href="./data.html" rel="next">
+<link href="./network2.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -115,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dl-overview.html">torchで深層学習</a></li><li class="breadcrumb-item"><a href="./dl-overview.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -208,7 +174,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link active">
+  <a href="./loss-functions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></span></a>
   </div>
 </li>
@@ -237,7 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
@@ -289,26 +255,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#torchの損失函数" id="toc-torchの損失函数" class="nav-link active" data-scroll-target="#torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</a></li>
-  <li><a href="#どの損失函数を選択すべきか" id="toc-どの損失函数を選択すべきか" class="nav-link" data-scroll-target="#どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</a>
-  <ul class="collapse">
-  <li><a href="#最尤法" id="toc-最尤法" class="nav-link" data-scroll-target="#最尤法"><span class="header-section-number">9.2.1</span> 最尤法</a></li>
-  <li><a href="#回帰" id="toc-回帰" class="nav-link" data-scroll-target="#回帰"><span class="header-section-number">9.2.2</span> 回帰</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">torchに慣れる</a></li><li class="breadcrumb-item"><a href="./loss-functions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./dl-overview.html">torchで深層学習</a></li><li class="breadcrumb-item"><a href="./dl-overview.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">損失函数</span></h1>
+<h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></h1>
 </div>
 
 
@@ -325,55 +280,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>損失函数の概念は機械学習に重要なものだ。 どの反復においても、現在の損失値は推定値が目的からどれくらい離れているかを示す。 そして、その値は損失が減少する方向にパラメタを更新するのに用いられる。</p>
-<p>これまでの応用例でも、損失函数を使ってきた。 それは平均二乗誤差で手作業で次のように計算した。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> (y_pred <span class="sc">-</span> y)<span class="sc">$</span><span class="fu">pow</span>(<span class="dv">2</span>)<span class="sc">$</span><span class="fu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>想像通り、ここでもこのような手作業は不要だ。</p>
-<p>この概念に関する最後の章で、現在の例を見直す前に、二つのことを述べたい。 一つは、<code>torch</code>組込の損失函数の作り方である。 もう一つは、どの損失函数を選択するかについてだ。</p>
-<section id="torchの損失函数" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="torchの損失函数"><span class="header-section-number">9.1</span> <code>torch</code>の損失函数</h2>
-<p><code>torch</code>では、損失函数は<code>nn_</code>または<code>nnf_</code>で始まる。</p>
-<p><code>nnf_</code>を使う場合、直接函数呼び出しを行う。 これに対応して、その（推定と目的の）引数はどちらもテンソルだ。 例えば、<code>nnf_mse_loss()</code>という組込函数は手作業でコードを書いたものに類似している。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
-0.81
-[ CPUFloatType{} ]</code></pre>
-</div>
-</div>
-<p>一方<code>nn_</code>では、まずオブジェクトを作成する。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_mse_loss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>このオブジェクトはテンソルに対して呼び出すと、求める損失が得られる。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">l</span>(<span class="fu">torch_ones</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="fu">torch_zeros</span>(<span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span> <span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch_tensor
-0.81
-[ CPUFloatType{} ]</code></pre>
-</div>
-</div>
-<p>オブジェクトまたは函数のどちらを選択するかは、主に好みと文脈次第だ。 大きなモデルでは、いくつかの損失函数を合わせてつかうことになる。 その際、損失オブジェクトを作る方が部品として扱いやすく、維持しやすいコードになる。 本書では、最初の方法を主に用いるが、特別な理由があれば別の方法を取ることにする。</p>
-</section>
-<section id="どの損失函数を選択すべきか" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="どの損失函数を選択すべきか"><span class="header-section-number">9.2</span> どの損失函数を選択すべきか。</h2>
-<p>深層学習や機械学習全般では、ほとんどの応用は数値の予測または確率の推定のどちらか一つ、または両方を行う。 現在の例の回帰問題は前者を行なっている。 実際の応用では、気温や従業員の離職率を推定したり、売り上げを予測したりする。 後者では、典型的な問題は分類だ。 例えば画像を最も顕著な内容に基づいて分類するには、実際にはそれぞれの確率を計算する。 そして「犬」の確率が0.7で、「猫」の確率が0.3なら犬と判定する。</p>
-<section id="最尤法" class="level3" data-number="9.2.1">
-<h3 data-number="9.2.1" class="anchored" data-anchor-id="最尤法"><span class="header-section-number">9.2.1</span> 最尤法</h3>
-<p>分類も回帰も最も使われている損失函数は最尤原理に基づいている。 最尤とは、モデルのパラメタの選択がデータ、つまり観測したものや観測できたかもしれないことが最大限起こりやすいようにする。 この原理は基本的である「だけ」でなく、直感に訴えるものだ。 簡単な例を考えよう。</p>
-<p>例えば、7.1, 22.14, 11.3という値があり、生じさせる過程が正規分布に則っているものとする。 その場合、これらのデータは平均14、標準偏差7の分布により生じたものである可能性が、平均20、標準偏差 1よりもはるかに可能性が高い。</p>
-</section>
-<section id="回帰" class="level3" data-number="9.2.2">
-<h3 data-number="9.2.2" class="anchored" data-anchor-id="回帰"><span class="header-section-number">9.2.2</span> 回帰</h3>
-<p>回帰（目的の分布が正規分布であるという暗黙の仮定をおいたもの^1）では、尤度を最大化するには、これまで計算してきた損失である、平均二乗誤差を引き続き用いればよい。 最尤推定値は望まれる全ての統計的な性質を持つ。 しかしながら、特定の用途では他の損失を使う理由があるかもしれない。 ^1: 仮定があり得ない場合、分布適合損失函数が提供されている（例: Poisson負対数は`nnf_poisson_nll_loss()）。</p>
-<p>例えば、データセットに外れ値があり、何らかの理由で予測と目的がかなりずれていることがある。 平均二乗誤差は外れ値に大きな重みを置く。 そのような場合、代替となりうるのは平均絶対誤差（<code>nnf_l1_loss()</code>）と滑らかなL1損失（`nn_smooth_l1_loss()）である。 後者は混合した型で、既定では絶対（L1）誤差を計算するが二乗（L2）に絶対誤差が非常に小さいところで切り替える。</p>
+<p>本書のこの部は、全て深層学習の応用に割かれている。 掘り下げることが二つある。 一つ目の話題は手順に関係することで、もう一つは分野への適合についてである。</p>
+<p>手順に関して、学ぶことは、</p>
+<ul>
+<li>入力データを準備して、モデルが扱える形式にすること。</li>
+<li>有効かつ効率的にモデルを訓練し、進捗を監視し、ハイパパラメタを学習中に調整すること。</li>
+<li>モデルを保存し、読み込むこと。</li>
+<li>モデルを汎化して訓練データ以外を扱えるようにすること。</li>
+<li>訓練を高速化すること。</li>
+<li>等</li>
+</ul>
+<p>二番目に、効率的な手順の次には、問題とする課題が重要となる。 第一部で <code>torch</code> を学ぶために用いた線型層を重ねる方法は、目的には不十分であり、画像や時系列のモデル化は難しい。 深層学習をうまく使うということは、モデルの構造を問題としている分野に適合させることを意味する。 その目的には、具体的な課題から始め、適用可能な構造を直接例示する。</p>
+<p>具体的な計画は以下の通りである。 以下の二つの章では、手順に関して実践で不可欠な手法を示す。 別のパッケージ <code>luz</code> を知ることで、層を抽象化し、手順をかなり簡素化することを学ぶ。 使い方を学んだら、最初の応用、画像分類を見る準備が整う。 初期結果を改善するために、後退して二つのより進んだ手順についての話題を探索する。 それは、汎化の改善と学習の高速化だ。 この知識を得た上で画像に戻り、その後、応用に関して、表形式データや、時系列、音声についての技術を高める。</p>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -798,13 +718,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./optimizers.html" class="pagination-link" aria-label="最適化器">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">最適化器</span></span>
+      <a href="./network2.html" class="pagination-link" aria-label="ニューラルネットワークのモジュール化">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ニューラルネットワークのモジュール化</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./optim2.html" class="pagination-link" aria-label="L-BFGSを用いた函数の最適化">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">L-BFGSを用いた函数の最適化</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./data.html" class="pagination-link" aria-label="データの読み込み">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

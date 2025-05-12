@@ -258,7 +258,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+ <span class="menu-text">torchで深層学習</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -266,20 +266,43 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./leastsquares.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./convolution.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
   </div>
 </li>
       </ul>
@@ -366,16 +389,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.6930
- 1.7024
--0.3626
--1.6283
--0.1718
--0.1420
- 0.1308
- 3.1060
--1.1940
- 0.1999
+  3.7318
+ -0.1890
+ -3.4294
+ -1.2528
+  1.3601
+  6.2656
+  3.0182
+ -3.7571
+ -3.1763
+ -2.3714
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -553,26 +576,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  64.93443 
-Epoch:  20    Loss:  57.7855 
-Epoch:  30    Loss:  51.59102 
-Epoch:  40    Loss:  46.20132 
-Epoch:  50    Loss:  41.51944 
-Epoch:  60    Loss:  37.42964 
-Epoch:  70    Loss:  33.83841 
-Epoch:  80    Loss:  30.67413 
-Epoch:  90    Loss:  27.89814 
-Epoch:  100    Loss:  25.45625 
-Epoch:  110    Loss:  23.30801 
-Epoch:  120    Loss:  21.40174 
-Epoch:  130    Loss:  19.70491 
-Epoch:  140    Loss:  18.19546 
-Epoch:  150    Loss:  16.84911 
-Epoch:  160    Loss:  15.64606 
-Epoch:  170    Loss:  14.56843 
-Epoch:  180    Loss:  13.60064 
-Epoch:  190    Loss:  12.72329 
-Epoch:  200    Loss:  11.9331 </code></pre>
+<pre><code>Epoch:  10    Loss:  70.71572 
+Epoch:  20    Loss:  63.92153 
+Epoch:  30    Loss:  57.88784 
+Epoch:  40    Loss:  52.52216 
+Epoch:  50    Loss:  47.75594 
+Epoch:  60    Loss:  43.49489 
+Epoch:  70    Loss:  39.67999 
+Epoch:  80    Loss:  36.25851 
+Epoch:  90    Loss:  33.1709 
+Epoch:  100    Loss:  30.38891 
+Epoch:  110    Loss:  27.88091 
+Epoch:  120    Loss:  25.61374 
+Epoch:  130    Loss:  23.56756 
+Epoch:  140    Loss:  21.7197 
+Epoch:  150    Loss:  20.04354 
+Epoch:  160    Loss:  18.5186 
+Epoch:  170    Loss:  17.13169 
+Epoch:  180    Loss:  15.8768 
+Epoch:  190    Loss:  14.73451 
+Epoch:  200    Loss:  13.69401 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>

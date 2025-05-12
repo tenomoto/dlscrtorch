@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>13&nbsp; 行列演算: 最小二乗問題 – R torchによる深層学習と科学計算</title>
+<title>15&nbsp; 行列演算: 最小二乗問題 – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -163,7 +163,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./leastsquares.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./leastsquares.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -277,7 +277,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+ <span class="menu-text">torchで深層学習</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -285,20 +285,43 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./leastsquares.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./convolution.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
   </div>
 </li>
       </ul>
@@ -319,29 +342,29 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#最小二乗を求める五つの方法" id="toc-最小二乗を求める五つの方法" class="nav-link active" data-scroll-target="#最小二乗を求める五つの方法"><span class="header-section-number">13.1</span> 最小二乗を求める五つの方法</a></li>
-  <li><a href="#天気予報についての回帰" id="toc-天気予報についての回帰" class="nav-link" data-scroll-target="#天気予報についての回帰"><span class="header-section-number">13.2</span> 天気予報についての回帰</a>
+  <li><a href="#最小二乗を求める五つの方法" id="toc-最小二乗を求める五つの方法" class="nav-link active" data-scroll-target="#最小二乗を求める五つの方法"><span class="header-section-number">15.1</span> 最小二乗を求める五つの方法</a></li>
+  <li><a href="#天気予報についての回帰" id="toc-天気予報についての回帰" class="nav-link" data-scroll-target="#天気予報についての回帰"><span class="header-section-number">15.2</span> 天気予報についての回帰</a>
   <ul class="collapse">
-  <li><a href="#最小二乗法-i-lm-による参照値" id="toc-最小二乗法-i-lm-による参照値" class="nav-link" data-scroll-target="#最小二乗法-i-lm-による参照値"><span class="header-section-number">13.2.1</span> 最小二乗法 (I): <code>lm()</code> による参照値</a></li>
-  <li><a href="#最小二乗法-ii-linalg_lstsqの利用" id="toc-最小二乗法-ii-linalg_lstsqの利用" class="nav-link" data-scroll-target="#最小二乗法-ii-linalg_lstsqの利用"><span class="header-section-number">13.2.2</span> 最小二乗法 (II): <code>linalg_lstsq()</code>の利用</a></li>
-  <li><a href="#一休み-標準化しなかった場合" id="toc-一休み-標準化しなかった場合" class="nav-link" data-scroll-target="#一休み-標準化しなかった場合"><span class="header-section-number">13.2.3</span> 一休み: 標準化しなかった場合</a></li>
-  <li><a href="#最小二乗法-iii-正規方程式" id="toc-最小二乗法-iii-正規方程式" class="nav-link" data-scroll-target="#最小二乗法-iii-正規方程式"><span class="header-section-number">13.2.4</span> 最小二乗法 (III): 正規方程式</a></li>
-  <li><a href="#最小二乗法-iv-コレスキー分解" id="toc-最小二乗法-iv-コレスキー分解" class="nav-link" data-scroll-target="#最小二乗法-iv-コレスキー分解"><span class="header-section-number">13.2.5</span> 最小二乗法 (IV): コレスキー分解</a></li>
-  <li><a href="#最小二乗法-v-lu分解" id="toc-最小二乗法-v-lu分解" class="nav-link" data-scroll-target="#最小二乗法-v-lu分解"><span class="header-section-number">13.2.6</span> 最小二乗法 (V): LU分解</a></li>
-  <li><a href="#最小二乗法-vi-qr分解" id="toc-最小二乗法-vi-qr分解" class="nav-link" data-scroll-target="#最小二乗法-vi-qr分解"><span class="header-section-number">13.2.7</span> 最小二乗法 (VI): QR分解</a></li>
-  <li><a href="#最小二乗法-vii-特異値分解svd" id="toc-最小二乗法-vii-特異値分解svd" class="nav-link" data-scroll-target="#最小二乗法-vii-特異値分解svd"><span class="header-section-number">13.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</a></li>
-  <li><a href="#実行時間の比較" id="toc-実行時間の比較" class="nav-link" data-scroll-target="#実行時間の比較"><span class="header-section-number">13.2.9</span> 実行時間の比較</a></li>
+  <li><a href="#最小二乗法-i-lm-による参照値" id="toc-最小二乗法-i-lm-による参照値" class="nav-link" data-scroll-target="#最小二乗法-i-lm-による参照値"><span class="header-section-number">15.2.1</span> 最小二乗法 (I): <code>lm()</code> による参照値</a></li>
+  <li><a href="#最小二乗法-ii-linalg_lstsqの利用" id="toc-最小二乗法-ii-linalg_lstsqの利用" class="nav-link" data-scroll-target="#最小二乗法-ii-linalg_lstsqの利用"><span class="header-section-number">15.2.2</span> 最小二乗法 (II): <code>linalg_lstsq()</code>の利用</a></li>
+  <li><a href="#一休み-標準化しなかった場合" id="toc-一休み-標準化しなかった場合" class="nav-link" data-scroll-target="#一休み-標準化しなかった場合"><span class="header-section-number">15.2.3</span> 一休み: 標準化しなかった場合</a></li>
+  <li><a href="#最小二乗法-iii-正規方程式" id="toc-最小二乗法-iii-正規方程式" class="nav-link" data-scroll-target="#最小二乗法-iii-正規方程式"><span class="header-section-number">15.2.4</span> 最小二乗法 (III): 正規方程式</a></li>
+  <li><a href="#最小二乗法-iv-コレスキー分解" id="toc-最小二乗法-iv-コレスキー分解" class="nav-link" data-scroll-target="#最小二乗法-iv-コレスキー分解"><span class="header-section-number">15.2.5</span> 最小二乗法 (IV): コレスキー分解</a></li>
+  <li><a href="#最小二乗法-v-lu分解" id="toc-最小二乗法-v-lu分解" class="nav-link" data-scroll-target="#最小二乗法-v-lu分解"><span class="header-section-number">15.2.6</span> 最小二乗法 (V): LU分解</a></li>
+  <li><a href="#最小二乗法-vi-qr分解" id="toc-最小二乗法-vi-qr分解" class="nav-link" data-scroll-target="#最小二乗法-vi-qr分解"><span class="header-section-number">15.2.7</span> 最小二乗法 (VI): QR分解</a></li>
+  <li><a href="#最小二乗法-vii-特異値分解svd" id="toc-最小二乗法-vii-特異値分解svd" class="nav-link" data-scroll-target="#最小二乗法-vii-特異値分解svd"><span class="header-section-number">15.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</a></li>
+  <li><a href="#実行時間の比較" id="toc-実行時間の比較" class="nav-link" data-scroll-target="#実行時間の比較"><span class="header-section-number">15.2.9</span> 実行時間の比較</a></li>
   </ul></li>
-  <li><a href="#簡単な数値安定性の確認" id="toc-簡単な数値安定性の確認" class="nav-link" data-scroll-target="#簡単な数値安定性の確認"><span class="header-section-number">13.3</span> 簡単な数値安定性の確認</a></li>
+  <li><a href="#簡単な数値安定性の確認" id="toc-簡単な数値安定性の確認" class="nav-link" data-scroll-target="#簡単な数値安定性の確認"><span class="header-section-number">15.3</span> 簡単な数値安定性の確認</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./leastsquares.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./leastsquares.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></h1>
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></h1>
 </div>
 
 
@@ -360,8 +383,8 @@ window.Quarto = {
 
 <p>本章と次の章では、 <code>torch</code> が提供する行列演算を調べる。 この章では、最小二乗問題を解く様々な方法を見ていく。 目的は二つある。</p>
 <p>まず、この問題はすぐに技術上、計算上の内容になりがちだ。 読者の素養（や目的）により、これが望むものであるかもしれない。 基礎的な概念について、よく知っているかもしれないし、あまり興味がないかもしれない。 純粋に技術的な、つまり同時に概念や問題の基礎となる抽象的な考え方に基づかない説明だと、一部の読者はこの問題が持つ魅力を感じ、知的な関心を持つことができないかもしれない。 そのため、この章では、主な考え方が「コンピュータ科学的」な詳細（多くの素晴らしい本に書いてある）により覆い隠されないような方法で説明することに努める。</p>
-<section id="最小二乗を求める五つの方法" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="最小二乗を求める五つの方法"><span class="header-section-number">13.1</span> 最小二乗を求める五つの方法</h2>
+<section id="最小二乗を求める五つの方法" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="最小二乗を求める五つの方法"><span class="header-section-number">15.1</span> 最小二乗を求める五つの方法</h2>
 <p>線型最小二乗回帰をどのように計算するか。 Rでは、<code>lm()</code> を用いる。 <code>torch</code> には、<code>linalg_lstsq()</code> がある。 Rが利用者からややこしいことを隠蔽するのに対し、<code>torch</code> のような高性能計算フレームワークではより明示的な作業を求める傾向がある。 作業とは、説明書を丁寧に読むことや、少し試すこと、もしくはその両方だ。 例えば、次に示す <code>linalg_lstsq()</code> の説明の主要部は <code>driver</code> パラメタが詳しく記述されている。</p>
 <p><code>driver</code> chooses the LAPACK/MAGMA function that will be used.</p>
 <p>For CPU inputs the valid values are <code>'gels'</code>, <code>'gelsy'</code>, <code>'gelsd'</code>, <code>'gelss'</code>. For CUDA input, the only valid driver is <code>'gels'</code>, which assumes that <code>A</code> is full-rank.</p>
@@ -386,8 +409,8 @@ window.Quarto = {
 </ol>
 <p>全ての方法は、現実のデータセット、次に安定性に欠けることが知られているベンチマーク問題にに適用される。</p>
 </section>
-<section id="天気予報についての回帰" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="天気予報についての回帰"><span class="header-section-number">13.2</span> 天気予報についての回帰</h2>
+<section id="天気予報についての回帰" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="天気予報についての回帰"><span class="header-section-number">15.2</span> 天気予報についての回帰</h2>
 <p>用いる <a href="https://doi.org/10.24432/C59K76">データセット</a> は<a href="https://archive.ics.uci.edu/">UCI機械学習リポジトリ</a> から得られる。 Zipを展開して、作業ディレクトリ（ここでは <code>data</code>）に配置する。 ここでの利用方法は、本来の目的とは異なる。 機械学習で気温を予測する代わりに、原論文 <span class="citation" data-cites="Cho-etal:2020">(<a href="references.html#ref-Cho-etal:2020" role="doc-biblioref">Cho et al. 2020</a>)</span> では数値天気予報モデルの予測データのバイアス修正について述べられている。 本来の用途を気にする必要ない。 ここでの主眼は行列演算にあり、データセット自体はここで行う調査に非常に適している。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
@@ -445,8 +468,8 @@ window.Quarto = {
 </div>
 </div>
 <p>それでは、最初に期待される出力を求めよう。</p>
-<section id="最小二乗法-i-lm-による参照値" class="level3" data-number="13.2.1">
-<h3 data-number="13.2.1" class="anchored" data-anchor-id="最小二乗法-i-lm-による参照値"><span class="header-section-number">13.2.1</span> 最小二乗法 (I): <code>lm()</code> による参照値</h3>
+<section id="最小二乗法-i-lm-による参照値" class="level3" data-number="15.2.1">
+<h3 data-number="15.2.1" class="anchored" data-anchor-id="最小二乗法-i-lm-による参照値"><span class="header-section-number">15.2.1</span> 最小二乗法 (I): <code>lm()</code> による参照値</h3>
 <p>「信用できる」最小二乗法の実装があるとすれば、もちろん <code>lm()</code> に違いない。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Next_Tmax <span class="sc">~</span> . , <span class="at">data =</span> weather_df)</span>
@@ -510,8 +533,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
-<section id="最小二乗法-ii-linalg_lstsqの利用" class="level3" data-number="13.2.2">
-<h3 data-number="13.2.2" class="anchored" data-anchor-id="最小二乗法-ii-linalg_lstsqの利用"><span class="header-section-number">13.2.2</span> 最小二乗法 (II): <code>linalg_lstsq()</code>の利用</h3>
+<section id="最小二乗法-ii-linalg_lstsqの利用" class="level3" data-number="15.2.2">
+<h3 data-number="15.2.2" class="anchored" data-anchor-id="最小二乗法-ii-linalg_lstsqの利用"><span class="header-section-number">15.2.2</span> 最小二乗法 (II): <code>linalg_lstsq()</code>の利用</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_lstsq <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(A, b)<span class="sc">$</span>solution</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -539,8 +562,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>確かに。これは満足のいく結果だ。 しかし、これはあの「秘訣」、標準化に基づく結果だ。 もちろん、「秘訣」というほどのものではない。 データの標準化は通常の操作で、特にニューラルネットワークでは日常的に使われていおり、訓練を高速化している。 強調したい点は、 <code>torch</code> のような高性能計算のためのフレームワークは適用される領域の知識や、事前の解析がより多く利用者側に求められることが多いということだ。</p>
 </section>
-<section id="一休み-標準化しなかった場合" class="level3" data-number="13.2.3">
-<h3 data-number="13.2.3" class="anchored" data-anchor-id="一休み-標準化しなかった場合"><span class="header-section-number">13.2.3</span> 一休み: 標準化しなかった場合</h3>
+<section id="一休み-標準化しなかった場合" class="level3" data-number="15.2.3">
+<h3 data-number="15.2.3" class="anchored" data-anchor-id="一休み-標準化しなかった場合"><span class="header-section-number">15.2.3</span> 一休み: 標準化しなかった場合</h3>
 <p>素早く比較するために、今度はデータを標準化 <em>せずに</em> 別の予測変数の行列を作ってみる。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>weather_df_alt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
@@ -588,14 +611,14 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>なんと、何が起きたのか。 引用した説明書の一部を思い出すと、今度は既定の引数がうまくいかなかったのかもしれない。 理由を見つけよう。</p>
-<section id="問題の調査" class="level4" data-number="13.2.3.1">
-<h4 data-number="13.2.3.1" class="anchored" data-anchor-id="問題の調査"><span class="header-section-number">13.2.3.1</span> 問題の調査</h4>
+<section id="問題の調査" class="level4" data-number="15.2.3.1">
+<h4 data-number="15.2.3.1" class="anchored" data-anchor-id="問題の調査"><span class="header-section-number">15.2.3.1</span> 問題の調査</h4>
 <p>最小二乗問題を効率的に解くため、 <code>torch</code> はLAPACKというFortranのルーチン一式を呼んでいる。 LAPACKは効率的かつ規模の拡大に対応しつつ、線型代数においてよくある問題を解けるように設計されており、線型方程式の解や固有ベクトルと固有値、特異値を求めることができる。</p>
 <p><code>linalg_lstsqt()</code> で利用できる <code>driver</code> はLAPACKの異なる手続<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。 これは、今後行っていくことに類似している。</p>
 <p>つまり、何が起きているか調べるには、第一歩はどの手法がなぜ利用されたのか、（可能ならば）なぜ結果が満足いかないのか、代わりに使いたいLAPACKのルーチンを定め、実際に用いたときに何が起こるか確認することである。 （もちろん、わずかな手間がかかるだけなら、全ての方法を試せばよい。）</p>
 </section>
-<section id="概念i-行列の階数" class="level4" data-number="13.2.3.2">
-<h4 data-number="13.2.3.2" class="anchored" data-anchor-id="概念i-行列の階数"><span class="header-section-number">13.2.3.2</span> 概念(I): 行列の階数</h4>
+<section id="概念i-行列の階数" class="level4" data-number="15.2.3.2">
+<h4 data-number="15.2.3.2" class="anchored" data-anchor-id="概念i-行列の階数"><span class="header-section-number">15.2.3.2</span> 概念(I): 行列の階数</h4>
 <p>「ちょっと待て！」上述の説明書の一部から、最初にすべきことは階数ではなく、 <em>条件数</em>、つまり行列が「良条件」 であると思うかもしれない。 確かに条件数は重要で、この後すぐにこの問題に戻る。 でも、もっと基本的にことが起きている。 実際に「目に飛び込んでくる」ものではないことが。</p>
 <p><code>linalg_lstsq()</code> について参照してる、LAPACKの説明書の一部に重要な情報がある。 四つのルーチン <code>GELS</code> 、 <code>GELSY</code> 、 <code>GELSD</code> 、 <code>GELSS</code> の間て、違いは実装に限らない。 最適化の目的も異なっている。 根拠は次の通りだ。 一貫して、行列は行が列よりも多い（観測が特徴量より多い通常の場合）と仮定する。</p>
 <ul>
@@ -614,8 +637,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>行列は21列あり、階数は21なら、完全階数である。 呼び出すべきは確実に <code>GELS</code> ルーチンだ。</p>
 </section>
-<section id="正しい-linalg_lstsq-の呼び出し方" class="level4" data-number="13.2.3.3">
-<h4 data-number="13.2.3.3" class="anchored" data-anchor-id="正しい-linalg_lstsq-の呼び出し方"><span class="header-section-number">13.2.3.3</span> 正しい <code>linalg_lstsq()</code> の呼び出し方</h4>
+<section id="正しい-linalg_lstsq-の呼び出し方" class="level4" data-number="15.2.3.3">
+<h4 data-number="15.2.3.3" class="anchored" data-anchor-id="正しい-linalg_lstsq-の呼び出し方"><span class="header-section-number">15.2.3.3</span> 正しい <code>linalg_lstsq()</code> の呼び出し方</h4>
 <p>何を <code>driver</code> に渡すか分かったので、呼び出しを修正する。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x_lstsq_alt <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(</span>
@@ -636,8 +659,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>今度はそれぞれのRMSEが非常に近くなった。 標準化された行列を使ったときは、なぜFortranのルーチンを指定する必要がなかったのか疑問に思うだろう。</p>
 </section>
-<section id="標準化が役立つ理由" class="level4" data-number="13.2.3.4">
-<h4 data-number="13.2.3.4" class="anchored" data-anchor-id="標準化が役立つ理由"><span class="header-section-number">13.2.3.4</span> 標準化が役立つ理由</h4>
+<section id="標準化が役立つ理由" class="level4" data-number="15.2.3.4">
+<h4 data-number="15.2.3.4" class="anchored" data-anchor-id="標準化が役立つ理由"><span class="header-section-number">15.2.3.4</span> 標準化が役立つ理由</h4>
 <p>用いた行列に対して、標準化がしたことは特異値が範囲をかなり狭めたということだ。 標準化された行列 <code>A</code> では、特異値の最大値は最小値の約10倍である。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>svals_normalized_A <span class="ot">&lt;-</span> <span class="fu">linalg_svdvals</span>(A) <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A)[<span class="dv">1</span>]</span>
@@ -662,8 +685,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>これがなぜ重要なのか。 ここでついに <em>条件数</em> に話が戻る。</p>
 </section>
-<section id="概念-ii-条件数" class="level4" data-number="13.2.3.5">
-<h4 data-number="13.2.3.5" class="anchored" data-anchor-id="概念-ii-条件数"><span class="header-section-number">13.2.3.5</span> 概念 (II): 条件数</h4>
+<section id="概念-ii-条件数" class="level4" data-number="15.2.3.5">
+<h4 data-number="15.2.3.5" class="anchored" data-anchor-id="概念-ii-条件数"><span class="header-section-number">15.2.3.5</span> 概念 (II): 条件数</h4>
 <p>いわゆる <em>条件数</em> が大きいほど、計算の際に数値安定性の問題が生じる可能性が高くなる。 <code>torch</code> では、 <code>linalg_cond()</code> を用いて条件数を計算できる。 <code>A</code> と <code>A_alt</code> の条件数をそれぞれ比較しよう。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -700,8 +723,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>ここまでで、<code>torch</code> の <code>linalg</code> の部分を使うと、最もよく使われている最小二乗アルゴリズムがどのように動いているか理解することに役立つごとに納得してもらえたと思う。 これらに馴染もう。</p>
 </section>
 </section>
-<section id="最小二乗法-iii-正規方程式" class="level3" data-number="13.2.4">
-<h3 data-number="13.2.4" class="anchored" data-anchor-id="最小二乗法-iii-正規方程式"><span class="header-section-number">13.2.4</span> 最小二乗法 (III): 正規方程式</h3>
+<section id="最小二乗法-iii-正規方程式" class="level3" data-number="15.2.4">
+<h3 data-number="15.2.4" class="anchored" data-anchor-id="最小二乗法-iii-正規方程式"><span class="header-section-number">15.2.4</span> 最小二乗法 (III): 正規方程式</h3>
 <p>目的を示すことから始める。 特徴量を列に観測を行に格納した行列 <span class="math inline">\(\mathbf{A}\)</span> 及び観測された結果のベクトル <span class="math inline">\(\mathbf{b}\)</span> が与えられたとき、各特徴量について <span class="math inline">\(\mathbf{b}\)</span> を最もよく近似する回帰係数を一つ求めたい。 回帰係数のベクトルを <span class="math inline">\(\mathbf{x}\)</span> とする。 求めるには、連立方程式を解く必要があり、その行列表記は次のようになる。</p>
 <p><span class="math display">\[
 \mathbf{Ax} = \mathbf{b}
@@ -742,8 +765,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>直説法がうまくいくことを確かめたので、より洗練された手法を試す。 四つの行列分解が現れる。 コレスキー、LU、QR、そして特異値分解だ。 目的は、どの場合でも、（擬）逆行列の重い計算を回避することだ。 この計算は全ての手法に共通する。 しかしながら、行列の分解の仕方「だけ」ではなく、どの行列を分解するかも異なる。 これは様々な手法が課す制約と関係している。 大まかに述べると、上に並べた順序は前提条件の程度を反映している。 別の言い方をすれば、後ろほど一般性が高くなる。 関係する制約に応じて、最初の二つ（コレスキーとLU分解）は <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> に対して行い、後の二つ（QRとSVD）は <span class="math inline">\(\mathbf{A}\)</span> に直接作用させる。 これらを使うと <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を計算する必要がない。</p>
 </section>
-<section id="最小二乗法-iv-コレスキー分解" class="level3" data-number="13.2.5">
-<h3 data-number="13.2.5" class="anchored" data-anchor-id="最小二乗法-iv-コレスキー分解"><span class="header-section-number">13.2.5</span> 最小二乗法 (IV): コレスキー分解</h3>
+<section id="最小二乗法-iv-コレスキー分解" class="level3" data-number="15.2.5">
+<h3 data-number="15.2.5" class="anchored" data-anchor-id="最小二乗法-iv-コレスキー分解"><span class="header-section-number">15.2.5</span> 最小二乗法 (IV): コレスキー分解</h3>
 <p>コレスキー分解では、行列は二つの同じ大きさの三角行列に分解される。一方は他方の転置となっている。 通常次のように表す。</p>
 <p><span class="math display">\[
 \mathbf{A} = \mathbf{LL}^\mathbf{T}
@@ -865,8 +888,8 @@ x_3
 </div>
 <p>次の手法、つまり次の分解に進もう。</p>
 </section>
-<section id="最小二乗法-v-lu分解" class="level3" data-number="13.2.6">
-<h3 data-number="13.2.6" class="anchored" data-anchor-id="最小二乗法-v-lu分解"><span class="header-section-number">13.2.6</span> 最小二乗法 (V): LU分解</h3>
+<section id="最小二乗法-v-lu分解" class="level3" data-number="15.2.6">
+<h3 data-number="15.2.6" class="anchored" data-anchor-id="最小二乗法-v-lu分解"><span class="header-section-number">15.2.6</span> 最小二乗法 (V): LU分解</h3>
 <p>LU分解という名前は、分解により得られる二つの因子に由来している。 下三角行列 <span class="math inline">\(\mathbf{L}\)</span> と上三角行列 <span class="math inline">\(\mathbf{U}\)</span> である。 理論的には、LU分解に制約はない。 つまり、行の交換を許して、実質的に <span class="math inline">\(\mathbf{A} = \mathbf{LU}\)</span> を <span class="math inline">\(\mathbf{A} = \mathbf{PLU}\)</span> （ここで <span class="math inline">\(\mathbf{P}\)</span> は置換行列）とすれば、どんな行列も分解できる。</p>
 <p>実際には、 <code>torch_triangular_solve()</code> を使う場合は、入力する行列は対称でなければならない。 そのため、 <span class="math inline">\(\mathbf{A}\)</span> ではなく、 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うことになる。 （そのため、LU分解をコレスキーの直後に説明している。これらは使い方が似ているものの、考え方は全く異なる。）</p>
 <p><span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を使うということは、この方法も正規方程式から出発することを意味する。 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> を分解し、二つの三角行列を解いて、最終的な解を得る。 ここで手順を示す。 常に必要とは限らない置換行列 <span class="math inline">\(\mathbf{P}\)</span> も含まれている。</p>
@@ -921,8 +944,8 @@ x_3
 </div>
 <p>次に、<span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> の計算が必要ない二つの方法を見る。</p>
 </section>
-<section id="最小二乗法-vi-qr分解" class="level3" data-number="13.2.7">
-<h3 data-number="13.2.7" class="anchored" data-anchor-id="最小二乗法-vi-qr分解"><span class="header-section-number">13.2.7</span> 最小二乗法 (VI): QR分解</h3>
+<section id="最小二乗法-vi-qr分解" class="level3" data-number="15.2.7">
+<h3 data-number="15.2.7" class="anchored" data-anchor-id="最小二乗法-vi-qr分解"><span class="header-section-number">15.2.7</span> 最小二乗法 (VI): QR分解</h3>
 <p>どんな行列も直交行列 <span class="math inline">\(\mathbf{Q}\)</span> と上三角行列 <span class="math inline">\(\mathbf{R}\)</span> に分解できる。 QR分解は、最小二乗問題の解法としておそらく最もよく使われており、Rの <code>lm()</code> にも採用されている。 どのようにして、問題を簡単にしているのか。</p>
 <p><span class="math inline">\(\mathbf{F}\)</span> については、どのように便利かを既に述べた。 三角行列により、代入だけで順に解くことができる連立方程式が得られる。 <span class="math inline">\(\mathbf{Q}\)</span> はもっと便利である。 直交行列は、列が直交するものを指す。 これが意味するのは、相互内積が全て0で、ノルムが1であるということだ。 そのため、こののような行列はその逆行列が転置に等しい。 一般的には、逆行列は計算が困難である一方、転置は容易である。 逆行列を計算し、 <span class="math inline">\(\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}\)</span> を解くことが最小二乗法の中心的な問題であることを考慮すると、その重要性は明らかだ。</p>
 <p>これまでの方法と比較して、手順は少し短くなる。 ダミー変数 <span class="math inline">\(\mathbf{y}\)</span> はもう不要だ。 代わりに <span class="math inline">\(\mathbf{Q}\)</span> を右辺に移し、転置（逆行列）を求める。 残りは、後退代入だけだ。 また、全ての行列に対してQR分解が存在するので、 <span class="math inline">\(\mathbf{A}\)</span> から直接始め、<span class="math inline">\(\mathbf{A}\mathrm{T}\mathbf{A}\)</span>は不要だ。</p>
@@ -956,8 +979,8 @@ x_3
 </div>
 <p>ここまで読んでくると、節の終わりに「専用の函数が <code>torch</code> / <code>torch_linalg</code> にある…」という記述を期待しているかもしれない。 文字通りのものはないが、実質上はある。 <code>linalg_lstsq()</code> を呼び出すときに <code>driver = "gels"</code> を渡すと、QR分解が使われる。</p>
 </section>
-<section id="最小二乗法-vii-特異値分解svd" class="level3" data-number="13.2.8">
-<h3 data-number="13.2.8" class="anchored" data-anchor-id="最小二乗法-vii-特異値分解svd"><span class="header-section-number">13.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</h3>
+<section id="最小二乗法-vii-特異値分解svd" class="level3" data-number="15.2.8">
+<h3 data-number="15.2.8" class="anchored" data-anchor-id="最小二乗法-vii-特異値分解svd"><span class="header-section-number">15.2.8</span> 最小二乗法 (VII): 特異値分解（SVD）</h3>
 <p>まさに、頂点に向かう順序で、最後に説明する分解手法は万能で、用途が広く、意味論において価値がある、特異値分解（SVD: singular value decomposition）である。 三つ目の側面は、興味深いものの、現在の問題に関係しないので省略する。 ここでは、汎用性が重要である。 全ての行列は、SVDの形式に分解して構成することができる。</p>
 <p>特異値分解は、入力 <span class="math inline">\(\mathbf{A}\)</span> を二つの直交行列 <span class="math inline">\(\mathbf{U}\)</span> と <span class="math inline">\(\mathbf{V}^\mathrm{T}\)</span> と対角行列 <span class="math inline">\(\boldsymbol{\Sigma}\)</span> に分解し、 <span class="math inline">\(\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^\mathrm{T}\)</span> という形にする。 ここで、 <span class="math inline">\(\mathbf{U}\)</span> と <span class="math inline">\(\mathbf{V}^\mathrm{T}\)</span> は <em>左</em> と <em>右</em> 特異ベクトルであり、 <span class="math inline">\(\boldsymbol{\Sigma}\)</span> には特異値が格納されている。</p>
 <p><span class="math display">\[
@@ -1011,8 +1034,8 @@ x_3
 </div>
 <p>これで、重要な最小二乗アルゴリズムが一巡した。 この例の仕上げに、簡単に性能を見ておこう。</p>
 </section>
-<section id="実行時間の比較" class="level3" data-number="13.2.9">
-<h3 data-number="13.2.9" class="anchored" data-anchor-id="実行時間の比較"><span class="header-section-number">13.2.9</span> 実行時間の比較</h3>
+<section id="実行時間の比較" class="level3" data-number="15.2.9">
+<h3 data-number="15.2.9" class="anchored" data-anchor-id="実行時間の比較"><span class="header-section-number">15.2.9</span> 実行時間の比較</h3>
 <p>既に述べたように、本章の主眼は概念であり、性能ではない。 しかしより大きなデータセットを扱い始めると、スピードが気になることは避けられない。 また、これらの手法がどのくらい速いか確認すること自体は、興味深い。 ということで、簡単な性能比較をしよう。 ただし、結果を外挿しないように。 扱うデータに対して、類似のコードを実行すること。</p>
 <p>時間計測のために各アルゴリズムを対応する函数にまとめる。</p>
 <div class="cell">
@@ -1147,8 +1170,8 @@ integer overflows</code></pre>
 <p>結論として、様々な方法で行列を分解することが、最小二乗問題を解くために役立つことが分かった。 また、これらの手法の時間を計測する方法を簡単に示したが、スピードだけが重要ではない。 同時に、解が信頼できるものであることも望まれる。 これを専門用語では <em>数値安定性</em> と呼ぶ。</p>
 </section>
 </section>
-<section id="簡単な数値安定性の確認" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="簡単な数値安定性の確認"><span class="header-section-number">13.3</span> 簡単な数値安定性の確認</h2>
+<section id="簡単な数値安定性の確認" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="簡単な数値安定性の確認"><span class="header-section-number">15.3</span> 簡単な数値安定性の確認</h2>
 <p>既に条件数について議論した。 数値安定性の概念は、考え方としては類似しているが、行列ではなくアルゴリズムを参照している。 どちらの場合も、考え方は入力における微小な変化は出力においても微小であるべきだというものだ。 この話題について一冊全体割いた本がいくつもあるので、詳細に立ち入ることは避ける。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p>代わりに、悪条件な最小二乗問題の例を用いる。 つまり、行列が悪条件となっている。 この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <p>予測変数の行列は、悪条件になるように作られた100 x 15のファンデルモンド行列である。</p>
@@ -1746,12 +1769,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./other-overview.html" class="pagination-link" aria-label="概要">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./convolution.html" class="pagination-link" aria-label="行列計算: 畳み込み">
-        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

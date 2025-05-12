@@ -1,7 +1,7 @@
 ::: {.content-visible when-format="html"}
 <h2> ようこそ </h2>
 
-**これはオンライン版 [*Deep Learning and Scientific Computing with R `torch`*](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/wavelets.html) [Sigrid Keydana](https://divergences.xyz/) 著の部分的な和訳「R torchによる深層学習と科学計算」である。
+**これはオンライン版 [*Deep Learning and Scientific Computing with R `torch`*](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) [Sigrid Keydana](https://divergences.xyz/) 著の部分的な和訳「R torchによる深層学習と科学計算」である。
 GitHubリポジトリは [原典](https://github.com/skeydan/Deep-Learning-and-Scientific-Computing-with-R-torch)、[和訳](https://github.com/tenomoto/dlscrtorch/) にある。
 原典の紙媒体 [CRC Press](https://doi.org/10.1201/9781003275923) は出版社または [Amazon](https://www.amazon.com/Learning-Scientific-Computing-torch-Chapman/dp/1032231394)のような販売店から購入できる。**
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>14&nbsp; 行列計算: 畳み込み – R torchによる深層学習と科学計算</title>
+<title>16&nbsp; 行列計算: 畳み込み – R torchによる深層学習と科学計算</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -144,7 +144,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -258,7 +258,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+ <span class="menu-text">torchで深層学習</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -266,20 +266,43 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./dl-overview.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./leastsquares.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./convolution.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
   </div>
 </li>
       </ul>
@@ -300,16 +323,16 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#畳み込みの意義" id="toc-畳み込みの意義" class="nav-link active" data-scroll-target="#畳み込みの意義"><span class="header-section-number">14.1</span> 畳み込みの意義</a></li>
-  <li><a href="#一次元の畳み込み" id="toc-一次元の畳み込み" class="nav-link" data-scroll-target="#一次元の畳み込み"><span class="header-section-number">14.2</span> 一次元の畳み込み</a></li>
-  <li><a href="#畳み込みの二つの考え方" id="toc-畳み込みの二つの考え方" class="nav-link" data-scroll-target="#畳み込みの二つの考え方"><span class="header-section-number">14.3</span> 畳み込みの二つの考え方</a>
+  <li><a href="#畳み込みの意義" id="toc-畳み込みの意義" class="nav-link active" data-scroll-target="#畳み込みの意義"><span class="header-section-number">16.1</span> 畳み込みの意義</a></li>
+  <li><a href="#一次元の畳み込み" id="toc-一次元の畳み込み" class="nav-link" data-scroll-target="#一次元の畳み込み"><span class="header-section-number">16.2</span> 一次元の畳み込み</a></li>
+  <li><a href="#畳み込みの二つの考え方" id="toc-畳み込みの二つの考え方" class="nav-link" data-scroll-target="#畳み込みの二つの考え方"><span class="header-section-number">16.3</span> 畳み込みの二つの考え方</a>
   <ul class="collapse">
-  <li><a href="#実装" id="toc-実装" class="nav-link" data-scroll-target="#実装"><span class="header-section-number">14.3.1</span> 実装</a></li>
+  <li><a href="#実装" id="toc-実装" class="nav-link" data-scroll-target="#実装"><span class="header-section-number">16.3.1</span> 実装</a></li>
   </ul></li>
-  <li><a href="#二次元での畳み込み" id="toc-二次元での畳み込み" class="nav-link" data-scroll-target="#二次元での畳み込み"><span class="header-section-number">14.4</span> 二次元での畳み込み</a>
+  <li><a href="#二次元での畳み込み" id="toc-二次元での畳み込み" class="nav-link" data-scroll-target="#二次元での畳み込み"><span class="header-section-number">16.4</span> 二次元での畳み込み</a>
   <ul class="collapse">
-  <li><a href="#仕組み出力からの見方" id="toc-仕組み出力からの見方" class="nav-link" data-scroll-target="#仕組み出力からの見方"><span class="header-section-number">14.4.1</span> 仕組み（出力からの見方）</a></li>
-  <li><a href="#実装-1" id="toc-実装-1" class="nav-link" data-scroll-target="#実装-1"><span class="header-section-number">14.4.2</span> 実装</a></li>
+  <li><a href="#仕組み出力からの見方" id="toc-仕組み出力からの見方" class="nav-link" data-scroll-target="#仕組み出力からの見方"><span class="header-section-number">16.4.1</span> 仕組み（出力からの見方）</a></li>
+  <li><a href="#実装-1" id="toc-実装-1" class="nav-link" data-scroll-target="#実装-1"><span class="header-section-number">16.4.2</span> 実装</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -317,9 +340,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./other-overview.html">他にも<code>torch</code> でできること: 行列計算・フーリエ変換・ウェーブレット</a></li><li class="breadcrumb-item"><a href="./convolution.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></h1>
+<h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></h1>
 </div>
 
 
@@ -338,14 +361,14 @@ window.Quarto = {
 
 <p>機械学習では、畳み込みや畳み込み層、畳み込みニューラルネットワークが話題となる。しかしながら、画像処理の章で説明したように、そのように呼んで行っているものは実際は少し異なり、相互相関である。</p>
 <p>形式的には、差は重要ではなく、符号が逆になるだけである。 意味の上では、これらは全く異なる。 既に見たように、相互相関は類似性を見つけ、特徴抽出器として働く。 畳み込みは、抽象的に特徴づけるのは難しい。 信号処理において果たしている傑出した役割やその数学的な意義については、本が何冊も書けるほどである。 ここでは、深く基礎を掘り下げることはしない。 その代わりに、その作用について何らかの洞察を得ることにする。 まず、関わる手順について考察し示すこと、そしてコードとして実装することによりこれを行う。 前の章と同様に、読者が興味を持てるよう、焦点は理解と更なる探究のための基礎作りに合わせる。</p>
-<section id="畳み込みの意義" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="畳み込みの意義"><span class="header-section-number">14.1</span> 畳み込みの意義</h2>
+<section id="畳み込みの意義" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="畳み込みの意義"><span class="header-section-number">16.1</span> 畳み込みの意義</h2>
 <p>信号処理では、 <em>フィルタ</em> を用いることにより、信号を変えて目的の形、例えば高振動数が除去されたものにする。 手元に、時系列をフーリエ変換した表現、つまり振動数毎に大きさと位相があるとする。 ある閾値より高い振動数をを除去したいとしよう。 最も簡単な方法は、振動数のデータに1と0の列を掛けることだ。 このようにすると、フィルタの作用は振動数領域で生じ、これが断然最も便利な方法だ。</p>
 <p>もし、同様の結果を時間領域で得たい、つまり生の時系列データを扱うとしたらどうするか。 その場合、フィルタの時間領域での表現（逆フーリエ変換から得られる）を見つけなくてはならない。 そして、この表現を時系列に <em>畳み込む</em> 。 言い換えれば、時間領域における畳み込みは振動数領域における掛け算に対応する。 この基本的な事実は常に利用される。</p>
 <p>それでは、畳み込みは何にをするものかや、どのように実装されているかについて、より詳しく理解しよう。 単一の次元から始めて、二次元の場合にどのようになるか、少し探究する。</p>
 </section>
-<section id="一次元の畳み込み" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="一次元の畳み込み"><span class="header-section-number">14.2</span> 一次元の畳み込み</h2>
+<section id="一次元の畳み込み" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="一次元の畳み込み"><span class="header-section-number">16.2</span> 一次元の畳み込み</h2>
 <p>簡単な信号 <code>x</code> と簡単なフィルタ <code>h</code> を作るところから取り掛かる。 変数の名前は思いつきで決めたのではない、信号処理で <span class="math inline">\(h\)</span> は、この後すぐに現れる用語 <em>インパルス</em> 応答を表すのに通常使われる記号だ。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
@@ -407,20 +430,20 @@ window.Quarto = {
 <p>技術的にはさはわずかだ。 単に符号が逆転するだけである。 しかし、数学的には、フィルタが何であり、何をするかに関わるという意味で重要である。 これは、この後説明する。</p>
 <p>畳み込みの基礎となる演算は二つの方法で示すことができる。</p>
 </section>
-<section id="畳み込みの二つの考え方" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="畳み込みの二つの考え方"><span class="header-section-number">14.3</span> 畳み込みの二つの考え方</h2>
+<section id="畳み込みの二つの考え方" class="level2" data-number="16.3">
+<h2 data-number="16.3" class="anchored" data-anchor-id="畳み込みの二つの考え方"><span class="header-section-number">16.3</span> 畳み込みの二つの考え方</h2>
 <p>一つは、単一の出力に着目しどのように得られたか定めるものだ。 つまり、どの入力要素がその値に寄与したか、どのように組み合わされたかを問う。 これは「出力からの見方」と呼ぶことができ、相互相関で馴染みのあるものである。</p>
 <p>相互相関と同様に、次のようにも述べることもできる。 フィルタが画像を「移動」し、個々の画像中の位置（画素）で、周囲の入力画素と対応する「重ねられた」フィルタ値とを掛け算し、全ての画素を足し合わせる。 つまり、個々の出力画素は入力とフィルタ値の組の間の内積の計算から得られる。</p>
 <p>二つ目の考え方は、入力の観点から見たもの（「入力からの見方」と呼ぶ）だ。 問いは、どのように各入力が出力に寄与するかである。 この見方は、最初の見方よりも慣れを要するが、単に馴染み、ニューラルネットワークの文脈でのよくある説明のされ方の問題かもしれない。 どちらにしても、入力からの見方は、畳み込みの数学的な意味について学ぶという点で非常に有益である。</p>
 <p>両方の見方を学ぶ。 まず、馴染みのある、出力からの見方から始める。</p>
-<section id="出力からの見方" class="level4" data-number="14.3.0.1">
-<h4 data-number="14.3.0.1" class="anchored" data-anchor-id="出力からの見方"><span class="header-section-number">14.3.0.1</span> 出力からの見方</h4>
+<section id="出力からの見方" class="level4" data-number="16.3.0.1">
+<h4 data-number="16.3.0.1" class="anchored" data-anchor-id="出力からの見方"><span class="header-section-number">16.3.0.1</span> 出力からの見方</h4>
 <p>出力からの見方では、<code>torch_conv1d()</code> で <code>padding = 2</code> を指定したときのように、まず入力信号の両側を延長する。 指定通りに、インパルス応答を反転し、<code>1, 0, -1</code> とする。 次に、「移動」を示す。</p>
-<p>以下は、表形式でこれを示したものだ（<a href="#tbl-convolution_output_view" class="quarto-xref">Table&nbsp;<span>14.1</span></a>）。</p>
+<p>以下は、表形式でこれを示したものだ（<a href="#tbl-convolution_output_view" class="quarto-xref">Table&nbsp;<span>16.1</span></a>）。</p>
 <div id="tbl-convolution_output_view" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-convolution_output_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;14.1: 畳み込み: 出力からの見方
+Table&nbsp;16.1: 畳み込み: 出力からの見方
 </figcaption>
 <div aria-describedby="tbl-convolution_output_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -524,8 +547,8 @@ Table&nbsp;14.1: 畳み込み: 出力からの見方
 </div>
 <p>結局この話題について既に述べたように、書き出してみた結果に驚くことは何もない。 次に入力からの見方を考える。</p>
 </section>
-<section id="入力からの見方" class="level4" data-number="14.3.0.2">
-<h4 data-number="14.3.0.2" class="anchored" data-anchor-id="入力からの見方"><span class="header-section-number">14.3.0.2</span> 入力からの見方</h4>
+<section id="入力からの見方" class="level4" data-number="16.3.0.2">
+<h4 data-number="16.3.0.2" class="anchored" data-anchor-id="入力からの見方"><span class="header-section-number">16.3.0.2</span> 入力からの見方</h4>
 <p>入力からの考え方で重要なことは、入力信号をどのように考えるかである。 個々の要素は、拡大縮小され、移動されたインパルスと見なされる。</p>
 <p><em>インパルス</em> は単位標本（またはインパルス）函数、デルタ（<span class="math inline">\(\delta\)</span>）で与えられる。 この函数は値が1となる0を除いたすべての位置において0である。</p>
 <p><span class="math display">\[
@@ -547,11 +570,11 @@ h[n] = h[n - 0] \equiv h(\delta[n-0])
 \]</span> [^4]: この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。</p>
 <p>扱っている例では、数列 <code>-1, 0, 1</code> となるだろう。 でも信号は0だけでなく、他の時刻においても表すことが必要であるように、フィルタも他の位置でも適用できなければならない。 その目的のためにも、移動操作が用いられ、似た方法で定式化される。 例えば、<span class="math inline">\(h[n-1]\)</span> はフィルタが時刻1、<span class="math inline">\(n-1\)</span>が0となる時刻に適用されることを意味する。 このような移動は、俗に「ずらし」と呼んでいるものに相当する。</p>
 <p>さて、残されている仕事は部品を組み合わせることだ。 時刻 <span class="math inline">\(n=0\)</span> において、移動なしのインパルス応答を受け取り、信号の振幅で拡大縮小する。 例においては、その値は1なので、<span class="math inline">\(1 * h[n- 0] = 1 * [-1, 0, 1] = [-1, 0, 1]\)</span>となる。 他の時刻においては、インパルスオス等を考えている入力位置に移動し掛け算する。 最後に、すべての入力位置からすべての寄与を得たら、足し合わせて畳み込まれた出力を得る。</p>
-<p>次の表は、それを説明するものである<a href="#tbl-convolution_input_view" class="quarto-xref">Table&nbsp;<span>14.2</span></a>。</p>
+<p>次の表は、それを説明するものである<a href="#tbl-convolution_input_view" class="quarto-xref">Table&nbsp;<span>16.2</span></a>。</p>
 <div id="tbl-convolution_input_view" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-convolution_input_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;14.2: 畳み込み: 入力からの見方
+Table&nbsp;16.2: 畳み込み: 入力からの見方
 </figcaption>
 <div aria-describedby="tbl-convolution_input_view-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -596,8 +619,8 @@ Table&nbsp;14.2: 畳み込み: 入力からの見方
 <p>個人的には、出力からの見方の方が理解しやすいものの、入力からの見方から得られる洞察が多いように感じる。 特に、避けられない問い、なぜインパルス応答を反転させるのかに答えている。</p>
 <p>謎の力のようなものからは程遠く、負号は信号の表現のされ方から生じた機械的な結果にすぎない。 時刻 <span class="math inline">\(n=2\)</span> において測定された信号は <span class="math inline">\(\delta[n-2]\)</span> （2から2を引くと0）と表され、その信号に適用されるフィルタも <span class="math inline">\(h[n-2]\)</span> となる。</p>
 </section>
-<section id="実装" class="level3" data-number="14.3.1">
-<h3 data-number="14.3.1" class="anchored" data-anchor-id="実装"><span class="header-section-number">14.3.1</span> 実装</h3>
+<section id="実装" class="level3" data-number="16.3.1">
+<h3 data-number="16.3.1" class="anchored" data-anchor-id="実装"><span class="header-section-number">16.3.1</span> 実装</h3>
 <p>出力からの見方についての説明から、どのようにコードにするか述べることはあまりないと思うかもしれない。 入力ベクトルに亙ってループし、期待される出力位置において内積を計算するのは容易に見える。 しかし、これは多数のベクトル積を計算することを意味し、さらに入力が長ければ長いほどその計算が増加する。</p>
 <p>幸運にも、もっと良い方法がある。 単一次元（線型）畳み込みは、対角成分がいくつかの定数で、他の要素が0であるToeplitz行列により計算される。 フィルタがToeplitz行列で定式化れれば、行われる積はToeplitz行列と入力との間の一つだけである。 行列の列数は入力の長さと同じだけ必要である（さもなくば積が計算できない）といっても、行列は「ほぼ空」なので計算量は少ない。</p>
 <p>扱っている例に対して、Toeplitz行列を作ったものを示す。</p>
@@ -639,11 +662,11 @@ Table&nbsp;14.2: 畳み込み: 入力からの見方
 <p>期待通りになった。 次に二次元の場合を考えよう。 概念的には、差はないが、実際の計算（「自作」と行列の両方）はもっと複雑になる。 つまり、手計算の（一般化可能な）一部を示すことで満足し、計算の部分ではいちいち詳細を示さないことにする。</p>
 </section>
 </section>
-<section id="二次元での畳み込み" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="二次元での畳み込み"><span class="header-section-number">14.4</span> 二次元での畳み込み</h2>
+<section id="二次元での畳み込み" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="二次元での畳み込み"><span class="header-section-number">16.4</span> 二次元での畳み込み</h2>
 <p>一次元と二次元の畳み込みがどのように類似しているか外見的に示すために、出力からの見方を考える。</p>
-<section id="仕組み出力からの見方" class="level3" data-number="14.4.1">
-<h3 data-number="14.4.1" class="anchored" data-anchor-id="仕組み出力からの見方"><span class="header-section-number">14.4.1</span> 仕組み（出力からの見方）</h3>
+<section id="仕組み出力からの見方" class="level3" data-number="16.4.1">
+<h3 data-number="16.4.1" class="anchored" data-anchor-id="仕組み出力からの見方"><span class="header-section-number">16.4.1</span> 仕組み（出力からの見方）</h3>
 <p>今回の例では、入力は二次元で、次のようなものである。</p>
 <p><span class="math display">\[
 \begin{bmatrix}
@@ -851,11 +874,11 @@ Table&nbsp;14.2: 畳み込み: 入力からの見方
 \]</span></p>
 <p>まだ値のない残りについても同様に計算できる。 その計算は省略して、どのように実際の計算が行われるか見ることにする。</p>
 </section>
-<section id="実装-1" class="level3" data-number="14.4.2">
-<h3 data-number="14.4.2" class="anchored" data-anchor-id="実装-1"><span class="header-section-number">14.4.2</span> 実装</h3>
+<section id="実装-1" class="level3" data-number="16.4.2">
+<h3 data-number="16.4.2" class="anchored" data-anchor-id="実装-1"><span class="header-section-number">16.4.2</span> 実装</h3>
 <p>二次元の畳み込みの実装にもToeplitz行列を使う。 すでに述べたように、なぜすべての手順がそのなるか <em>厳密な形</em> では示さない。 ここでの意図は扱っている例を示すことであり、その例を踏まえて、必要ならいろいろと探究してほしい。</p>
-<section id="手順1-フィルタ行列の準備" class="level4" data-number="14.4.2.1">
-<h4 data-number="14.4.2.1" class="anchored" data-anchor-id="手順1-フィルタ行列の準備"><span class="header-section-number">14.4.2.1</span> 手順1: フィルタ行列の準備</h4>
+<section id="手順1-フィルタ行列の準備" class="level4" data-number="16.4.2.1">
+<h4 data-number="16.4.2.1" class="anchored" data-anchor-id="手順1-フィルタ行列の準備"><span class="header-section-number">16.4.2.1</span> 手順1: フィルタ行列の準備</h4>
 <p>フィルタを出力の大きさに合わせる。</p>
 <pre><code>0  0 0 0
 1  1 0 0
@@ -949,8 +972,8 @@ H2  H1</code></pre>
 [ CPUFloatType{12,6} ]</code></pre>
 <p>最終的な行列は二つの非0の「バンド」を持ち、二つの全てが0の対角線で分けられている。 この行列は、行列積のために必要なフィルタの最終的な形である。</p>
 </section>
-<section id="手順2-入力の準備" class="level4" data-number="14.4.2.2">
-<h4 data-number="14.4.2.2" class="anchored" data-anchor-id="手順2-入力の準備"><span class="header-section-number">14.4.2.2</span> 手順2: 入力の準備</h4>
+<section id="手順2-入力の準備" class="level4" data-number="16.4.2.2">
+<h4 data-number="16.4.2.2" class="anchored" data-anchor-id="手順2-入力の準備"><span class="header-section-number">16.4.2.2</span> 手順2: 入力の準備</h4>
 <p>この <code>12 x 6</code> 行列と掛け算できるように、入力をベクトルに平坦化する必要がある。 再び、行を下から順に進める。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">3</span>)) </span>
@@ -970,8 +993,8 @@ H2  H1</code></pre>
 </div>
 </div>
 </section>
-<section id="手順3-行列積" class="level4" data-number="14.4.2.3">
-<h4 data-number="14.4.2.3" class="anchored" data-anchor-id="手順3-行列積"><span class="header-section-number">14.4.2.3</span> 手順3: 行列積</h4>
+<section id="手順3-行列積" class="level4" data-number="16.4.2.3">
+<h4 data-number="16.4.2.3" class="anchored" data-anchor-id="手順3-行列積"><span class="header-section-number">16.4.2.3</span> 手順3: 行列積</h4>
 <p>ここまでで、畳み込みは単純な行列積に変わった。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> H<span class="sc">$</span><span class="fu">matmul</span>(x)</span>
@@ -1446,7 +1469,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./leastsquares.html" class="pagination-link" aria-label="行列演算: 最小二乗問題">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
