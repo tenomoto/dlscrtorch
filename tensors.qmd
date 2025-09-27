@@ -325,7 +325,7 @@ torch_tensor(c(1, NA, 3))
 
 Rの`NA`は`NaN`に変換された。
 これを扱えるだろうか。
-いくつかの`torch`のかんすうでは可能だ。
+いくつかの`torch`の函数では可能だ。
 例えば、`torch_nanquantile()`は単に`NaN`を無視する。
 
 ```{r}
