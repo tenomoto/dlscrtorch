@@ -278,6 +278,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">データの読み込み</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./luz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">luzを使った訓練</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -292,19 +298,19 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./other-overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">概要</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">概要</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./leastsquares.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列演算: 最小二乗問題</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./convolution.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">行列計算: 畳み込み</span></span></a>
   </div>
 </li>
       </ul>
@@ -391,16 +397,16 @@ window.Quarto = {
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 2.3861
--1.5593
- 4.7452
--3.3252
- 0.1498
--1.7578
--1.2850
- 0.6665
--0.1195
--2.5335
+ 0.0849
+-0.5364
+-0.7455
+-0.8728
+ 1.0749
+ 0.1355
+ 0.1975
+ 0.2398
+-0.0627
+ 1.5160
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -578,26 +584,26 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  41.5757 
-Epoch:  20    Loss:  39.00263 
-Epoch:  30    Loss:  36.63568 
-Epoch:  40    Loss:  34.45618 
-Epoch:  50    Loss:  32.44524 
-Epoch:  60    Loss:  30.5777 
-Epoch:  70    Loss:  28.85323 
-Epoch:  80    Loss:  27.26075 
-Epoch:  90    Loss:  25.78811 
-Epoch:  100    Loss:  24.42213 
-Epoch:  110    Loss:  23.15415 
-Epoch:  120    Loss:  21.9749 
-Epoch:  130    Loss:  20.88033 
-Epoch:  140    Loss:  19.86461 
-Epoch:  150    Loss:  18.91824 
-Epoch:  160    Loss:  18.03577 
-Epoch:  170    Loss:  17.21113 
-Epoch:  180    Loss:  16.43913 
-Epoch:  190    Loss:  15.71785 
-Epoch:  200    Loss:  15.044 </code></pre>
+<pre><code>Epoch:  10    Loss:  47.01073 
+Epoch:  20    Loss:  43.27639 
+Epoch:  30    Loss:  39.93836 
+Epoch:  40    Loss:  36.9425 
+Epoch:  50    Loss:  34.24915 
+Epoch:  60    Loss:  31.81582 
+Epoch:  70    Loss:  29.61428 
+Epoch:  80    Loss:  27.62029 
+Epoch:  90    Loss:  25.81124 
+Epoch:  100    Loss:  24.16312 
+Epoch:  110    Loss:  22.66156 
+Epoch:  120    Loss:  21.29248 
+Epoch:  130    Loss:  20.04201 
+Epoch:  140    Loss:  18.89908 
+Epoch:  150    Loss:  17.85307 
+Epoch:  160    Loss:  16.89423 
+Epoch:  170    Loss:  16.01326 
+Epoch:  180    Loss:  15.20265 
+Epoch:  190    Loss:  14.4554 
+Epoch:  200    Loss:  13.76766 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>

@@ -25,6 +25,7 @@ book:
       chapters:
         - dl-overview.qmd
         - data.qmd
+        - luz.qmd
     - part: "他にも`torch` でできること: 行列計算・フーリエ変換・ウェーブレット"
       chapters:
         - other-overview.qmd

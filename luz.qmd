@@ -1,0 +1,530 @@
+# luzを使った訓練
+
+本書をここまで読み進めていれば、ニューラルネットワークの訓練の仕方は会得しているだろう。
+でも、実を言うと、 `optimizer$zero_grad()` や `loss$backward()` そして `optimizer$step()` のような手順について正しい実行順序を意識する必要がいくらかある。
+また、我々が用いている例よりも複雑なシナリオでは、意識しておく必要のある項目が増える。
+
+まだ取り上げていないことの中には、例えば機械学習における三段階、訓練、検証、試験がある。
+他にも、デバイス（CPUとお持ちならGPU）間のデータの流れの問題がある。
+どちらも、訓練ループに追加のコードを導入する必要がある。
+このコードを書くのには手がかかり、誤りを起こす可能性が生じる。
+
+今述べたことは、本章の末尾の付録に記す。
+ここでは、解決手段に絞る。
+高水準で、使いやすく、簡潔な方法で、訓練段階を組み上げるために、 `torch` の上に作られたパッケージ `luz` を用いる。
+
+## 光あれ、光あれ、luzがある
+
+*torch* は既にある程度の光をもたらしたが、実際は *十分* 明るくないことがある。
+`luz` は `torch` を用いた深層学習が可能な限り手軽になるように作られ、同時に簡単なあつらえができるようになっている。
+本章では、全体の過程に焦点を絞り、あつらえは後の章で扱う。
+
+比較が簡単にできるように、我々が取り組んでいる例を引き続き用い、第3版を `luz` を用いて作る。
+まず、例を「そのまま」移植する。
+その後により現実的なシナリオに合わせる。
+そのシナリオでは
+
+* 独立した訓練、検証、試験集合を用いる。
+* 訓練・検証の間、 `luz` で *指標* を計算する。
+* *コールバック* を用いてあつらえの動作や訓練中にハイパパラメタの動的な変更を行う。
+* 前述の *デバイス* において何が起きているか説明する。
+
+## おもちゃの例の移植
+
+データ
+
+`luz` はニューラルネットワークを訓練するのに必要なコードを大きく変更するだけではなく、データ側の柔軟性を向上させる。
+すぐに確認するように、`dataloader()` への参照に加えて、その `fit()` メソッドは `dataset()` やテンソル、Rのオブジェクトまでも受け取る。
+
+まずRの行列とベクトルを生成するところから始める。
+今回は、 `tensor_dataset()` の中にこれらを包み、 `dataloader()` のインスタンスを作る。
+100個でなく、1000個の観測を生成しよう。
+
+```{r}
+library(torch)
+library(luz)
+
+# 入力次元（入力特徴量の数）
+d_in <- 3
+# 訓練集合の観測数
+n <- 1000
+
+x <- torch_randn(n, d_in)
+coefs <- c(0.2, -1.3, -0.5)
+y <- x$matmul(coefs)$unsqueeze(2) + torch_randn(n, 1)
+
+ds <- tensor_dataset(x, y)
+
+dl <- dataloader(ds, batch_size = 100, shuffle = TRUE)
+```
+
+### モデル
+
+`luz` を使っても、モデルの定義に変更はない。
+でも、モデルのアーキテクチャのみを定義し、モデルオブジェクトのインスタンスは作らないことに注意する。
+
+```{r}
+# 潜在層の次元
+d_hidden <- 32
+# 出力次元（予測される特徴量の数）
+d_out <- 1
+
+net <- nn_module(
+  initialize = function(d_in, d_hidden, d_out) {
+    self$net <- nn_sequential(
+      nn_linear(d_in, d_hidden),
+      nn_relu(),
+      nn_linear(d_hidden, d_out)
+    )
+  },
+  forward = function(x) {
+    self$net(x)
+  }
+)
+```
+
+### 訓練
+
+モデルを訓練するのに、もうループは書かない。
+`luz` が慣れ親しんだ `反復` を `宣言` する形に置き換える。
+`luz` に起きてほしいことを伝え、素直な魔法使いの弟子のようにからくりが動き始める。
+
+具体的には、指示は二つの必須の呼び出しからなる。
+
+1. `setup()` では、用いる損失函数と最適化器を指定する。
+2. `fit()` では、訓練（と任意で検証）データへの参照や訓練のエポック数を渡す。
+
+モデルが調整可能、つまり `initialize()` の引数を受け取る場合、三つ目のメソッド `set_hparams()` を他の二つの間に呼び出す（`hparams` はハイパパラメタ）。
+この仕組みを使って、例えば異なる層の大きさや性能に影響すると考えられる要因について試すことができる。
+
+
+```{r}
+#| eval: false
+fittted <- net |>
+  setup(loss = nn_mse_loss(), optimizer = optim_adam) |>
+  set_hparams(
+    d_in = d_in,
+    d_hidden = d_hidden, d_out = d_out
+  ) |>
+  fit(dl, epochs = 200)
+```
+このコードを走らせると、以下のような出力が得られる。
+
+    Epoch 1/200
+    Train metrics: Loss: 3.0343
+    Epoch 2/200
+    Train metrics: Loss: 2.5387
+    Epoch 3/200
+    Train metrics: Loss: 2.2758                   
+    ...
+    ...
+    Epoch 198/200
+    Train metrics: Loss: 0.891
+    Epoch 199/200
+    Train metrics: Loss: 0.8879
+    Epoch 200/200
+    Train metrics: Loss: 0.9036
+
+上記では、 `fit()` に渡したのは、 `dataloader()` だった。
+`dataset()` を参照しても問題ないことを確認しよう。
+
+```r
+fitter <- net|>
+  setup(loss = nn_mse_loss(), optimizer = optim_adam) |>
+  set_hparams(
+    d_in = d_in,
+    d_hidden = d_hidden, d_out = d_out
+  ) |>
+  fit(list(x, y), epochs = 200)
+```
+
+最後に、Rオプジェクトを渡してみる。
+これは、まだテンソルを扱っていない場合に便利である。
+
+```r
+fitter <- net|>
+  setup(loss = nn_mse_loss(), optimizer = optim_adam) |>
+  set_hparams(
+    d_in = d_in,
+    d_hidden = d_hidden, d_out = d_out
+  ) |>
+  fit(list(as.matrix(x), as.matrix(y)), epochs = 200)
+```
+
+以降、常に `dataloader()` を扱うことにするが、場合によってはこのような「近道」が便利なこともある。
+
+次に、おもちゃの例を拡張して、より複雑な要件に取り組む方法を説明する。
+
+## より現実的なシナリオ
+
+### 訓練、検証及び試験の統合
+
+深層学習では、訓練と検証の段階は織り重なっている。
+個々の訓練のエポックの後に検証のエポックが続く。
+重要なのは、二つの段階で使われるデータは厳密に区別することである。
+
+各訓練段階で、勾配が計算され、重みが更新される。
+検証中は、どちらも変化しない。
+ならば、なぜ検証集合があるのか。
+もし、各エポックでタスクに関連した尺度を分割された二つについて計算すれば、訓練データに対して過剰適合しているかどうか確認できる。
+つまり、特定の訓練標本に基づいて導き出された結論は、モデル化したい集団全体を雉湯つしていない。
+しなければならないことは、
+`luz` に適切な尺度を計算するように指示すること、検証データを指す追加の `dataloader` 渡すことの二つだけだ。
+
+前者は `setup()` で行われ、回帰の問題でよく使われるのは平均二乗または平均絶対誤差（それぞれMSE、MAE）である。
+損失としてMSEは使ったので、 MAE を尺度にしてみよう。
+
+```r
+fitted <- net |>
+  setup(
+    loss = nn_mse_loss(),
+    optmizer = optim_adam,
+    metrics = list(luz_metric_mae())
+  ) |>
+  fit(...)
+```
+
+検証 `dataloader` は `fit()` に渡されるが、これを参照するには、先に作成する表がある。
+そこで、（試験集合も必要になることを見越して）、元の1000個の観測を三つ分割し、 `dataset` `dataloader` をそれぞれについて作る。
+
+```{r}
+train_ids <- sample(1:length(ds), size = 0.6 * length(ds))
+valid_ids <- sample(
+  setdiff(1:length(ds), train_ids),
+  size = 0.2 * length(ds)
+)
+test_ids <- setdiff(
+  1:length(ds),
+  union(train_ids, valid_ids)
+)
+
+train_ds <- dataset_subset(ds, indices = train_ids)
+valid_ds <- dataset_subset(ds, indices = valid_ids)
+test_ds <- dataset_subset(ds, indices = test_ids)
+
+train_dl <- dataloader(train_ds,
+  batch_size = 100, shuffle = TRUE
+)
+valid_dl <- dataloader(valid_ds, batch_size = 100)
+test_dl <- dataloader(test_ds, batch_size = 100)
+```
+
+これで拡張されたワークフローを始める準備ができた。
+
+```{r}
+#| output: false
+#| warning: false
+fitted <- net |>
+  setup(
+    loss = nn_mse_loss(),
+    optimizer = optim_adam,
+    metrics = list(luz_metric_mae())
+  ) |>
+  set_hparams(
+    d_in = d_in,
+    d_hidden = d_hidden, d_out = d_out
+  ) |>
+  fit(train_dl, epochs = 200, valid_data = valid_dl)
+```
+
+    Epoch 1/200
+    Train metrics: Loss: 2.5863 - MAE: 1.2832
+    Valid metrics: Loss: 2.487 - MAE: 1.2365
+    Epoch 2/200
+    Train metrics: Loss: 2.4943 - MAE: 1.26
+    Valid metrics: Loss: 2.4049 - MAE: 1.2161
+    Epoch 3/200
+    Train metrics: Loss: 2.4036 - MAE: 1.236
+    Valid metrics: Loss: 2.3261 - MAE: 1.1962
+    ...
+    ...
+    Epoch 198/200
+    Train metrics: Loss: 0.8947 - MAE: 0.7504
+    Valid metrics: Loss: 1.0572 - MAE: 0.8287
+    Epoch 199/200
+    Train metrics: Loss: 0.8948 - MAE: 0.7503
+    Valid metrics: Loss: 1.0569 - MAE: 0.8286
+    Epoch 200/200
+    Train metrics: Loss: 0.8944 - MAE: 0.75
+    Valid metrics: Loss: 1.0579 - MAE: 0.8292
+
+訓練と検証集合の双方が同一の分布に由来するとしても、かなりの過剰適合がある。
+これについては次の章で詳しく議論する。
+
+一度訓練が終了すれば、 `fitted` オブジェクトはエポック毎の尺度の履歴や訓練段階に関わる重要なオブジェクトを多数保持している。
+後者には、適合したモデル自体も含まれる。
+このモデルにより、テストデータから予測を得ることが可能になる。
+
+```{r}
+#| warning: false
+fitted |> predict(test_dl)
+```
+
+テストデータに対する性能評価をしてみよう。
+
+```{r}
+#| warning: false
+fitted |> evaluate(test_dl)
+```
+
+このワークフローは、訓練と検証が結合されて、その後試験集合に対する確認と予測を導出するものであり、本書で何度も登場する。
+
+### 訓練過程に「つなぐ」コールバックの利用
+
+現時点では、コードの効率性が向上したが、柔軟性が失われたことが感じられたと思う。
+訓練ループを自分で書けば、モデルの重みの保存や、学習率の調整など、必要なことを思うように並べることができた。
+
+実は、柔軟性は全く失われていない。
+`luz` は同じ目的を達成するために標準化された方法を提供している。
+それがコールバックだ。
+コールバックは任意のRコードを実行できるオプジェクトで、次のどの時点にも使える。
+
+* 全体の訓練過程の開始または終了時（ `on_fit_begin()` / `on_fit_end()` ）
+* 一つのエポックの開始または終了時（ `on_epoch_begin()` / `on_epoch_end()` ）
+* 一つのエポックの最中における訓練（検証）段階の開始または終了時（ `on_train_begin()` / `on_train_end()` / `on_valid_begin()` / `on_valid_end()` ）
+* 訓練（検証）の最中における新たなバッチが処理されようとするまたはされた時（ `on_train_batch_begin()` / `on_train_batch_end()` / `on_valid_batch_begin()` / `on_valid_batch_end()` ）
+* そして、「損失計算の後」、「 `backward()` の後」、「 `step()` の後」のような「最内側」の訓練や検証ロジックの中の特定の時点でも使える。
+
+希望するどんなロジックでもコールバックを使って実装できる（方法は後の章で説明する）が、 `luz` にはとても有用なものが既に備えられている。
+例えば次のようなものがある。
+
+* `luz_callback_model_checkpoint()` はモデルの重みを各エポックの後に保存する（改善があった場合だけ保存するように指示することもできる）。
+* `luz_callback_lr_scheduler()` は `torch` の学習率スケジューラの一つを起動する。
+スケジューラオブジェクトは複数あり、それぞれが固有のロジックに従い、動的に学習率を更新する。
+* `luz_callback_early_stopping()` はモデル性能が改善しなくなったら訓練を停止する。
+「改善しない」が何を意味するかは利用者が設定できる。
+
+コールバックは `fit()` メソッドにリストとして渡す。
+例えば、最近のワークフローに付け加えてみよう。
+
+```{r}
+#| eval: false
+fitted <- net |>
+  setup(
+    loss = nn_mse_loss(),
+    optimizer = optim_adam,
+    metrics = list(luz_metric_mae())
+  ) |>
+  set_hparams(d_in = d_in,
+              d_hidden = d_hidden,
+              d_out = d_out) |>
+  fit(
+    train_dl,
+    epochs = 200,
+    valid_data = valid_dl,
+    callbacks = list(
+      luz_callback_model_checkpoint(path = "./models/",
+                                    save_best_only = TRUE),
+      luz_callback_early_stopping(patience = 10)
+    )
+  )
+```
+
+この設定では、重みは保存されるのは検証損失が減少した時だけだ。
+訓練は10エポックに亙り（ここでも検証損失において）改善が見られないときに停止する。
+どちらのコールバックでも、決定の基準として別の尺度を選択でき、対象の尺度は訓練集合を参照できる。
+
+### デバイスに対する `luz` の活用
+
+最後に、どのように `luz` がデバイスの配置に活用できるかを簡単に見ておこう。
+デバイスは、通常の環境ではCPUであり、GPUが使えることもある。
+訓練には、データとモデルの重みは同じデバイスに存在する必要がある。
+これにより複雑になる可能性があり、少なくとも全ての部品を同期させるための追加のコードが必要となる。
+
+`luz` では関連する動作は利用者に明示的に実行される。
+上記から予測ステップを取り出す。
+
+```r
+fitted <- predict(test_dl)
+```
+
+この場合、コードがGPUのあるマシンで実行されると、 `luz` はそれを検知し、モデルの重みテンソルはGPUに転送されている。
+さて、上記の `predict()` の呼び出しで、「水面下で」起きていることは、次のとおりである。
+
+* `luz` はモデルを評価モードにし、重みが更新されないようにする。
+* `luz` はテストデータをバッチ毎にGPUに転送し、モデルの予測を得る。
+* これらの予測はCPUに戻される。呼び出しは、Rでその後の処理を行うと想定している（ `as.numeric()` や `as.matrix()` のような変換函数はCPUに存在するテンソルに対してのみ作用する）。
+
+以下の付録に、訓練・検証・試験ワークフローを手書きで実装する完全な演習を示す。
+上記よりもかなりややこしくなっていることに気づくだろう。
+以下の例は、尺度など `luz` のコールバックが提供する機能を全く用いていない。
+
+次の章では、まだ示していない現代の深層学習で必須の要素について議論し、具体的に異なるタスクとドメインを扱うように構築された特定のアーキテクチャを取り上げる。
+
+
+## 付録: 訓練・検証・試験ワークフローの手書きでの実装
+
+念のため、`luz` を用いているかどうかに依存しない `dataloader()` の準備とモデル定義も再掲する。
+
+```{r}
+# 入力次元（入力特徴量の数）
+d_in <- 3
+# 訓練集合の観測数
+n <- 1000
+
+x <- torch_randn(n, d_in)
+coefs <- c(0.2, -1.3, -0.5)
+y <- x$matmul(coefs)$unsqueeze(2) + torch_randn(n, 1)
+
+ds <- tensor_dataset(x, y)
+
+dl <- dataloader(ds, batch_size = 100, shuffle = TRUE)
+
+train_ids <- sample(1:length(ds), size = 0.6 * length(ds))
+valid_ids <- sample(
+  setdiff(1:length(ds), train_ids),
+  size = 0.2 * length(ds)
+)
+test_ids <- setdiff(
+  1:length(ds),
+  union(train_ids, valid_ids)
+)
+
+train_ds <- dataset_subset(ds, indices = train_ids)
+valid_ds <- dataset_subset(ds, indices = valid_ids)
+test_ds <- dataset_subset(ds, indices = test_ids)
+
+train_dl <- dataloader(train_ds,
+  batch_size = 100, shuffle = TRUE
+)
+valid_dl <- dataloader(valid_ds, batch_size = 100)
+test_dl <- dataloader(test_ds, batch_size = 100)
+
+# 潜在層の次元
+d_hidden <- 32
+# 出力次元（予測される特徴量の数）
+d_out <- 1
+
+net <- nn_module(
+  initialize = function(d_in, d_hidden, d_out) {
+    self$net <- nn_sequential(
+      nn_linear(d_in, d_hidden),
+      nn_relu(),
+      nn_linear(d_hidden, d_out)
+    )
+  },
+  forward = function(x) {
+    self$net(x)
+  }
+)
+```
+
+`luz` を使うと、どのように訓練及び検証損失が時間発展するか監視するのに必要なのは次のコード断片で済む。
+
+```{r}
+#| eval: false
+fitted <- net |>
+  setup(
+    loss = nn_mse_loss(),
+    optimizer = optim_adam,
+    metrics = list(luz_metric_mae())
+  ) |>
+  set_hparams(
+    d_in = d_in,
+    d_hidden = d_hidden, d_out = d_out
+  ) |>
+  fit(train_dl, epochs = 200, valid_data = valid_dl)
+```
+
+`luz` を使わない場合は、扱わなければならないことは次の三つに分けられる。
+
+まず、ネットワークのインスタンスを作成し、CUDAがインストールされていれば重みをGPUに転送する。
+
+```{r}
+device <- torch_device(
+  if(cuda_is_available()) {
+    "cuda"
+  } else {
+    "cpu"
+  })
+
+model <- net(d_in = d_in, d_hidden = d_hidden, d_out = d_out)
+model <- model$to(device = device)
+```
+
+次に最適化器を作成する。
+
+```{r}
+optimizer <- optim_adam(model$parameters)
+```
+
+三つ目は最も大きな断片になる。
+各エポックで訓練バッチと検証バッチを反復し、訓練では誤差逆伝播を実行し、検証では受動的に損失を報告する。
+
+分かりやすくするために、訓練ロジックと検証ロジックをそれぞれ固有の函数にまとめる。
+`train_batch()` と`valid_batch()` はループの中で対応するバッチに対して呼び出される。
+ループは各エポックについて実行される。
+
+`train_batch()` と `valid_batch` 自体は通常の動作を通常の順序で起動するが、デバイスの配置呼び出しに注意する。
+モデルがデータを受け取るには、同じデバイスにある必要がある。
+また、平均二乗誤差の計算をするにも、目的テンソルも同じデバイスに置く必要がある。
+
+```{r}
+train_batch <- function(b) {
+  optimizer$zero_grad()
+  output <- model(b[[1]]$to(device = device))
+  target <-  b[[2]]$to(device = device)
+  
+  loss <- nnf_mse_loss(output, target)
+  loss$backward()
+  optimizer$step()
+  
+  loss$item()
+}
+
+valid_batch <- function(b) {
+  optimizer$zero_grad()
+  output <- model(b[[1]]$to(device = device))
+  target <-  b[[2]]$to(device = device)
+  
+  loss <- nnf_mse_loss(output, target)
+  loss$item()
+}
+```
+
+エポックに亙るループには特に注意に値する二つの行がある。
+`model$train()` と `model$eval()` である。
+前者は `torch` にモデルを訓練モードに入れることを指示する。
+後者はその反対である。
+ここで使っている簡単なモデルでは、これらの呼び出しを忘れても大きな問題にならないかもしれないが、 `nn_dropout()` や`nn_batch_norm2d()` のような正規化層を用いる場合は、これらのメソッドを正しい場所で呼ぶことは必須である。
+なぜなら、正規化層は評価と訓練でふるまいが異なるからだ。
+
+```{r}
+#| eval: false
+num_epochs <- 200
+
+for (epoch in 1:num_epochs) {
+  model$train()
+  train_loss <- c()
+  
+  # 安定性と性能のため coro::loop() を使用
+  coro::loop(for (b in train_dl) {
+    loss <- train_batch(b)
+    train_loss <- c(train_loss, loss)
+  })
+  
+  cat(sprintf(
+    "\nEpoch %d, training: loss: %3.5f \n",
+    epoch, mean(train_loss)
+  ))
+  
+  model$eval()
+  valid_loss <- c()
+  
+  # 勾配追跡を抑制しメモリを節約
+  with_no_grad({
+    coro::loop(for (b in valid_dl) {
+      loss <- valid_batch(b)
+      valid_loss <- c(valid_loss, loss)
+    })
+  })
+  
+  cat(sprintf(
+    "\nEpoch %d, validation: loss: %3.5f \n",
+    epoch, mean(valid_loss)
+  ))
+}
+```
+
+これで手書きで訓練する演習は完成した。
+`luz` を使うと、やりがちな（例えばコピー＆ペースト）のエラーを大きく低減できるという主張が具体的に裏付けられたものと考える。
