@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -88,14 +88,15 @@ div.csl-indent {
 <link href="./other-overview.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -138,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -421,12 +422,12 @@ window.Quarto = {
 <h2 data-number="16.2" class="anchored" data-anchor-id="天気予報についての回帰"><span class="header-section-number">16.2</span> 天気予報についての回帰</h2>
 <p>用いる <a href="https://doi.org/10.24432/C59K76">データセット</a> は<a href="https://archive.ics.uci.edu/">UCI機械学習リポジトリ</a> から得られる。 Zipを展開して、作業ディレクトリ（ここでは <code>data</code>）に配置する。 ここでの利用方法は、本来の目的とは異なる。 機械学習で気温を予測する代わりに、原論文 <span class="citation" data-cites="Cho-etal:2020">(<a href="references.html#ref-Cho-etal:2020" role="doc-biblioref">Cho et al. 2020</a>)</span> では数値天気予報モデルの予測データのバイアス修正について述べられている。 本来の用途を気にする必要ない。 ここでの主眼は行列演算にあり、データセット自体はここで行う調査に非常に適している。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>weather_df <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(<span class="fu">read.csv</span>(<span class="st">"data/Bias_correction_ucl.csv"</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(weather_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(weather_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  station       Date Present_Tmax Present_Tmin LDAPS_RHmin LDAPS_RHmax
 1       1 2013-06-30         28.7         21.4    58.25569    91.11636
@@ -460,17 +461,17 @@ window.Quarto = {
 </div>
 <p>ここでの問題の組み立て方では、基本的にデータセット内の全てが予測変数である。（データセットに残しておけば予測因子になりうる。詳しくは以下で説明する） 目的変数としては、 <code>Next_Tmax</code> 翌日に取った最高気温を用いる。 この場合、 <code>Next_Tmin</code> を予測変数から取り除く必要がある。 さもないと、これが強力すぎる手掛かりになる。 同様に <code>station</code> 測候所の識別番号と <code>Date</code> も削除する。 結果として、21個の予測変数が得られ、これらには実際の気温（ <code>Prexent_Tmax</code> 、 <code>Present_Tmin</code> ）、様々な変数に対するモデルの予報（ <code>LDAPS_*</code> ）、そして補助的な情報（ <code>lat</code> や、 <code>lon</code> <code>Solar radiation</code> など）がある。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>weather_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  weather_df[<span class="sc">!</span>(<span class="fu">names</span>(weather_df) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"station"</span>, <span class="st">"Date"</span>, <span class="st">"Next_Tmin"</span>))]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>weather_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">scale</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  weather_df[<span class="sc">!</span>(<span class="fu">names</span>(weather_df) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"station"</span>, <span class="st">"Date"</span>, <span class="st">"Next_Tmin"</span>))]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>ここで予測変数を <em>標準化</em> する <code>scale()</code> を追加したことに目を向けてほしい。 これは、上述した「秘訣」である。 なぜそのようにするかは、すぐに議論する。</p>
 <p><code>torch</code>には、データを二つのテンソルに分け、全ての予測変数を行列 <code>A</code> に、目的変数を格納した <code>b</code> に格納する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(weather_df <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>())</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(weather_df <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>())</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> weather[, <span class="dv">1</span><span class="sc">:-</span><span class="dv">2</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> weather[, <span class="sc">-</span><span class="dv">1</span>]</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7588   21</code></pre>
 </div>
@@ -480,8 +481,8 @@ window.Quarto = {
 <h3 data-number="16.2.1" class="anchored" data-anchor-id="最小二乗法-i-lm-による参照値"><span class="header-section-number">16.2.1</span> 最小二乗法 (I): <code>lm()</code> による参照値</h3>
 <p>「信用できる」最小二乗法の実装があるとすれば、もちろん <code>lm()</code> に違いない。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Next_Tmax <span class="sc">~</span> . , <span class="at">data =</span> weather_df)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Next_Tmax <span class="sc">~</span> . , <span class="at">data =</span> weather_df)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -525,7 +526,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>分散説明率78%は、予報がうまくいっていることを示している。 これを基準として、他の手法を比較調査する。 そのためにそれぞれの予測と予測誤差を保存する（後で平均二乗誤差 RMSE: root mean squared errorを計算するため）。 今は、 <code>lm()</code> に対する入力だけがある。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(y_true, y_pred) {</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(y_true, y_pred) {</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  (y_true <span class="sc">-</span> y_pred)<span class="sc">^</span><span class="dv">2</span> <span class="sc">|&gt;</span> <span class="fu">sum</span>() <span class="sc">|&gt;</span> <span class="fu">sqrt</span>()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -534,7 +535,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lm =</span> fit<span class="sc">$</span>fitted.values</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>all_errs <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lm =</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lm))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm
 1 40.8369</code></pre>
@@ -544,12 +545,12 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="最小二乗法-ii-linalg_lstsqの利用" class="level3" data-number="16.2.2">
 <h3 data-number="16.2.2" class="anchored" data-anchor-id="最小二乗法-ii-linalg_lstsqの利用"><span class="header-section-number">16.2.2</span> 最小二乗法 (II): <code>linalg_lstsq()</code>の利用</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_lstsq <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(A, b)<span class="sc">$</span>solution</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_lstsq <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(A, b)<span class="sc">$</span>solution</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>lstsq <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x_lstsq))</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>lstsq <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lstsq)</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(all_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(all_preds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              b         lm      lstsq
 7745 -1.1380931 -1.3544620 -1.3544625
@@ -562,7 +563,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>予測は <code>lm()</code> と非常によく似ている。 実際、想像されるのは、わずかな差が数値誤差がそれぞれの呼び出しスタックの奥から表面化したものだけではないかということで、すなわち、同じはずだということだ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq
 1 40.8369 40.8369</code></pre>
@@ -574,17 +575,17 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h3 data-number="16.2.3" class="anchored" data-anchor-id="一休み-標準化しなかった場合"><span class="header-section-number">16.2.3</span> 一休み: 標準化しなかった場合</h3>
 <p>素早く比較するために、今度はデータを標準化 <em>せずに</em> 別の予測変数の行列を作ってみる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>weather_df_alt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>weather_df_alt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read.csv</span>(<span class="st">"data/Bias_correction_ucl.csv"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">|&gt;</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">subset</span>(<span class="at">select =</span> <span class="fu">c</span>(<span class="sc">-</span>station, <span class="sc">-</span>Date, <span class="sc">-</span>Next_Tmin)))</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>weather_alt <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(weather_df_alt <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>())</span>
 <span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>A_alt <span class="ot">&lt;-</span> weather_alt[, <span class="dv">1</span><span class="sc">:-</span><span class="dv">2</span>]</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>b_alt <span class="ot">&lt;-</span> weather_alt[, <span class="sc">-</span><span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>b_alt <span class="ot">&lt;-</span> weather_alt[, <span class="sc">-</span><span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit_alt <span class="ot">&lt;-</span> <span class="fu">lm</span>(Next_Tmax <span class="sc">~</span> ., <span class="at">data =</span> weather_df_alt)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit_alt <span class="ot">&lt;-</span> <span class="fu">lm</span>(Next_Tmax <span class="sc">~</span> ., <span class="at">data =</span> weather_df_alt)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>all_preds_alt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> weather_df_alt<span class="sc">$</span>Next_Tmax,</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lm =</span> fit_alt<span class="sc">$</span>fitted.values</span>
@@ -597,7 +598,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        lm
 1 127.0765</code></pre>
@@ -605,14 +606,14 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>次に、前のように既定の引数とともに<code>linalg_lstsq()</code> を呼ぶ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>x_lstsq_alt <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(A_alt, b_alt)<span class="sc">$</span>solution</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>x_lstsq_alt <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(A_alt, b_alt)<span class="sc">$</span>solution</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>all_preds_alt<span class="sc">$</span>lstsq <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A_alt<span class="sc">$</span><span class="fu">matmul</span>(x_lstsq_alt))</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>all_errs_alt<span class="sc">$</span>lstsq <span class="ot">&lt;-</span> <span class="fu">rmse</span>(</span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  all_preds_alt<span class="sc">$</span>b, all_preds_alt<span class="sc">$</span>lstsq</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        lm    lstsq
 1 127.0765 217.7987</code></pre>
@@ -636,7 +637,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>まとめると <code>GELS</code> （完全階数行列向け）と <code>GELSY</code> 、 <code>GELSD</code> 、 <code>GELSS</code> の三種（階数不足の向け行列向け）は意図的に異なる最適化の基準に従っている。</p>
 <p>さて、<code>linalg_lstsq()</code> の説明書に従って、 <code>driver</code> が明示的に渡されていないときは <code>GELSY</code> が呼び出される。 これは行列が階数不足のときに適切なはずだが、そうなっているだろうか。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_matrix_rank</span>(A_alt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_matrix_rank</span>(A_alt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 21
@@ -649,7 +650,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h4 data-number="16.2.3.3" class="anchored" data-anchor-id="正しい-linalg_lstsq-の呼び出し方"><span class="header-section-number">16.2.3.3</span> 正しい <code>linalg_lstsq()</code> の呼び出し方</h4>
 <p>何を <code>driver</code> に渡すか分かったので、呼び出しを修正する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x_lstsq_alt <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x_lstsq_alt <span class="ot">&lt;-</span> <span class="fu">linalg_lstsq</span>(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  A_alt, b_alt,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">driver =</span> <span class="st">"gels"</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>solution</span>
@@ -659,7 +660,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  all_preds_alt<span class="sc">$</span>b, all_preds_alt<span class="sc">$</span>lstsq</span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>all_errs_alt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        lm    lstsq
 1 127.0765 127.9489</code></pre>
@@ -671,8 +672,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h4 data-number="16.2.3.4" class="anchored" data-anchor-id="標準化が役立つ理由"><span class="header-section-number">16.2.3.4</span> 標準化が役立つ理由</h4>
 <p>用いた行列に対して、標準化がしたことは特異値が範囲をかなり狭めたということだ。 標準化された行列 <code>A</code> では、特異値の最大値は最小値の約10倍である。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>svals_normalized_A <span class="ot">&lt;-</span> <span class="fu">linalg_svdvals</span>(A) <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A)[<span class="dv">1</span>]</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>svals_normalized_A <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>svals_normalized_A <span class="ot">&lt;-</span> <span class="fu">linalg_svdvals</span>(A) <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A)[<span class="dv">1</span>]</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>svals_normalized_A <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 1.0000000 0.7473212 0.5929527 0.5233989 0.5188765 0.4706139 0.4391665
  [8] 0.4249272 0.4034658 0.3815900 0.3621314 0.3557949 0.3297923 0.2707912
@@ -681,8 +682,8 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>一方 <code>A_alt</code> では約100万倍大きい。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>svals_normalized_A_alt <span class="ot">&lt;-</span> <span class="fu">linalg_svdvals</span>(A_alt) <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">1</span>]</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>svals_normalized_A_alt <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>svals_normalized_A_alt <span class="ot">&lt;-</span> <span class="fu">linalg_svdvals</span>(A_alt) <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">1</span>]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>svals_normalized_A_alt <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 1.000000e+00 1.014368e-02 6.407313e-03 2.881967e-03 2.236537e-03
  [6] 9.633786e-04 6.678379e-04 3.988165e-04 3.584047e-04 3.137257e-04
@@ -697,13 +698,13 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <h4 data-number="16.2.3.5" class="anchored" data-anchor-id="概念-ii-条件数"><span class="header-section-number">16.2.3.5</span> 概念 (II): 条件数</h4>
 <p>いわゆる <em>条件数</em> が大きいほど、計算の際に数値安定性の問題が生じる可能性が高くなる。 <code>torch</code> では、 <code>linalg_cond()</code> を用いて条件数を計算できる。 <code>A</code> と <code>A_alt</code> の条件数をそれぞれ比較しよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 9.2956
 [ CPUFloatType{} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A_alt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A_alt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 118771
@@ -714,13 +715,13 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>条件数は <code>A</code> の行列ノルムをその逆行列のノルムで割ったものとして定義される。 様々な種類のノルムが用いられるが、既定は2ノルムである。 その場合、条件数は行列の特異値はから計算できる。 つまり、 <code>A</code> の2ノルムは最大の特異値であり、その逆行列のものは最小値で与えられる。</p>
 <p>以前のように <code>linalg_svdvals()</code> でこれを確認できる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_svdvals</span>(A)[<span class="dv">1</span>] <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A)[<span class="dv">21</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_svdvals</span>(A)[<span class="dv">1</span>] <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A)[<span class="dv">21</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 9.2956
 [ CPUFloatType{} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">1</span>] <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">21</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">1</span>] <span class="sc">/</span> <span class="fu">linalg_svdvals</span>(A_alt)[<span class="dv">21</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 118771
@@ -757,7 +758,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> は正方行列である。 逆行列が求まらないかもしれないが、その場合は擬逆行列を代わりに計算すればよい。 例としている問題はその必要はない。 <span class="math inline">\(\mathbf{A}\)</span> は完全階数なので、 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> も完全階数である。</p>
 <p>このように、正規方程式から <span class="math inline">\(\mathbf{b}\)</span> を予測する方法が導出された。 これを使って、<code>lm()</code> や <code>linalg_lstsq()</code> を用いて得られたものと比較しよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>inv <span class="ot">&lt;-</span> <span class="fu">linalg_inv</span>(AtA)</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> inv<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span>
@@ -765,7 +766,7 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>neq <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>neq <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>neq)</span>
 <span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq
 1 40.8369 40.8369 40.8369</code></pre>
@@ -786,14 +787,14 @@ F-statistic:  1279 on 21 and 7566 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>コレスキー分解が可能であるためには、行列は対称かつ正定値でなければならない。 これはかなり強い条件で、実際に満たされることは多くない。 用いている例では <span class="math inline">\(\mathbf{A}\)</span> は対称ではないので、代わりに <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> に作用される必要があることが直ち示唆される。 また <span class="math inline">\(\mathbf{A}\)</span> はすでに正定値なので、 <span class="math inline">\(\mathbf{A}^\mathrm{T}\mathbf{A}\)</span> も正定値であることが分かっている。</p>
 <p><code>torch</code> では、コレスキー分解を得るには <code>linalg_cholesky()</code> を用いる。 既定では、呼び出すと下三角行列 <span class="math inline">\(\mathbf{L}\)</span> が返ってくる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># AtA = L L_t</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># AtA = L L_t</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><span class="math inline">\(\mathbf{A}\)</span> が <span class="math inline">\(\mathbf{L}\)</span> から再構築できるか確認する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>LLt <span class="ot">&lt;-</span> L<span class="sc">$</span><span class="fu">matmul</span>(L<span class="sc">$</span><span class="fu">t</span>())</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_norm</span>(LLt <span class="sc">-</span> AtA, <span class="at">ord =</span> <span class="st">"fro"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>LLt <span class="ot">&lt;-</span> L<span class="sc">$</span><span class="fu">matmul</span>(L<span class="sc">$</span><span class="fu">t</span>())</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_norm</span>(LLt <span class="sc">-</span> AtA, <span class="at">ord =</span> <span class="st">"fro"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 0.00372015
@@ -824,7 +825,7 @@ x_3
 <p>コードでは、 <code>torch_trianglular_solv()</code> を使うと効率的に予測変数の行列が下または上三角行列である連立方程式を効率的に解くことができる。 追加の条件は行列が対称であることであるが、これはコレスキー分解を使うために既に満たされている。</p>
 <p>既定では、 <code>torch_triangular_solve()</code> は上（下ではなく）三角行列を想定するが、函数のパラメタに <code>upper</code> があり、想定を修正することができる。 返り値はリストで、最初の要素が求める解である。 説明のため、 <code>torch_triangular_solv()</code> を、上で暗算で解いたおもちゃの例に適用したものを示す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>some_L <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>some_L <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>some_b <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">11</span>, <span class="dv">15</span>), <span class="at">ncol =</span> <span class="dv">1</span>))</span>
@@ -834,7 +835,7 @@ x_3
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  some_L,</span>
 <span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="cn">FALSE</span></span>
 <span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>)[[<span class="dv">1</span>]]</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1
@@ -852,13 +853,13 @@ x_3
 \mathbf{Ly} = \mathbf{A}^\mathrm{T}\mathbf{b}
 \]</span> そして <em>この</em> 系の解を求める。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
 <span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
 <span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  L,</span>
 <span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="cn">FALSE</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>)[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>)[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><span class="math inline">\(\mathbf{y}\)</span> がもとまったので、これがどのように定義されていたか振り返る。</p>
 <p><span class="math display">\[
@@ -866,15 +867,15 @@ x_3
 \]</span></p>
 <p><span class="math inline">\(\mathbf{x}\)</span> を定めるには、また <code>torch_triangular_solve()</code> を用いる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, L<span class="sc">$</span><span class="fu">t</span>())[[<span class="dv">1</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(y, L<span class="sc">$</span><span class="fu">t</span>())[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>これで完了。</p>
 <p>通常通り、誤差を計算する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>chol <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>chol <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>chol <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>chol)</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol
 1 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -882,13 +883,13 @@ x_3
 </div>
 <p>コレスキー分解の理論的根拠を理解した。 既に述べたが、この考え方は他の全ての分解にも適用される。 実は、専用の便利な函数 <code>torch_cholesky_solve</code> を利用すると作業を節約できる。 これを使うと、二つの <code>torch_triangular_solve()</code> の呼び出しが不要になる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="fu">linalg_cholesky</span>(AtA)</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_cholesky_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), L)</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>chol2 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>chol2 <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>chol2)</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol   chol2
 1 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -912,17 +913,17 @@ x_3
 <p><span class="math inline">\(\mathbf{P}\)</span> が必要な場合、追加の計算が生じる。 コレスキーで使った方法と同様に <span class="math inline">\(\mathbf{P}\)</span> を左辺から右辺に移したい。 幸いにも、大変そうな逆行列の計算は重くない。 置換行列に対しては、その転置が逆演算となる。</p>
 <p>コード上は、しなければならないことは既に馴染みのあるものだ。 てできてないのは <code>torch_lu()</code> だけだ。 <code>torch_lu()</code>は二つのテンソルのリストを返す。 最初の要素は三つの行列 <span class="math inline">\(\mathbf{P}\)</span> 、 <span class="math inline">\(\mathbf{L}\)</span> 、 <span class="math inline">\(\mathbf{U}\)</span>で、二つ目はピボットだ。 <code>torch_lu_unpack()</code> で三つの行列に展開できる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>plu <span class="ot">&lt;-</span> <span class="fu">torch_lu_unpack</span>(lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(plu) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>, <span class="st">"L"</span>, <span class="st">"U"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(plu) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P"</span>, <span class="st">"L"</span>, <span class="st">"U"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><span class="math inline">\(\mathbf{P}\)</span> を右辺に移す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> plu<span class="sc">$</span>P<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>Atb <span class="ot">&lt;-</span> plu<span class="sc">$</span>P<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(Atb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>あとは、二つの三角行列を解けば完了する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>),</span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  plu<span class="sc">$</span>L,</span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="cn">FALSE</span></span>
@@ -931,7 +932,7 @@ x_3
 <span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>lu <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>lu <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lu)</span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol   chol2      lu
 1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -939,12 +940,12 @@ x_3
 </div>
 <p>コレスキー分解と同様に、<code>torch_triangular_solve()</code> を二回呼び出す手間を省ける。 <code>torch_lu_solve()</code> は分解を取り、直接最終的な解を返す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>lu <span class="ot">&lt;-</span> <span class="fu">torch_lu</span>(AtA)</span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_lu_solve</span>(Atb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), lu[[<span class="dv">1</span>]], lu[[<span class="dv">2</span>]])</span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>lu2 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>lu2 <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>lu2)</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>all_errs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>all_errs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol   chol2      lu     lu2
 1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -966,20 +967,20 @@ x_3
 \]</span></p>
 <p><code>torch</code> では <code>linalg_qr()</code> が行列 <span class="math inline">\(\mathbf{Q}\)</span> と<span class="math inline">\(\mathbf{R}\)</span> を計算する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>qr <span class="ot">&lt;-</span> <span class="fu">linalg_qr</span>(A)</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(qr) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Q"</span>, <span class="st">"R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>qr <span class="ot">&lt;-</span> <span class="fu">linalg_qr</span>(A)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(qr) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Q"</span>, <span class="st">"R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>右辺に <span class="math inline">\(\mathbf{A}\mathrm{T}\mathbf{b}\)</span> を格納した「便宜的な」変数を用いてきたがこの手順は省略でき、変わりに「すぐに役立つ」ことをする。 つまり<span class="math inline">\(\mathbf{Q}\)</span> を右辺に移す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>Qtb <span class="ot">&lt;-</span> qr<span class="sc">$</span>Q<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>Qtb <span class="ot">&lt;-</span> qr<span class="sc">$</span>Q<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>残りの手順は、三角行列を解くことだけだ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(Qtb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), qr<span class="sc">$</span>R)[[<span class="dv">1</span>]]</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_triangular_solve</span>(Qtb<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>), qr<span class="sc">$</span>R)[[<span class="dv">1</span>]]</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>qr <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>qr <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>qr)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol      lu      qr
 1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -1001,40 +1002,40 @@ x_3
 \]</span></p>
 <p>行列の分解を <code>linalg_svd()</code> を用いて求めることから始める。 引数 <code>full_matrices = FALSE</code> は <code>torch</code> に <span class="math inline">\(\mathbf{U}\)</span> が <span class="math inline">\(\mathbf{A}\)</span> と同じ次元であることを伝え、7588 x 7588に展開されるのを防ぐ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>svd <span class="ot">&lt;-</span> <span class="fu">linalg_svd</span>(A, <span class="at">full_matrices =</span> <span class="cn">FALSE</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>svd <span class="ot">&lt;-</span> <span class="fu">linalg_svd</span>(A, <span class="at">full_matrices =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(svd) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"U"</span>, <span class="st">"S"</span>, <span class="st">"Vt"</span>)</span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>U)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>U)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7588   21</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>S)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>S)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 21</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>Vt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(svd<span class="sc">$</span>Vt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 21 21</code></pre>
 </div>
 </div>
 <p><span class="math inline">\(\mathbf{U}\)</span>を右辺に移す。 これは <span class="math inline">\(\mathbf{U}\)</span> が直交行列なので軽い計算である。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>Utb <span class="ot">&lt;-</span> svd<span class="sc">$</span>U<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>Utb <span class="ot">&lt;-</span> svd<span class="sc">$</span>U<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><span class="math inline">\(\mathbf{U}^\mathrm{T}\mathbf{b}\)</span> と <span class="math inline">\(\boldsymbol\Sigma\)</span> は同じ長さのベクトルなので、要素毎の積を使って <span class="math inline">\(\boldsymbol\Sigma\)</span>　を右辺に移すことができる。 一時変数 <code>y</code> に結果を保存する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>最後に残ったのは、方程式系 <span class="math inline">\(\mathbf{V}^\mathrm{T}\mathbf{x} = \mathbf{y}\)</span> を解くことだが、今回は行列 <span class="math inline">\(\mathbf{V}\)</span> に関して再び直交性が役立つ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>まとめに予測値と予測誤差を計算しよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>svd <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>all_preds<span class="sc">$</span>svd <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(A<span class="sc">$</span><span class="fu">matmul</span>(x))</span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>all_errs<span class="sc">$</span>svd <span class="ot">&lt;-</span> <span class="fu">rmse</span>(all_preds<span class="sc">$</span>b, all_preds<span class="sc">$</span>svd)</span>
 <span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>all_errs[<span class="dv">1</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">7</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       lm   lstsq     neq    chol      lu      qr     svd
 1 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369 40.8369</code></pre>
@@ -1047,7 +1048,7 @@ x_3
 <p>既に述べたように、本章の主眼は概念であり、性能ではない。 しかしより大きなデータセットを扱い始めると、スピードが気になることは避けられない。 また、これらの手法がどのくらい速いか確認すること自体は、興味深い。 ということで、簡単な性能比較をしよう。 ただし、結果を外挿しないように。 扱うデータに対して、類似のコードを実行すること。</p>
 <p>時間計測のために各アルゴリズムを対応する函数にまとめる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>ls_normal_eq <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
 <span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
 <span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">linalg_inv</span>(AtA)<span class="sc">$</span><span class="fu">matmul</span>(A<span class="sc">$</span><span class="fu">t</span>())<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
@@ -1136,11 +1137,11 @@ x_3
 <span id="cb69-87"><a href="#cb69-87" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span>
 <span id="cb69-88"><a href="#cb69-88" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span>
 <span id="cb69-89"><a href="#cb69-89" aria-hidden="true" tabindex="-1"></a>  x</span>
-<span id="cb69-90"><a href="#cb69-90" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb69-90"><a href="#cb69-90" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>mircrobenchmark</code> バッケージを使って、これらの手法を計測する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_manual_seed</span>(<span class="dv">777</span>)</span>
@@ -1156,17 +1157,17 @@ x_3
 <span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">linalg_lstsq</span>(A, b),</span>
 <span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">1000</span>,</span>
 <span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit =</span> <span class="st">"ms"</span></span>
-<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in microbenchmark(ls_normal_eq(A, b), ls_cholesky_diy(A, b),
 ls_cholesky_solve(A, : less accurate nanosecond times to avoid potential
 integer overflows</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>ylabs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NE"</span>, <span class="st">"CHD"</span>, <span class="st">"CHS"</span>, <span class="st">"LUD"</span>, <span class="st">"LUS"</span>, <span class="st">"QR"</span>, <span class="st">"SVD"</span>, <span class="st">"LST"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>ylabs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"NE"</span>, <span class="st">"CHD"</span>, <span class="st">"CHS"</span>, <span class="st">"LUD"</span>, <span class="st">"LUS"</span>, <span class="st">"QR"</span>, <span class="st">"SVD"</span>, <span class="st">"LST"</span>)</span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(res, <span class="at">unit =</span> <span class="st">"us"</span>, <span class="at">horizontal =</span> <span class="cn">TRUE</span>, <span class="at">xlab =</span> <span class="st">"method"</span>,</span>
 <span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Least Squares Benchmark"</span>, <span class="at">yaxt =</span> <span class="st">"n"</span>)</span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side =</span> <span class="dv">2</span>, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(ylabs), <span class="at">labels =</span> ylabs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side =</span> <span class="dv">2</span>, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(ylabs), <span class="at">labels =</span> ylabs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1184,7 +1185,7 @@ integer overflows</code></pre>
 <p>代わりに、悪条件な最小二乗問題の例を用いる。 つまり、行列が悪条件となっている。 この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <p>予測変数の行列は、悪条件になるように作られた100 x 15のファンデルモンド行列である。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">777</span>)</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_manual_seed</span>(<span class="dv">777</span>)</span>
 <span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">100</span></span>
@@ -1193,11 +1194,11 @@ integer overflows</code></pre>
 <span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">torch_vander</span>(t, <span class="at">N =</span> n, <span class="at">increasing =</span> <span class="cn">TRUE</span>)<span class="sc">$</span><span class="fu">to</span>(</span>
 <span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">dtype =</span> <span class="fu">torch_double</span>()</span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>条件数はとても大きい。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linalg_cond</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 2.27178e+10
@@ -1206,12 +1207,12 @@ integer overflows</code></pre>
 </div>
 <p>次に、予測対象を作成する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">torch_exp</span>(<span class="fu">torch_sin</span>(<span class="dv">4</span> <span class="sc">*</span> t))</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> b <span class="sc">/</span> <span class="fl">2006.787453080206</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">torch_exp</span>(<span class="fu">torch_sin</span>(<span class="dv">4</span> <span class="sc">*</span> t))</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> b <span class="sc">/</span> <span class="fl">2006.787453080206</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>上記の最小二乗問題では全ての手法で同じRMSEを得た。 今回の問題では興味深いことが起きる。 以前に示したもののうち、「自作」函数だけに絞る。 便宜上、再掲する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 正規方程式</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>ls_normal_eq <span class="ot">&lt;-</span> <span class="cf">function</span>(A, b) {</span>
 <span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  AtA <span class="ot">&lt;-</span> A<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(A)</span>
 <span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">linalg_inv</span>(AtA)<span class="sc">$</span><span class="fu">matmul</span>(A<span class="sc">$</span><span class="fu">t</span>())<span class="sc">$</span><span class="fu">matmul</span>(b)</span>
@@ -1295,11 +1296,11 @@ integer overflows</code></pre>
 <span id="cb77-82"><a href="#cb77-82" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> Utb <span class="sc">/</span> svd<span class="sc">$</span>S</span>
 <span id="cb77-83"><a href="#cb77-83" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> svd<span class="sc">$</span>Vt<span class="sc">$</span><span class="fu">t</span>()<span class="sc">$</span><span class="fu">matmul</span>(y)</span>
 <span id="cb77-84"><a href="#cb77-84" aria-hidden="true" tabindex="-1"></a>  x</span>
-<span id="cb77-85"><a href="#cb77-85" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb77-85"><a href="#cb77-85" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>それでは実行してみよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>algorithms <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>algorithms <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_normal_eq"</span>,</span>
 <span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_cholesky_diy"</span>,</span>
 <span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ls_lu_diy"</span>,</span>
@@ -1322,7 +1323,7 @@ integer overflows</code></pre>
 <span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">rmse =</span> <span class="fu">unlist</span>(rmses)</span>
 <span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>rmse_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>rmse_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        algorithm         rmse
 1    ls_normal_eq 6.343033e-04
@@ -1405,13 +1406,14 @@ Trefethen, L. N., and D. Bau, 1997: <em>Numerical linear algebra</em>. SIAM,.
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

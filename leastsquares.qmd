@@ -204,10 +204,10 @@ all_errs_alt
 最小二乗問題を効率的に解くため、 `torch` はLAPACKというFortranのルーチン一式を呼んでいる。
 LAPACKは効率的かつ規模の拡大に対応しつつ、線型代数においてよくある問題を解けるように設計されており、線型方程式の解や固有ベクトルと固有値、特異値を求めることができる。
 
-`linalg_lstsqt()` で利用できる `driver` はLAPACKの異なる手続[^1]に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。
+`linalg_lstsqt()` で利用できる `driver` はLAPACKの異なる手続[^least_squares-1]に対応し、これらの手続は皆異なるアルゴリズムで問題を解く。
 これは、今後行っていくことに類似している。
 
-[^1]: 上で引用した `driver` の説明は、基本的にLAPACKの[説明書](https://netlib.org/lapack/lug/node27.html) からの抜粋である。
+[^least_squares-1]: 上で引用した `driver` の説明は、基本的にLAPACKの[説明書](https://netlib.org/lapack/lug/node27.html) からの抜粋である。
 問題のページは便利のため `linalg_lstsq()` の説明からリンクされているので、これを確認することは容易だ。
 
 つまり、何が起きているか調べるには、第一歩はどの手法がなぜ利用されたのか、（可能ならば）なぜ結果が満足いかないのか、代わりに使いたいLAPACKのルーチンを定め、実際に用いたときに何が起こるか確認することである。
@@ -899,15 +899,15 @@ axis(side = 2, las = 2, at = 1:length(ylabs), labels = ylabs)
 既に条件数について議論した。
 数値安定性の概念は、考え方としては類似しているが、行列ではなくアルゴリズムを参照している。
 どちらの場合も、考え方は入力における微小な変化は出力においても微小であるべきだというものだ。
-この話題について一冊全体割いた本がいくつもあるので、詳細に立ち入ることは避ける。[^2]
+この話題について一冊全体割いた本がいくつもあるので、詳細に立ち入ることは避ける。[^least_squares-2]
 
-[^2]: 詳しくは、そのような本の一つ、例えば、広く使われ（かつ簡明な） @Trefethen の記述を参照。
+[^least_squares-2]: 詳しくは、そのような本の一つ、例えば、広く使われ（かつ簡明な） @Trefethen の記述を参照。
 
 代わりに、悪条件な最小二乗問題の例を用いる。
 つまり、行列が悪条件となっている。
-この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。[^3]
+この例を用いて、既に議論したアルゴリズムの数値安定性について理解する。[^least_squares-3]
 
-[^3]: この例は上の脚注にある @Trefethen の本から取った。[Computational Linear Algebra for Code](https://github.com/fastai/numerical-linear-algebra) （プログラマのための数値線型代数）の講義資料を通じて、この例を教えてくれたRachel Thomasに感謝する。
+[^least_squares-3]: この例は上の脚注にある @Trefethen の本から取った。[Computational Linear Algebra for Code](https://github.com/fastai/numerical-linear-algebra) （プログラマのための数値線型代数）の講義資料を通じて、この例を教えてくれたRachel Thomasに感謝する。
 
 予測変数の行列は、悪条件になるように作られた100 x 15のファンデルモンド行列である。
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,14 +69,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./leastsquares.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -119,7 +120,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -379,19 +380,19 @@ window.Quarto = {
 <h2 data-number="17.2" class="anchored" data-anchor-id="一次元の畳み込み"><span class="header-section-number">17.2</span> 一次元の畳み込み</h2>
 <p>簡単な信号 <code>x</code> と簡単なフィルタ <code>h</code> を作るところから取り掛かる。 変数の名前は思いつきで決めたのではない、信号処理で <span class="math inline">\(h\)</span> は、この後すぐに現れる用語 <em>インパルス</em> 応答を表すのに通常使われる記号だ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">4</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>さて、 <code>torch_conv1d()</code> があるので、これを呼んで何が起こるか見てみよう。 畳み込みの定義によると、出力の長さは入力の長さとフィルタの長さとの和より一つ少ない。 <code>torch_conv1d()</code> を使って、長さ6の出力を得るには、フィルタの長さが3なので、両側に二つずつ広げる必要がある。</p>
 <p>次のコードで、 <code>view()</code> の呼び出しに気を取られてはいけない。 これはただ <code>torch</code> が3次元の入力を必要としているためだ。 最初と次の次元は、いつも通りそれぞれバッチとチャンネルを表す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>)),</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  h<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>)),</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">padding =</span> <span class="dv">2</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 (1,.,.) = 
@@ -401,10 +402,10 @@ window.Quarto = {
 </div>
 <p><code>torchconv1d()</code> は畳み込みではなく相互相関を計算するのだったのではないか、と考えているかもしれない。 Rには <code>convolve()</code> があるので確認しよう<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x_ <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x_ <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(x)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>h_ <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(h)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, h_, <span class="at">type =</span> <span class="st">"open"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, h_, <span class="at">type =</span> <span class="st">"open"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1]  1  2  2  2 -3 -4</code></pre>
 </div>
@@ -415,18 +416,18 @@ window.Quarto = {
 </blockquote>
 <p>明らかに、フィルタの要素の順序を逆転させる必要がある。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, <span class="fu">rev</span>(h_), <span class="at">type =</span> <span class="st">"open"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">convolve</span>(x_, <span class="fu">rev</span>(h_), <span class="at">type =</span> <span class="st">"open"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -1 -2 -2 -2  3  4</code></pre>
 </div>
 </div>
 <p>確かに、今度の結果は異なっている。 同様なことを <code>torch_conv1d()</code> でやってみよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_conv1d</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>)),</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  h<span class="sc">$</span><span class="fu">flip</span>(<span class="dv">1</span>)<span class="sc">$</span><span class="fu">view</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>)),</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">padding =</span> <span class="dv">2</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 (1,.,.) = 
@@ -566,16 +567,16 @@ Table&nbsp;17.1: 畳み込み: 出力からの見方
 <p><span class="math display">\[
 \delta[n] = \delta_{n0} = \delta_{0n}
 \]</span></p>
-<p>つまり、この函数 <span class="math inline">\(\delta[n]\)</span> だけがあれば、 <span class="math inline">\(n\)</span> が、例えば離散時間を表すとすると、厳密に一つの信号値、時刻 <span class="math inline">\(n=0\)</span><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> における値を表すことができ、その唯一とりうる値は <code>1</code> である。 今、この操作に拡大縮小と移動を加える。</p>
+<p>つまり、この函数 <span class="math inline">\(\delta[n]\)</span> だけがあれば、 <span class="math inline">\(n\)</span> が、例えば離散時間を表すとすると、厳密に一つの信号値、時刻 <span class="math inline">\(n=0\)</span>[<sup>convolution</sup>3] における値を表すことができ、その唯一とりうる値は <code>1</code> である。 今、この操作に拡大縮小と移動を加える。</p>
 <ul>
 <li>拡大縮小により、<span class="math inline">\(n=0\)</span> でのいかなる値も作れる。例えば <span class="math inline">\(x_0 = 0 * \delta[n]\)</span>。</li>
 <li>移動により、他の時刻での値に影響を与えることができる。例えば、時刻 <span class="math inline">\(n = 3\)</span>は <span class="math inline">\(n - 3 = 0\)</span> なので<span class="math inline">\(\delta[n-3] = \delta_{n3}\)</span> で与えられる。</li>
 <li>両方を組み合わせることにより、どんな時刻のどんな値でも表すことができる。例えば <span class="math inline">\(x_5 = 1.11 * \delta[n-5]\)</span>。</li>
 </ul>
-<p>これまで、信号についてだけ考えてきた。 フィルタはどうなるか。 インパルスを特徴づけたのと同様に、フィルタも * インパルス応答* で完全に記述できる[^4]。 インパルス応答は、定義により、入力がインパルスである（つまり、時刻 <span class="math inline">\(n=0\)</span> で生じる）ときに現れるものである。 信号に対して用いた表記にならい、<span class="math inline">\(h\)</span> をインパルス応答とすると次のように書ける。</p>
+<p>これまで、信号についてだけ考えてきた。 フィルタはどうなるか。 インパルスを特徴づけたのと同様に、フィルタも * インパルス応答* で完全に記述できる[^convolution-4]。 インパルス応答は、定義により、入力がインパルスである（つまり、時刻 <span class="math inline">\(n=0\)</span> で生じる）ときに現れるものである。 信号に対して用いた表記にならい、<span class="math inline">\(h\)</span> をインパルス応答とすると次のように書ける。</p>
 <p><span class="math display">\[
 h[n] = h[n - 0] \equiv h(\delta[n-0])
-\]</span> [^4]: この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。</p>
+\]</span> [^convolution-4]: この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。</p>
 <p>扱っている例では、数列 <code>-1, 0, 1</code> となるだろう。 でも信号は0だけでなく、他の時刻においても表すことが必要であるように、フィルタも他の位置でも適用できなければならない。 その目的のためにも、移動操作が用いられ、似た方法で定式化される。 例えば、<span class="math inline">\(h[n-1]\)</span> はフィルタが時刻1、<span class="math inline">\(n-1\)</span>が0となる時刻に適用されることを意味する。 このような移動は、俗に「ずらし」と呼んでいるものに相当する。</p>
 <p>さて、残されている仕事は部品を組み合わせることだ。 時刻 <span class="math inline">\(n=0\)</span> において、移動なしのインパルス応答を受け取り、信号の振幅で拡大縮小する。 例においては、その値は1なので、<span class="math inline">\(1 * h[n- 0] = 1 * [-1, 0, 1] = [-1, 0, 1]\)</span>となる。 他の時刻においては、インパルスオス等を考えている入力位置に移動し掛け算する。 最後に、すべての入力位置からすべての寄与を得たら、足し合わせて畳み込まれた出力を得る。</p>
 <p>次の表は、それを説明するものである<a href="#tbl-convolution_input_view" class="quarto-xref">Table&nbsp;<span>17.2</span></a>。</p>
@@ -633,7 +634,7 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
 <p>幸運にも、もっと良い方法がある。 単一次元（線型）畳み込みは、対角成分がいくつかの定数で、他の要素が0であるToeplitz行列により計算される。 フィルタがToeplitz行列で定式化れれば、行われる積はToeplitz行列と入力との間の一つだけである。 行列の列数は入力の長さと同じだけ必要である（さもなくば積が計算できない）といっても、行列は「ほぼ空」なので計算量は少ない。</p>
 <p>扱っている例に対して、Toeplitz行列を作ったものを示す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
@@ -641,7 +642,7 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>h</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>h</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 -1  0  0  0
@@ -655,7 +656,7 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
 </div>
 <p>例の入力との積が期待通りの結果になるか確認しよう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h<span class="sc">$</span><span class="fu">matmul</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h<span class="sc">$</span><span class="fu">matmul</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 -1
@@ -910,7 +911,7 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
  0  0  0  </code></pre>
 <p>コードは次のように書ける。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>H0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>H0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
@@ -926,7 +927,7 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>H2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>H2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>次に、これら三つの行列を組み合わせて、次のように <em>二重ブロックToeplitz</em> <em>行列</em> を作る。</p>
 <pre><code>H0   0
@@ -934,7 +935,7 @@ H1  H0
 H2  H1</code></pre>
 <p>これをコードにする一つの方法は <code>torch_block_diag()</code> を二回使って二つの非0ブロックを作り、 で結合することだ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_block_diag</span>(<span class="fu">list</span>(H0, H0)), <span class="fu">torch_zeros</span>(<span class="dv">4</span>, <span class="dv">6</span>)</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  )</span>
@@ -946,7 +947,7 @@ H2  H1</code></pre>
 <span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>H</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1  0  0  0  0  0
@@ -984,11 +985,11 @@ H2  H1</code></pre>
 <h4 data-number="17.4.2.2" class="anchored" data-anchor-id="手順2-入力の準備"><span class="header-section-number">17.4.2.2</span> 手順2: 入力の準備</h4>
 <p>この <code>12 x 6</code> 行列と掛け算できるように、入力をベクトルに平坦化する必要がある。 再び、行を下から順に進める。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">3</span>)) </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">3</span>)) </span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>))</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(<span class="fu">list</span>(x0, x1))</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  2
@@ -1005,8 +1006,8 @@ H2  H1</code></pre>
 <h4 data-number="17.4.2.3" class="anchored" data-anchor-id="手順3-行列積"><span class="header-section-number">17.4.2.3</span> 手順3: 行列積</h4>
 <p>ここまでで、畳み込みは単純な行列積に変わった。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> H<span class="sc">$</span><span class="fu">matmul</span>(x)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> H<span class="sc">$</span><span class="fu">matmul</span>(x)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
   2
@@ -1049,7 +1050,6 @@ H2  H1</code></pre>
 <ol>
 <li id="fn1"><p>引数 <code>type = "open"</code> を渡すことにより、単調で周期的でない畳み込みにすることを指定できる。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>クロネッカーのデルタは、 <span class="math inline">\(i=j\)</span> のときに1、そうでないときに0となる。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><span class="math inline">\(n\)</span> を <span class="math inline">\(t\)</span> の代わりに異なる位置として使っている。 信号その他離散化された値は、時間（あるいは空間）の離散点においてのみ「存在」するからである。 文脈によって、少しぎこちなく見えるかもしれないが少なくとも一貫している。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
@@ -1105,13 +1105,14 @@ H2  H1</code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

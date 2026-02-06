@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,14 +69,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./network1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -119,7 +120,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -372,12 +373,12 @@ window.Quarto = {
 <h2 data-number="7.1" class="anchored" data-anchor-id="組込のnn_moudle"><span class="header-section-number">7.1</span> 組込の<code>nn_moudle()</code></h2>
 <p><code>torch</code>では、線型層は<code>nn_linear()</code>で作る。 <code>nn_linear()</code>は、<code>in_features</code>と<code>out_features</code>の（最低）二つの引数が必要である。 入力データに観測が50あり、それぞれ五つの特徴量がある場合、大きさは50 x 5となる。 潜在層には、16のユニットを置く。 この場合、<code>in_features</code>は5、<code>out_features</code>は16である。 （自分で重み行列を作る場合、同じ5と16が行と列の数である。）</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="at">in_features =</span> <span class="dv">5</span>, <span class="at">out_features =</span> <span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="at">in_features =</span> <span class="dv">5</span>, <span class="at">out_features =</span> <span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>一度作られれば、モジュールのパラメタの情報は簡単に得られる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>l</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `nn_module` containing 96 parameters.
 
@@ -388,92 +389,92 @@ window.Quarto = {
 </div>
 <p>カプセル化されていても、重みとバイアステンソルを確認することができる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.2179  0.2400  0.2997 -0.2364  0.2009
--0.3717  0.2020  0.1188  0.2640  0.1651
--0.3992  0.1757 -0.4342  0.3357 -0.0600
--0.3006  0.0169 -0.4413 -0.2897  0.3256
- 0.2940 -0.0851 -0.2454  0.0777 -0.2029
- 0.2247 -0.1254 -0.0165  0.3461  0.4136
--0.3599  0.3258  0.4119  0.3838  0.3943
--0.2184  0.0884  0.0633 -0.1821  0.1976
--0.3152 -0.0439 -0.2226 -0.1534  0.2483
--0.4345 -0.1778 -0.0023  0.4249  0.2083
- 0.0560 -0.3876 -0.2508  0.3364 -0.2165
- 0.3290  0.1634  0.4448 -0.3617 -0.0129
- 0.2773  0.2240  0.3171  0.0118 -0.1267
--0.4357  0.4335 -0.0060 -0.1765 -0.1125
- 0.2324 -0.1227  0.1103  0.0032 -0.1158
--0.0397  0.1002 -0.1864 -0.1413 -0.2172
+-0.2321  0.1196 -0.1082  0.3741  0.3791
+-0.2827  0.2061 -0.0965  0.0321  0.1563
+ 0.0208  0.2261 -0.0627 -0.3980 -0.2109
+ 0.1148 -0.4087 -0.3632 -0.2858  0.1270
+-0.2226 -0.3872 -0.0544  0.0061  0.1972
+ 0.2078  0.1262  0.1178  0.0488 -0.1258
+-0.2497  0.0689  0.1186  0.2253 -0.4100
+-0.1340  0.3746 -0.4240  0.4211 -0.1330
+ 0.3483  0.3390 -0.3513 -0.1874  0.3765
+ 0.1757  0.2505 -0.3149  0.4323 -0.0624
+ 0.1593  0.0569 -0.1195  0.1900  0.1982
+ 0.0092  0.1773 -0.1453  0.3832  0.1469
+ 0.3501  0.3589  0.3158 -0.0358 -0.3191
+-0.2445  0.4300  0.2089  0.2854  0.2724
+ 0.3289 -0.3740  0.3885 -0.2722  0.4230
+-0.1472  0.4318 -0.2697 -0.2558 -0.3269
 [ CPUFloatType{16,5} ][ requires_grad = TRUE ]</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>bias</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>bias</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
--0.1803
- 0.3968
--0.4302
- 0.1568
--0.0483
--0.3524
--0.1767
--0.2658
- 0.3715
- 0.2572
--0.2896
--0.3497
--0.0469
- 0.3987
--0.4315
--0.4244
+ 0.2736
+-0.1553
+-0.3096
+-0.3517
+ 0.4337
+-0.0973
+ 0.3978
+ 0.3662
+-0.0145
+ 0.4204
+ 0.0638
+-0.0613
+ 0.0812
+ 0.3730
+-0.3420
+ 0.4213
 [ CPUFloatType{16} ][ requires_grad = TRUE ]</code></pre>
 </div>
 </div>
 <p>この時点で、ちょっと立ち止まってほしい。 <code>torch</code>が返した重み行列の大きさは16 x 5で、白紙からコードを書いたときの5 x 16ではない。 これは基礎となるC++実装<code>libtorch</code>に由来する。 性能のため、<code>libtorch</code>の線型モジュールは重みとバイアスを転置で格納している。 Rからは、この点を指摘しておくことくらいしかできない。 混乱が軽減されることを望む。</p>
 <p>続けよう。 このモジュールにデータを適用するには函数のように「呼び出す」だけだ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">50</span>, <span class="dv">5</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">50</span>, <span class="dv">5</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">l</span>(x)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span><span class="fu">size</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span><span class="fu">size</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 50 16</code></pre>
 </div>
 </div>
 <p>これが順伝播だ。 勾配計算はどうするのか。 以前は、勾配計算の「入力」として必要なテンソルを作るとき、<code>torch</code>に明示的に<code>requires_grad = TRUE</code>を渡す必要があった。 組込<code>nn_module()</code>ではその必要はない。 すぐに<code>output</code>が<code>backward()</code>でどのような計算をすべきか調べることができる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span>grad_fn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>output<span class="sc">$</span>grad_fn</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>AddmmBackward0</code></pre>
 </div>
 </div>
 <p>確認のため、<code>output</code>に基づいて、適当な損失を計算して、<code>backward()</code>を読んでみよう。 線型モジュールの<code>weight</code>テンソルには埋められた<code>grad</code>フィールドがあることが分かる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> output<span class="sc">$</span><span class="fu">mean</span>()</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> output<span class="sc">$</span><span class="fu">mean</span>()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>loss<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight<span class="sc">$</span>grad</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>l<span class="sc">$</span>weight<span class="sc">$</span>grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 0.001 *
--0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
- -0.2452  7.6402 -12.2469 -16.4603 -4.3404
+-1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
+ -1.5947 -7.6484 -0.4393  6.0863 -3.4610
 [ CPUFloatType{16,5} ]</code></pre>
 </div>
 </div>
@@ -493,25 +494,25 @@ window.Quarto = {
 <h3 data-number="7.2.1" class="anchored" data-anchor-id="層の列としてのモデル-nn_sequential"><span class="header-section-number">7.2.1</span> 層の列としてのモデル: <code>nn_sequential()</code></h3>
 <p>モデルが単に層を伝播するだけであれば、モデルを作るときに<code>nn_sequential()</code>が使える。 線型層だけからなるモデルは多層パーセプトロン（MPL: Multi-Layer Perceptron）として知られている。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">nn_sequential</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">nn_sequential</span>(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">10</span>, <span class="dv">32</span>),</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">32</span>, <span class="dv">64</span>),</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">64</span>, <span class="dv">1</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>関係する層を詳しく見てみよう。 ReLU活性化を実装した函数をであった。 （<code>nnf_</code>の<code>f</code>は汎函数であることを示す。） 以下は<code>nn_relu</code>は<code>nn_linear()</code>と同様でモジュール、つまりオブジェクトで、引数は全てモジュールでなければならない。</p>
 <p>組込モジュール同様、このモデルをデータに適用するには呼び出せばよい。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mlp</span>(<span class="fu">torch_randn</span>(<span class="dv">5</span>, <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mlp</span>(<span class="fu">torch_randn</span>(<span class="dv">5</span>, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.0458
- 0.0866
--0.0011
- 0.0136
- 0.1569
+-0.0892
+ 0.0685
+-0.1851
+ 0.1477
+-0.1236
 [ CPUFloatType{5,1} ][ grad_fn = &lt;AddmmBackward0&gt; ]</code></pre>
 </div>
 </div>
@@ -523,7 +524,7 @@ window.Quarto = {
 <p><code>nn_module|()</code>は独自に作成されたR6オブジェクトに対するコンストラクタを作る。 以下、<code>my_linear()</code>はそのようなコンストラクタだ。 呼び出させれると、組込の<code>nn_linear()</code>に似た線型モジュールを返す。</p>
 <p>コンストラクタの定義の中で、二つのメソッドが実装されなければならない。<code>initialize()</code>と<code>forward()</code>である。 <code>initialize()</code>はモジュールのオブジェクトフィールドを作る。 すなわちそれが持つオブジェクトまたは値でどのメソッドの中からも見える。 <code>forward()</code>はモジュールが入力があったときの動作を定義する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>my_linear <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>my_linear <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(in_features, out_features) {</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>w <span class="ot">&lt;-</span> <span class="fu">nn_parameter</span>(<span class="fu">torch_randn</span>(</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      in_features, out_features</span>
@@ -533,13 +534,13 @@ window.Quarto = {
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(input) {</span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    input<span class="sc">$</span><span class="fu">mm</span>(self<span class="sc">$</span>w) <span class="sc">+</span> self<span class="sc">$</span>b</span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>nn_parameter()</code>の使い方を見てほしい。 <code>nn_parameter()</code>は渡されたテンソルかモジュールの <em>パラメタ</em> として登録されていることを確認する、つまり逆伝播されるのが既定だ。</p>
 <p>新たに定義されたモジュールのインスタンスを作るには、コンストラクタを呼び出す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">my_linear</span>(<span class="dv">7</span>, <span class="dv">1</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">my_linear</span>(<span class="dv">7</span>, <span class="dv">1</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>l</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `nn_module` containing 8 parameters.
 
@@ -607,13 +608,14 @@ window.Quarto = {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

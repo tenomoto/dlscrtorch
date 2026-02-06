@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,14 +69,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./optim1.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-485d01fc63b59abcd3ee1bf1e8e2748d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-27c261d06b905028a18691de25d09dde.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -119,7 +120,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -371,13 +372,13 @@ window.Quarto = {
 <section id="ネットワークの考え方" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="ネットワークの考え方"><span class="header-section-number">6.1</span> ネットワークの考え方</h2>
 <p>簡単にいうと、ネットワークは入力から出力への関数だ。 適切な函数が求めるものだ。</p>
-<p>これを決めるには、会期として線型回帰を考えてみよう。 線型回帰がしているのは、掛け算と足し算だ。 独立変数一つ一つに対して、これに掛ける係数がある。 それから、<em>バイアス</em> と呼ばれる項を末尾に加える。 （二次元では、回帰係数とバイアスは回帰直線の傾きとy切片である。）</p>
+<p>これを決めるには、回帰として線型回帰を考えてみよう。 線型回帰がしているのは、掛け算と足し算だ。 独立変数一つ一つに対して、これに掛ける係数がある。 それから、<em>バイアス</em> と呼ばれる項を末尾に加える。 （二次元では、回帰係数とバイアスは回帰直線の傾きとy切片である。）</p>
 <p>これらを考慮すると、乗算と加算はテンソルでできることで、テンソルはこれらの演算のためにあると言ってもいいくらいだ。 例として、入力が百個の観測からなり、特徴量がそれぞれ三つあるものを示す。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">100</span>, <span class="dv">3</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span><span class="fu">size</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x<span class="sc">$</span><span class="fu">size</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 100   3</code></pre>
 </div>
@@ -385,28 +386,28 @@ window.Quarto = {
 <p><code>x</code>に掛ける特徴量ごとの係数を格納するために、特徴量の数である長さ3の列ベクトルが必要だ。 あるいは、この後すぐ行う修正に備えて、列の長さが三の行列にしてもよい。 つまり、三行を持つ行列である。 列はいくつ必要か。 単一の特徴量を予測したいとすれば、行列は大きさ3 x 1となる。</p>
 <p>よさそうな候補を乱数で初期化する。 テンソルは<code>requires_grad = TRUE</code>をつけて作成されていることに留意する。 この変数はネットワークに学習てもらいたいパラメタを表しているからだ。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>バイアステンソルは大きさ1 x 1となる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>これで、データに重み<code>w</code>をかけ、バイアス<code>b</code>を加えて「予測」を得ることができる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">matmul</span>(w) <span class="sc">+</span> b</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">matmul</span>(w) <span class="sc">+</span> b</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(y, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.0849
--0.5364
--0.7455
--0.8728
- 1.0749
- 0.1355
- 0.1975
- 0.2398
--0.0627
- 1.5160
+ 1.0859
+ 1.8532
+-0.3657
+-0.7269
+-0.1947
+-2.2105
+ 0.0869
+ 0.1495
+-0.4312
+-2.6427
 ... [the output was truncated (use n=-1 to disable)]
 [ CPUFloatType{100,1} ][ grad_fn = &lt;AddBackward0&gt; ]</code></pre>
 </div>
@@ -421,14 +422,14 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <h2 data-number="6.2" class="anchored" data-anchor-id="ネットワークの層"><span class="header-section-number">6.2</span> ネットワークの層</h2>
 <p>ニューラルネットワークの用語に戻れば、ここでしたのは単層のネットワーク、出力層の動作の原型である。 単層ネットワークは構築したい類とはとてもいえない。 単に線型内挿すれば済むのに、なぜネットワークを作るのか。 実際、ニューラルネットワークの特徴は、（理論的に）無数の層を連鎖できることになある。 もちろん出力層以外は「隠れ」層と呼ばれるが。深層学習フレームワークを使う上では全く <em>隠れ</em> ている訳ではない。</p>
 <p>例えば、隠れ層が一つあるネットワークを作りたいとしよう。 その大きさ、つまり層が持つユニットの数はネットワークの力を決める重要な要因になる。 この数は作成する重み行列の大きさに反映される。 八つのユニットを持つ層には八つの列を持つ行列が必要である。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>w1 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>w1 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">3</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>各ユニットにはそれぞれバイアス値もある。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, <span class="dv">8</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>以前見たように、隠れ層は受け取った入力に重みを掛けてバイアスを加える。 つまり、上に示した函数<span class="math inline">\(f\)</span>を適用する。 そして、別の函数を適用する。 この函数は隠れそうから入力を受け取り、最終出力を生成する。 結局、ここで行われているのは函数の合成である。 二番目の函数<span class="math inline">\(g\)</span>を呼び出すと、全体の変換は<span class="math inline">\(g(f(\mathbf{X}))\)</span>つまり<span class="math inline">\(g\circ f\)</span>となる。</p>
 <p>上述の単層構造に類似した出力を<span class="math inline">\(g\)</span>がするには、その重み行列は八つの列の隠れ層を取り、単一の列にしなければならない。 つまり、<code>w2</code> は次のようになる。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>w2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">8</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>w2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">8</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>バイアス<code>b2</code>は<code>b1</code>のように単一の値である。</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>もちろん、単一の隠れ層に止める理由はなく、仕組みを完成させたら、自由にコードをいじってほしい。 でも最初に、追加しなければならない部品がいくつかある。 その一つは、今の構造では函数を連鎖、あるいは合成しているのはよいが、これらの函数がしているのは加算と乗算であり、線型である。 しかし、ニューラルネットワークの力は通常 <em>非線型性</em> にある。なぜか。</p>
 </section>
 <section id="活性化函数" class="level2" data-number="6.3">
@@ -438,14 +439,14 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <p>ここで活性化函数、時に「非線型性」が登場する。 これは非線型演算を導入するもので、行列演算でモデル化することはできない。 歴史的には典型的な活性化函数は <em>シグモイド</em> であり、現在でも極めて重要である。 その本質的な作用は入力を0と1との間に圧縮して確率と解釈できる量を与える。 回帰では、これが求めるものではなく、ほとんどの隠れ層についても同様だ。</p>
 <p>代わりに、ネットワークの中で最も利用されている活性化函数は <em>ReLU</em>、Rectified Linear Unit（正規化線型函数）と呼ばれるものだ。 名前は長いが単に全ての負の値を0するだけだ。 <code>torch</code>では<code>relu()</code>でこれができる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">7</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">7</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>なぜこれが非線型なのか。 線型である規準の一つは、二つの入力に対し先に加えてから変換しても、先に個々の入力を変換してから加えても結果が同じになることだ。 ReLUではそのようにはならない。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">3</span>))</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>t1<span class="sc">$</span><span class="fu">add</span>(t2)<span class="sc">$</span><span class="fu">relu</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>t1<span class="sc">$</span><span class="fu">add</span>(t2)<span class="sc">$</span><span class="fu">relu</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  2
@@ -455,10 +456,10 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t1_clamped <span class="ot">&lt;-</span> t1<span class="sc">$</span><span class="fu">relu</span>()</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t1_clamped <span class="ot">&lt;-</span> t1<span class="sc">$</span><span class="fu">relu</span>()</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>t2_clamped <span class="ot">&lt;-</span> t2<span class="sc">$</span><span class="fu">relu</span>()</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>t1_clamped<span class="sc">$</span><span class="fu">add</span>(t2_clamped)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>t1_clamped<span class="sc">$</span><span class="fu">add</span>(t2_clamped)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  2
@@ -475,15 +476,15 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <p>抽象的にいえば、損失とは目的からどれくらい離れているかという尺度だ。 函数を最小化するとき、前の章で行ったように、これは現在の函数値と取りうる最小の値との差である。 ニューラルネットワークでは、目的に適合している限り損失函数を自由に選ぶことができる。 回帰問題では、平均二乗誤差（MSE: mean square error）がよく用いられるが、それには限らない。 平均絶対誤差を代わりに用いるべきこともあるだろう。</p>
 <p><code>torch</code>では、平均二乗誤差は一行で書ける。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">5</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">5</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>y_pred <span class="ot">&lt;-</span> y <span class="sc">+</span> <span class="fl">0.01</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">&lt;-</span> (y_pred <span class="sc">-</span> y)<span class="sc">$</span><span class="fu">pow</span>(<span class="dv">2</span>)<span class="sc">$</span><span class="fu">mean</span>()</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>loss</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-9.99999e-05
+9.99998e-05
 [ CPUFloatType{} ]</code></pre>
 </div>
 </div>
@@ -497,7 +498,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <h3 data-number="6.5.1" class="anchored" data-anchor-id="ランダムデータの生成"><span class="header-section-number">6.5.1</span> ランダムデータの生成</h3>
 <p>例として使うデータは百個の観測からなる。 入力<code>x</code>は三つの特徴量を持つ。 目的<code>y</code>は一つの値で、<code>y</code>は<code>x</code>から生成されるが、ノイズが加えられる。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 入力次元（入力の特徴量の数）</span></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>d_in <span class="ot">&lt;-</span> <span class="dv">3</span></span>
@@ -506,14 +507,14 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(n, d_in)</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="sc">-</span><span class="fl">1.3</span>, <span class="sc">-</span><span class="fl">0.5</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">matmul</span>(coefs)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">torch_randn</span>(n, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">matmul</span>(coefs)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">torch_randn</span>(n, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="ネットワークの構築" class="level3" data-number="6.5.2">
 <h3 data-number="6.5.2" class="anchored" data-anchor-id="ネットワークの構築"><span class="header-section-number">6.5.2</span> ネットワークの構築</h3>
 <p>ネットワークは隠れ層と出力層の二層とする。 つまり二つの重み行列と二つのバイアステンソルが必要である。 特に理由はないが、隠れ層には三十二ユニット配置する。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 隠れ層の次元</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 隠れ層の次元</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>d_hidden <span class="ot">&lt;-</span> <span class="dv">32</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 出力次元（予測される特徴量の数）</span></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>d_out <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -526,7 +527,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 隠れ層のバイアス</span></span>
 <span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, d_hidden, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 出力層のバイアス</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, d_out, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>b2 <span class="ot">&lt;-</span> <span class="fu">torch_zeros</span>(<span class="dv">1</span>, d_out, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>現在の値、乱数初期化の結果は、重みとバイアスは有用ではない。 ネットワークを訓練する時が来た。</p>
 </section>
@@ -542,7 +543,7 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <li>パラメタを適切に更新する（ここでも全ての演算を<code>with_no_grad()</code>で囲み、<code>grad</code>フィールドを反復ごとにゼロにしている）。</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">1e-4</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">1e-4</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="do">### 訓練ループ----------------------------------------</span></span>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -582,28 +583,28 @@ f(\mathbf{X}) = \mathbf{X}\mathbf{W} + \mathbf{b}
 <span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    b2<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>()</span>
 <span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>  })</span>
 <span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Epoch:  10    Loss:  47.01073 
-Epoch:  20    Loss:  43.27639 
-Epoch:  30    Loss:  39.93836 
-Epoch:  40    Loss:  36.9425 
-Epoch:  50    Loss:  34.24915 
-Epoch:  60    Loss:  31.81582 
-Epoch:  70    Loss:  29.61428 
-Epoch:  80    Loss:  27.62029 
-Epoch:  90    Loss:  25.81124 
-Epoch:  100    Loss:  24.16312 
-Epoch:  110    Loss:  22.66156 
-Epoch:  120    Loss:  21.29248 
-Epoch:  130    Loss:  20.04201 
-Epoch:  140    Loss:  18.89908 
-Epoch:  150    Loss:  17.85307 
-Epoch:  160    Loss:  16.89423 
-Epoch:  170    Loss:  16.01326 
-Epoch:  180    Loss:  15.20265 
-Epoch:  190    Loss:  14.4554 
-Epoch:  200    Loss:  13.76766 </code></pre>
+<pre><code>Epoch:  10    Loss:  82.85979 
+Epoch:  20    Loss:  74.03245 
+Epoch:  30    Loss:  66.35075 
+Epoch:  40    Loss:  59.65015 
+Epoch:  50    Loss:  53.78239 
+Epoch:  60    Loss:  48.63364 
+Epoch:  70    Loss:  44.10446 
+Epoch:  80    Loss:  40.1131 
+Epoch:  90    Loss:  36.58716 
+Epoch:  100    Loss:  33.46431 
+Epoch:  110    Loss:  30.69569 
+Epoch:  120    Loss:  28.23539 
+Epoch:  130    Loss:  26.04533 
+Epoch:  140    Loss:  24.09444 
+Epoch:  150    Loss:  22.35265 
+Epoch:  160    Loss:  20.79491 
+Epoch:  170    Loss:  19.40153 
+Epoch:  180    Loss:  18.15282 
+Epoch:  190    Loss:  17.03158 
+Epoch:  200    Loss:  16.02347 </code></pre>
 </div>
 </div>
 <p>損失は最初急速に減少し、その後それほど速く減少なくなる。 この例はすばらしい性能を示すために作られたのでなく、わずかな行のコードで「本物の」ニューラルネットワークが構築できることを示すことが意図である。</p>
@@ -665,13 +666,14 @@ Epoch:  200    Loss:  13.76766 </code></pre>
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
