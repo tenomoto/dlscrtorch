@@ -529,36 +529,36 @@ Valid metrics: Loss: 1.0579 - MAE: 0.8292</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fitted <span class="sc">|&gt;</span> <span class="fu">predict</span>(test_dl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.0401
--2.6312
--2.1041
--0.8309
- 0.7093
--1.8683
- 0.2538
- 0.2257
- 0.8098
--1.8323
--1.4488
--0.7400
- 0.3872
- 0.6188
--0.5115
+ 0.4211
+-0.2533
+-1.6301
+-1.9802
+-1.6590
+-0.5438
+ 1.1037
+-2.2308
+-1.9137
+ 0.2233
+ 2.3819
+ 0.3637
+ 0.6636
+ 0.6360
+ 2.0393
+ 0.0695
+ 2.3820
+ 0.9947
+ 0.3128
+-0.3030
+-2.0685
+ 1.4697
+ 0.1681
  0.2032
--0.2504
- 0.7933
- 0.7332
- 2.6475
- 0.3975
--1.1754
- 1.4814
--0.2457
- 0.2797
- 2.0054
--2.3953
--0.3899
--0.1849
- 1.5364
+-0.5502
+ 0.9868
+ 1.7987
+-1.5472
+ 1.6100
+ 1.8116
 ... [the output was truncated (use n=-1 to disable)]
 [ MPSFloatType{200,1} ]</code></pre>
 </div>
@@ -569,8 +569,8 @@ Valid metrics: Loss: 1.0579 - MAE: 0.8292</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>A `luz_module_evaluation`
 ── Results ─────────────────────────────────────────────────────────────────────
-loss: 0.979
-mae: 0.7609</code></pre>
+loss: 1.1112
+mae: 0.8453</code></pre>
 </div>
 </div>
 <p>このワークフローは、訓練と検証が結合されて、その後試験集合に対する確認と予測を導出するものであり、本書で何度も登場する。</p>

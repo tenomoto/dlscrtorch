@@ -336,7 +336,9 @@ window.Quarto = {
   <li><a href="#一次元の畳み込み" id="toc-一次元の畳み込み" class="nav-link" data-scroll-target="#一次元の畳み込み"><span class="header-section-number">17.2</span> 一次元の畳み込み</a></li>
   <li><a href="#畳み込みの二つの考え方" id="toc-畳み込みの二つの考え方" class="nav-link" data-scroll-target="#畳み込みの二つの考え方"><span class="header-section-number">17.3</span> 畳み込みの二つの考え方</a>
   <ul class="collapse">
-  <li><a href="#実装" id="toc-実装" class="nav-link" data-scroll-target="#実装"><span class="header-section-number">17.3.1</span> 実装</a></li>
+  <li><a href="#出力からの見方" id="toc-出力からの見方" class="nav-link" data-scroll-target="#出力からの見方"><span class="header-section-number">17.3.1</span> 出力からの見方</a></li>
+  <li><a href="#入力からの見方" id="toc-入力からの見方" class="nav-link" data-scroll-target="#入力からの見方"><span class="header-section-number">17.3.2</span> 入力からの見方</a></li>
+  <li><a href="#実装" id="toc-実装" class="nav-link" data-scroll-target="#実装"><span class="header-section-number">17.3.3</span> 実装</a></li>
   </ul></li>
   <li><a href="#二次元での畳み込み" id="toc-二次元での畳み込み" class="nav-link" data-scroll-target="#二次元での畳み込み"><span class="header-section-number">17.4</span> 二次元での畳み込み</a>
   <ul class="collapse">
@@ -445,8 +447,8 @@ window.Quarto = {
 <p>相互相関と同様に、次のようにも述べることもできる。 フィルタが画像を「移動」し、個々の画像中の位置（画素）で、周囲の入力画素と対応する「重ねられた」フィルタ値とを掛け算し、全ての画素を足し合わせる。 つまり、個々の出力画素は入力とフィルタ値の組の間の内積の計算から得られる。</p>
 <p>二つ目の考え方は、入力の観点から見たもの（「入力からの見方」と呼ぶ）だ。 問いは、どのように各入力が出力に寄与するかである。 この見方は、最初の見方よりも慣れを要するが、単に馴染み、ニューラルネットワークの文脈でのよくある説明のされ方の問題かもしれない。 どちらにしても、入力からの見方は、畳み込みの数学的な意味について学ぶという点で非常に有益である。</p>
 <p>両方の見方を学ぶ。 まず、馴染みのある、出力からの見方から始める。</p>
-<section id="出力からの見方" class="level4" data-number="17.3.0.1">
-<h4 data-number="17.3.0.1" class="anchored" data-anchor-id="出力からの見方"><span class="header-section-number">17.3.0.1</span> 出力からの見方</h4>
+<section id="出力からの見方" class="level3" data-number="17.3.1">
+<h3 data-number="17.3.1" class="anchored" data-anchor-id="出力からの見方"><span class="header-section-number">17.3.1</span> 出力からの見方</h3>
 <p>出力からの見方では、<code>torch_conv1d()</code> で <code>padding = 2</code> を指定したときのように、まず入力信号の両側を延長する。 指定通りに、インパルス応答を反転し、<code>1, 0, -1</code> とする。 次に、「移動」を示す。</p>
 <p>以下は、表形式でこれを示したものだ（<a href="#tbl-convolution_output_view" class="quarto-xref">Table&nbsp;<span>17.1</span></a>）。</p>
 <div id="tbl-convolution_output_view" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -556,8 +558,8 @@ Table&nbsp;17.1: 畳み込み: 出力からの見方
 </div>
 <p>結局この話題について既に述べたように、書き出してみた結果に驚くことは何もない。 次に入力からの見方を考える。</p>
 </section>
-<section id="入力からの見方" class="level4" data-number="17.3.0.2">
-<h4 data-number="17.3.0.2" class="anchored" data-anchor-id="入力からの見方"><span class="header-section-number">17.3.0.2</span> 入力からの見方</h4>
+<section id="入力からの見方" class="level3" data-number="17.3.2">
+<h3 data-number="17.3.2" class="anchored" data-anchor-id="入力からの見方"><span class="header-section-number">17.3.2</span> 入力からの見方</h3>
 <p>入力からの考え方で重要なことは、入力信号をどのように考えるかである。 個々の要素は、拡大縮小され、移動されたインパルスと見なされる。</p>
 <p><em>インパルス</em> は単位標本（またはインパルス）函数、デルタ（<span class="math inline">\(\delta\)</span>）で与えられる。 この函数は値が1となる0を除いたすべての位置において0である。</p>
 <p><span class="math display">\[
@@ -567,16 +569,16 @@ Table&nbsp;17.1: 畳み込み: 出力からの見方
 <p><span class="math display">\[
 \delta[n] = \delta_{n0} = \delta_{0n}
 \]</span></p>
-<p>つまり、この函数 <span class="math inline">\(\delta[n]\)</span> だけがあれば、 <span class="math inline">\(n\)</span> が、例えば離散時間を表すとすると、厳密に一つの信号値、時刻 <span class="math inline">\(n=0\)</span>[<sup>convolution</sup>3] における値を表すことができ、その唯一とりうる値は <code>1</code> である。 今、この操作に拡大縮小と移動を加える。</p>
+<p>つまり、この函数 <span class="math inline">\(\delta[n]\)</span> だけがあれば、 <span class="math inline">\(n\)</span> が、例えば離散時間を表すとすると、厳密に一つの信号値、時刻 <span class="math inline">\(n=0\)</span><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> における値を表すことができ、その唯一とりうる値は <code>1</code> である。 今、この操作に拡大縮小と移動を加える。</p>
 <ul>
 <li>拡大縮小により、<span class="math inline">\(n=0\)</span> でのいかなる値も作れる。例えば <span class="math inline">\(x_0 = 0 * \delta[n]\)</span>。</li>
 <li>移動により、他の時刻での値に影響を与えることができる。例えば、時刻 <span class="math inline">\(n = 3\)</span>は <span class="math inline">\(n - 3 = 0\)</span> なので<span class="math inline">\(\delta[n-3] = \delta_{n3}\)</span> で与えられる。</li>
 <li>両方を組み合わせることにより、どんな時刻のどんな値でも表すことができる。例えば <span class="math inline">\(x_5 = 1.11 * \delta[n-5]\)</span>。</li>
 </ul>
-<p>これまで、信号についてだけ考えてきた。 フィルタはどうなるか。 インパルスを特徴づけたのと同様に、フィルタも * インパルス応答* で完全に記述できる[^convolution-4]。 インパルス応答は、定義により、入力がインパルスである（つまり、時刻 <span class="math inline">\(n=0\)</span> で生じる）ときに現れるものである。 信号に対して用いた表記にならい、<span class="math inline">\(h\)</span> をインパルス応答とすると次のように書ける。</p>
+<p>これまで、信号についてだけ考えてきた。 フィルタはどうなるか。 インパルスを特徴づけたのと同様に、フィルタも * インパルス応答* で完全に記述できる。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> インパルス応答は、定義により、入力がインパルスである（つまり、時刻 <span class="math inline">\(n=0\)</span> で生じる）ときに現れるものである。 信号に対して用いた表記にならい、<span class="math inline">\(h\)</span> をインパルス応答とすると次のように書ける。</p>
 <p><span class="math display">\[
 h[n] = h[n - 0] \equiv h(\delta[n-0])
-\]</span> [^convolution-4]: この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。</p>
+\]</span></p>
 <p>扱っている例では、数列 <code>-1, 0, 1</code> となるだろう。 でも信号は0だけでなく、他の時刻においても表すことが必要であるように、フィルタも他の位置でも適用できなければならない。 その目的のためにも、移動操作が用いられ、似た方法で定式化される。 例えば、<span class="math inline">\(h[n-1]\)</span> はフィルタが時刻1、<span class="math inline">\(n-1\)</span>が0となる時刻に適用されることを意味する。 このような移動は、俗に「ずらし」と呼んでいるものに相当する。</p>
 <p>さて、残されている仕事は部品を組み合わせることだ。 時刻 <span class="math inline">\(n=0\)</span> において、移動なしのインパルス応答を受け取り、信号の振幅で拡大縮小する。 例においては、その値は1なので、<span class="math inline">\(1 * h[n- 0] = 1 * [-1, 0, 1] = [-1, 0, 1]\)</span>となる。 他の時刻においては、インパルスオス等を考えている入力位置に移動し掛け算する。 最後に、すべての入力位置からすべての寄与を得たら、足し合わせて畳み込まれた出力を得る。</p>
 <p>次の表は、それを説明するものである<a href="#tbl-convolution_input_view" class="quarto-xref">Table&nbsp;<span>17.2</span></a>。</p>
@@ -628,8 +630,8 @@ Table&nbsp;17.2: 畳み込み: 入力からの見方
 <p>個人的には、出力からの見方の方が理解しやすいものの、入力からの見方から得られる洞察が多いように感じる。 特に、避けられない問い、なぜインパルス応答を反転させるのかに答えている。</p>
 <p>謎の力のようなものからは程遠く、負号は信号の表現のされ方から生じた機械的な結果にすぎない。 時刻 <span class="math inline">\(n=2\)</span> において測定された信号は <span class="math inline">\(\delta[n-2]\)</span> （2から2を引くと0）と表され、その信号に適用されるフィルタも <span class="math inline">\(h[n-2]\)</span> となる。</p>
 </section>
-<section id="実装" class="level3" data-number="17.3.1">
-<h3 data-number="17.3.1" class="anchored" data-anchor-id="実装"><span class="header-section-number">17.3.1</span> 実装</h3>
+<section id="実装" class="level3" data-number="17.3.3">
+<h3 data-number="17.3.3" class="anchored" data-anchor-id="実装"><span class="header-section-number">17.3.3</span> 実装</h3>
 <p>出力からの見方についての説明から、どのようにコードにするか述べることはあまりないと思うかもしれない。 入力ベクトルに亙ってループし、期待される出力位置において内積を計算するのは容易に見える。 しかし、これは多数のベクトル積を計算することを意味し、さらに入力が長ければ長いほどその計算が増加する。</p>
 <p>幸運にも、もっと良い方法がある。 単一次元（線型）畳み込みは、対角成分がいくつかの定数で、他の要素が0であるToeplitz行列により計算される。 フィルタがToeplitz行列で定式化れれば、行われる積はToeplitz行列と入力との間の一つだけである。 行列の列数は入力の長さと同じだけ必要である（さもなくば積が計算できない）といっても、行列は「ほぼ空」なので計算量は少ない。</p>
 <p>扱っている例に対して、Toeplitz行列を作ったものを示す。</p>
@@ -1050,6 +1052,8 @@ H2  H1</code></pre>
 <ol>
 <li id="fn1"><p>引数 <code>type = "open"</code> を渡すことにより、単調で周期的でない畳み込みにすることを指定できる。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>クロネッカーのデルタは、 <span class="math inline">\(i=j\)</span> のときに1、そうでないときに0となる。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><span class="math inline">\(n\)</span> を <span class="math inline">\(t\)</span> の代わりに異なる位置として使っている。 信号その他離散化された値は、時間（あるいは空間）の離散点においてのみ「存在」するからである。 文脈によって、少しぎこちなく見えるかもしれないが少なくとも一貫している。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>この章ではどこでも、フィルタについて話題にするときは、線型時間不変系だけを考えている。 時間不変系への制約は、畳み込み操作に内在している。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
